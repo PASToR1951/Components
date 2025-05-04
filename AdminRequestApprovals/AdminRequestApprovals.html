@@ -488,12 +488,14 @@
         /* --- Confirmation Message Styling --- */
         .confirmation-message {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background-color: var(--dark-green); /* Dark green background */
             color: white; padding: 0.8rem 1.5rem; border-radius: 0.5rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); z-index: 1001;
             opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s;
             font-size: 0.9rem; font-weight: 500;
         }
+        /* MODIFIED: Added background colors for confirmation types */
+        .confirmation-message.success { background-color: var(--dark-green); }
+        .confirmation-message.error { background-color: var(--danger-red-dark); }
         .confirmation-message.visible { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
 
     </style>
@@ -569,7 +571,6 @@
                 <p><strong>Book Title:</strong> <span id="detailBookTitle"></span></p>
                 <p><strong>Author:</strong> <span id="detailAuthorName"></span></p>
                 <p><strong>Volume:</strong> <span id="detailVolume"></span></p>
-                <p><strong>Document ID:</strong> <span id="detailDocumentId"></span></p>
                 <div class="mt-2"> <a id="detailDocumentLink" href="#" target="_blank" class="view-doc-button">View Document</a>
                 </div>
                 <hr class="my-3">
@@ -676,7 +677,7 @@
         const detailBookTitle = document.getElementById('detailBookTitle');
         const detailAuthorName = document.getElementById('detailAuthorName');
         const detailVolume = document.getElementById('detailVolume');
-        const detailDocumentId = document.getElementById('detailDocumentId');
+        // const detailDocumentId = document.getElementById('detailDocumentId'); // Removed reference to static element
         const detailFullName = document.getElementById('detailFullName');
         const detailEmail = document.getElementById('detailEmail');
         const detailAffiliation = document.getElementById('detailAffiliation');
@@ -1179,7 +1180,6 @@
                     : '';
 
                 details.innerHTML = `
-                    <p><strong>Request ID:</strong> ${request.id}</p>
                     <p><strong>Requester Name:</strong> ${request.fullName || 'N/A'}</p>
                     <p><strong>Email:</strong> ${request.email || 'N/A'}</p>
                     <p><strong>Affiliation:</strong> ${request.affiliation || 'N/A'}</p>
@@ -1406,8 +1406,9 @@
              .then(updatedRequest => {
                   // Success: Trigger email, show confirmation, close modal, refresh
                   sendNotificationEmail(updatedRequest, 'rejected'); // Pass reason if needed
-                  showConfirmationMessage(`Request ${requestId} rejected. Reason recorded.`);
+                  showConfirmationMessage(`Request ${requestId} rejected. Reason recorded.`, 'error'); // Use error type
                   closeRejectionModal();
+                  closeDetailsModal(); // Also close the main details modal
                   applyFiltersAndSort(); // Re-fetch data
              })
              .catch(error => {
@@ -1426,8 +1427,9 @@
 
                  sendNotificationEmail(requests[requestIndex], 'rejected'); // Simulate email
 
-                 showConfirmationMessage(`Request ${requestId} rejected. Reason recorded.`);
+                 showConfirmationMessage(`Request ${requestId} rejected. Reason recorded.`, 'error'); // Use error type
                  closeRejectionModal();
+                 closeDetailsModal(); // Also close the main details modal
                  applyFiltersAndSort(); // Re-render
              } else {
                  alert("Action failed or request is not pending.");
@@ -1456,7 +1458,7 @@
                 .then(response => { if (!response.ok) throw new Error('Failed to approve'); return response.json(); })
                 .then(updatedRequest => {
                      sendNotificationEmail(updatedRequest, 'approved');
-                     showConfirmationMessage(`Request ${requestId} approved. Email notification sent.`);
+                     showConfirmationMessage(`Request ${requestId} approved. Email notification sent.`, 'success'); // Use success type
                      closeDetailsModal();
                      applyFiltersAndSort(); // Re-fetch
                 })
@@ -1471,7 +1473,7 @@
                     requests[requestIndex].processedAt = new Date().toISOString();
                     saveRequests(); // To be removed
                     sendNotificationEmail(requests[requestIndex], 'approved'); // Simulate email
-                    showConfirmationMessage(`Request ${requestId} approved. Email notification sent.`);
+                    showConfirmationMessage(`Request ${requestId} approved. Email notification sent.`, 'success'); // Use success type
                     closeDetailsModal();
                     applyFiltersAndSort(); // Re-render
                 } else {
@@ -1497,8 +1499,9 @@
                 recipientName: request.fullName,
                 documentTitle: request.bookTitle,
                 status: type,
-                rejectionReason: type === 'rejected' ? request.rejectionReason : null
+                rejectionReason: type === 'rejected' ? request.rejectionReason : null,
                 // Add document URL or access instructions if approved
+                documentUrl: type === 'approved' ? request.documentUrl : null
             };
              fetch('/api/email/send-notification', {
                  method: 'POST',
@@ -1518,9 +1521,17 @@
         }
 
 
-        /** Shows a confirmation message. */
-        function showConfirmationMessage(message) { /* ... (same as before) ... */
-             confirmationMessage.textContent = message; confirmationMessage.classList.add('visible'); setTimeout(() => { confirmationMessage.classList.remove('visible'); }, 3000);
+        /** MODIFIED: Shows a confirmation message with different styles. */
+        function showConfirmationMessage(message, type = 'success') { // Default to 'success'
+             confirmationMessage.textContent = message;
+             // Remove previous type classes
+             confirmationMessage.classList.remove('success', 'error');
+             // Add the new type class
+             confirmationMessage.classList.add(type);
+             // Make visible
+             confirmationMessage.classList.add('visible');
+             // Hide after timeout
+             setTimeout(() => { confirmationMessage.classList.remove('visible'); }, 3000);
         }
 
          /** Populates the column visibility checklist */
