@@ -84,13 +84,18 @@
         }
         .modal-close-button:hover, .modal-close-button:focus { color: #bbb; text-decoration: none; }
 
-        .interactive-separator-wrapper { text-align: center; }
+        .interactive-separator-wrapper { 
+            text-align: center; 
+            /* Add margin to create space around the separator */
+            margin-top: 2rem; /* Adjust as needed */
+            margin-bottom: 2rem; /* Adjust as needed */
+        }
         .interactive-hr {
             display: inline-block; width: 30%; height: 3px; border: none; border-radius: 1.5px; 
             background: linear-gradient(to right, transparent, #4ade80, transparent); 
             opacity: 0.7; 
             transition: width 0.3s ease-out, opacity 0.3s ease-out, background 0.3s ease-out, box-shadow 0.3s ease-out;
-            margin-top: 0; margin-bottom: 0; 
+            /* Removed margin-top/bottom from hr itself, handled by wrapper now */
         }
         .interactive-separator-wrapper:hover .interactive-hr {
             width: 50%; opacity: 1; 
@@ -98,10 +103,25 @@
             box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); 
         }
 
+        /* Keyframes for subtle background movement */
+        @keyframes subtleBgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Apply animation to hero section */
+        .hero-section {
+            background-size: 200% 200%; /* Make gradient larger */
+            animation: subtleBgMove 25s ease infinite; /* Apply animation */
+        }
+
+
         #heroCarousel { /* Glassmorphism for the main carousel box */
             background: rgba(255, 255, 255, 0.15); 
             backdrop-filter: blur(10px);          
             -webkit-backdrop-filter: blur(10px);  
+            /* Cursor is handled by JS adding/removing classes */
         }
         
         /* Keyframes for the pulsing glow effect (this will be the border) */
@@ -117,17 +137,29 @@
             transition-duration: 700ms; 
             transition-timing-function: ease-in-out; 
             position: relative; 
-            /* rounded-[2rem], overflow-hidden, and p-1 (padding) are applied via Tailwind in HTML */
-            
-            /* Apply only the glow effect animation */
             animation: movingGlowEffect 5s ease-in-out infinite alternate;
         }
 
 
         .carousel-item img {
-             /* No specific rounding on image, it will be clipped by parent's overflow-hidden and border-radius */
              position: relative; 
              z-index: 0; 
+        }
+        /* Custom cursor styles for carousel navigation zones */
+        .cursor-prev { cursor: w-resize; /* West resize arrow */ }
+        .cursor-next { cursor: e-resize; /* East resize arrow */ }
+        .cursor-default { cursor: default; }
+
+        /* Scroll Reveal Animation Styles */
+        .scroll-reveal-section {
+            opacity: 0;
+            transform: translateY(30px); /* Start slightly lower */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            will-change: opacity, transform; /* Hint browser for optimization */
+        }
+        .scroll-reveal-section.is-visible {
+            opacity: 1;
+            transform: translateY(0); /* End at original position */
         }
 
 
@@ -158,12 +190,6 @@
                                 <img src="4.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 4" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+4+Not+Found';">
                             </div>
                         </div>
-                        <button class="carousel-control-prev absolute top-1/2 left-1 sm:left-2 transform -translate-y-1/2 bg-black/25 hover:bg-black/50 text-white p-2 rounded-full z-20 transition-colors" type="button">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </button>
-                        <button class="carousel-control-next absolute top-1/2 right-1 sm:right-2 transform -translate-y-1/2 bg-black/25 hover:bg-black/50 text-white p-2 rounded-full z-20 transition-colors" type="button">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        </button>
                         <div class="carousel-indicators absolute bottom-2 sm:bottom-3 left-1/2 transform -translate-x-1/2 z-20 flex space-x-1.5 sm:space-x-2">
                             <button type="button" data-slide-to="0" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
                             <button type="button" data-slide-to="1" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
@@ -185,49 +211,58 @@
             </div>
         </div>
     </div>
+
+    <div class="interactive-separator-wrapper">
+        <hr class="interactive-hr">
+    </div>
+
     <div class="container mx-auto"> 
-        <h2 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Organizational Chart</h2>
-        <img src="org-chart.png"
-             alt="Organization Chart (Click to enlarge)"
-             id="orgChartImage"
-             class="research-image-display"
-             onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Org+Chart+Not+Found';"> 
+        <div class="scroll-reveal-section">
+            <h2 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Organizational Chart</h2>
+            <img src="org-chart.png"
+                 alt="Organization Chart (Click to enlarge)"
+                 id="orgChartImage"
+                 class="research-image-display"
+                 onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Org+Chart+Not+Found';"> 
+        </div>
         
         <div class="interactive-separator-wrapper">
             <hr class="interactive-hr">
         </div>
 
-        <h1 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Research Agenda</h1>
+        <div class="scroll-reveal-section">
+            <h1 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Research Agenda</h1>
 
-        <img src="prism.png"
-             alt="Research Prism Diagram (Click to enlarge)"
-             id="prismImage"
-             class="research-image-display"
-             onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Prism+Diagram+Not+Found';"> 
-        
-        <div class="agenda-container">
-            <ul class="agenda-list" id="researchAgendaList">
-                <li>Paulinian Spirituality/Identity and its impact to international community and global partnerships</li>
-                <li>Paulinian Mission / Vision / Philosophy / Goals</li>
-                <li>Paulinian Roots and Formation</li>
-                <li>Advocacy (Peace, Pro-Life, Environment, Disaster & Risks Management)</li>
-                <li>Global Mental Health and Wellness</li>
-                <li>Synodal Church: Communion, Participation, and Mission</li>
-                <li>Inclusivity and Equity in Education</li>
-                <li>Curriculum development and Innovation geared towards internalization and global partnership</li>
-                <li>OBE - Instruction</li>
-                <li>Technology Integration</li>
-                <li>Faculty / Staff Development</li>
-                <li>Infrastructure / Software Development and Innovation</li>
-                <li>Financial Management, Sustainability, and Energy Security</li>
-                <li>Environmental Discipline and Stewardship</li>
-                <li>Ethical Leaders & Professionals</li>
-                <li>Cutting-edge Resilient Visionaries & Innovators; Engaging, Trustworthy Team Builders & Mentors; Reliable, Productive Experts & Implementers; Dedicated, Transformative Supporters & Stewardship in the context of international community and global partnerships</li>
-                <li>Civic and Community Involvement</li>
-                <li>Equality and Diversity</li>
-                <li>Economic cooperation and integration</li>
-                <li>Student and Faculty Mobility</li>
-            </ul>
+            <img src="prism.png"
+                 alt="Research Prism Diagram (Click to enlarge)"
+                 id="prismImage"
+                 class="research-image-display"
+                 onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Prism+Diagram+Not+Found';"> 
+            
+            <div class="agenda-container">
+                <ul class="agenda-list" id="researchAgendaList">
+                    <li>Paulinian Spirituality/Identity and its impact to international community and global partnerships</li>
+                    <li>Paulinian Mission / Vision / Philosophy / Goals</li>
+                    <li>Paulinian Roots and Formation</li>
+                    <li>Advocacy (Peace, Pro-Life, Environment, Disaster & Risks Management)</li>
+                    <li>Global Mental Health and Wellness</li>
+                    <li>Synodal Church: Communion, Participation, and Mission</li>
+                    <li>Inclusivity and Equity in Education</li>
+                    <li>Curriculum development and Innovation geared towards internalization and global partnership</li>
+                    <li>OBE - Instruction</li>
+                    <li>Technology Integration</li>
+                    <li>Faculty / Staff Development</li>
+                    <li>Infrastructure / Software Development and Innovation</li>
+                    <li>Financial Management, Sustainability, and Energy Security</li>
+                    <li>Environmental Discipline and Stewardship</li>
+                    <li>Ethical Leaders & Professionals</li>
+                    <li>Cutting-edge Resilient Visionaries & Innovators; Engaging, Trustworthy Team Builders & Mentors; Reliable, Productive Experts & Implementers; Dedicated, Transformative Supporters & Stewardship in the context of international community and global partnerships</li>
+                    <li>Civic and Community Involvement</li>
+                    <li>Equality and Diversity</li>
+                    <li>Economic cooperation and integration</li>
+                    <li>Student and Faculty Mobility</li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -238,11 +273,28 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Scroll Reveal Logic
+            const revealElements = document.querySelectorAll('.scroll-reveal-section');
+            
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger when 10% of the element is visible
+            });
+
+            revealElements.forEach(el => {
+                revealObserver.observe(el);
+            });
+
+            // --- Existing Carousel Logic ---
             const carousel = document.getElementById('heroCarousel');
             if (carousel) {
                 const items = carousel.querySelectorAll('.carousel-item');
-                const prevButton = carousel.querySelector('.carousel-control-prev');
-                const nextButton = carousel.querySelector('.carousel-control-next');
                 const indicators = carousel.querySelectorAll('.carousel-indicators button');
                 let currentIndex = 0;
                 const totalItems = items.length;
@@ -250,7 +302,6 @@
 
                 function showSlide(index) {
                     currentIndex = (index + totalItems) % totalItems; 
-
                     items.forEach((item, i) => {
                         const isActive = i === currentIndex;
                         item.classList.toggle('opacity-100', isActive); 
@@ -260,7 +311,6 @@
                         item.classList.toggle('z-10', isActive); 
                         item.classList.toggle('z-0', !isActive);  
                     });
-
                     indicators.forEach((indicator, i) => {
                         indicator.classList.toggle('bg-white', i === currentIndex); 
                         indicator.classList.toggle('bg-white/40', i !== currentIndex); 
@@ -278,13 +328,44 @@
                 }
                 function stopAutoSlide() { clearInterval(autoSlideInterval); }
 
-                if (totalItems > 0) { 
-                    if (prevButton && nextButton) {
-                        prevButton.addEventListener('click', () => { prevSlide(); stopAutoSlide(); startAutoSlide(); });
-                        nextButton.addEventListener('click', () => { nextSlide(); stopAutoSlide(); startAutoSlide();});
-                    }
+                if (totalItems > 0) {
+                    carousel.addEventListener('mousemove', (e) => {
+                        const rect = carousel.getBoundingClientRect();
+                        const x = e.clientX - rect.left; 
+                        if (x < rect.width / 2) { 
+                            carousel.classList.remove('cursor-next', 'cursor-default');
+                            carousel.classList.add('cursor-prev');
+                        } else { 
+                            carousel.classList.remove('cursor-prev', 'cursor-default');
+                            carousel.classList.add('cursor-next');
+                        }
+                    });
+
+                    carousel.addEventListener('mouseleave', () => {
+                        carousel.classList.remove('cursor-prev', 'cursor-next');
+                        carousel.classList.add('cursor-default'); 
+                        startAutoSlide(); 
+                    });
+                    
+                    carousel.addEventListener('mouseenter', () => {
+                        stopAutoSlide(); 
+                    });
+
+                    carousel.addEventListener('click', (e) => {
+                        const rect = carousel.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        if (x < rect.width / 2) { 
+                            prevSlide();
+                        } else { 
+                            nextSlide();
+                        }
+                        stopAutoSlide(); 
+                        startAutoSlide(); 
+                    });
+
                     indicators.forEach((indicator, i) => {
-                        indicator.addEventListener('click', () => { 
+                        indicator.addEventListener('click', (e) => { 
+                            e.stopPropagation(); 
                             showSlide(i); 
                             stopAutoSlide(); 
                             startAutoSlide(); 
@@ -303,6 +384,7 @@
                 }
             }
 
+            // --- Existing Image Modal Logic ---
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
             const modalCloseButton = document.getElementById('modalCloseButton');
