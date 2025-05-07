@@ -9,37 +9,52 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-image: linear-gradient(to bottom right, #fdfae8, #e6f4ea); /* Light Gold to Light Green */
-            min-height: 100vh; /* Ensure gradient covers full viewport height */
+            background-image: linear-gradient(to bottom right, #fdfae8, #e6f4ea);
+            min-height: 100vh;
+            position: relative; 
+            overflow-x: hidden;
+        }
+        .section-title { /* New class for image titles */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            margin-bottom: 1rem; /* Space below the image title */
         }
         .main-title {
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+            margin-top: 2.5rem; 
         }
-        /* Styles for the SVG placeholder (formerly agenda-image-placeholder) */
-        .svg-image-placeholder {
+        .research-image-display {
             display: block;
             width: 100%;
-            max-width: 48rem; /* Same max-width as agenda-container (lg:max-w-3xl or 768px) */
-            height: auto; /* Maintain aspect ratio for the SVG container if needed, though viewBox handles internal aspect */
+            max-width: 48rem; 
+            height: auto; 
             margin-left: auto;
             margin-right: auto;
-            margin-bottom: 2.5rem; /* Corresponds to mb-10 */
-            border-radius: 0.75rem; /* Rounded corners */
-            background-color: #e9e9e9; /* Fallback for the SVG itself, though rect inside will cover */
+            margin-bottom: 2.5rem; 
+            border-radius: 0.75rem; 
+            
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); 
+
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            cursor: pointer; /* Indicate it's interactive */
-            overflow: hidden; /* Ensures rounded corners clip the SVG content if needed */
+            cursor: pointer; 
+            overflow: hidden; 
         }
-        .svg-image-placeholder:hover {
-            transform: scale(1.02); /* Slightly enlarge the image on hover */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Add a more pronounced shadow on hover */
+        .research-image-display:hover {
+            transform: scale(1.02); 
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15); 
         }
         .agenda-container {
             background-color: #ffffff;
@@ -50,9 +65,6 @@
             margin-left: auto;
             margin-right: auto;
         }
-        .agenda-list {
-            padding-top: 0.5rem;
-        }
         .agenda-list li {
             position: relative;
             padding: 0.5rem 0.5rem 0.5rem 1.75rem;
@@ -62,12 +74,16 @@
             font-weight: normal;
             line-height: 1.6;
             border-radius: 0.375rem;
-            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out, font-weight 0.2s ease-in-out;
+            transition: background-color 0.25s ease-in-out, 
+                        transform 0.25s ease-in-out, 
+                        font-weight 0.25s ease-in-out,
+                        box-shadow 0.25s ease-in-out; 
             user-select: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             transform: scale(1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
         }
         .agenda-list li::before {
             content: '';
@@ -79,34 +95,83 @@
             width: 0.5rem;
             border-radius: 9999px;
             background-color: #22c55e;
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.25s ease-in-out;
         }
         .agenda-list li:hover {
             background-color: #e7f9ef;
             transform: scale(1.03);
             font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
         }
         .agenda-list li:hover::before {
             transform: translateY(-50%) scale(1.2);
+        }
+
+        /* Image Modal Styles */
+        .image-modal {
+            display: none; 
+            position: fixed; 
+            z-index: 10000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.85); 
+            justify-content: center;
+            align-items: center;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        .image-modal.active {
+            display: flex; 
+        }
+        .modal-content {
+            display: block;
+            margin: auto;
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 8px;
+            animation: zoomIn 0.3s ease-out;
+        }
+        @keyframes zoomIn {
+            from {transform: scale(0.5); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
+        .modal-close-button {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            user-select: none;
+        }
+        .modal-close-button:hover,
+        .modal-close-button:focus {
+            color: #bbb;
+            text-decoration: none;
         }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="container mx-auto">
+        <h2 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Organizational Chart</h2>
+        <img src="org-chart.png" 
+             alt="Organization Chart (Click to enlarge)"
+             id="orgChartImage" 
+             class="research-image-display"> 
+
         <h1 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Research Agenda</h1>
 
-        <svg viewBox="0 0 768 432"
-             class="svg-image-placeholder"
-             aria-label="Placeholder for University Research Agenda Diagram">
-            <rect width="100%" height="100%" fill="#A9A9A9"/>
-            <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, sans-serif" font-size="28px" fill="#FFFFFF">
-                Placeholder for Research Diagram
-            </text>
-            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, sans-serif" font-size="20px" fill="#FFFFFF">
-                (Replace with unnamed.jpg)
-            </text>
-             </svg>
+        <img src="prism.png" 
+             alt="Research Prism Diagram (Click to enlarge)"
+             id="prismImage" 
+             class="research-image-display"> 
+        
         <div class="agenda-container">
             <ul class="agenda-list" id="researchAgendaList">
                 <li>Paulinian Spirituality/Identity and its impact to international community and global partnerships</li>
@@ -116,7 +181,6 @@
                 <li>Global Mental Health and Wellness</li>
                 <li>Synodal Church: Communion, Participation, and Mission</li>
                 <li>Inclusivity and Equity in Education</li>
-
                 <li>Curriculum development and Innovation geared towards internalization and global partnership</li>
                 <li>OBE - Instruction</li>
                 <li>Technology Integration</li>
@@ -124,7 +188,6 @@
                 <li>Infrastructure / Software Development and Innovation</li>
                 <li>Financial Management, Sustainability, and Energy Security</li>
                 <li>Environmental Discipline and Stewardship</li>
-
                 <li>Ethical Leaders & Professionals</li>
                 <li>Cutting-edge Resilient Visionaries & Innovators; Engaging, Trustworthy Team Builders & Mentors; Reliable, Productive Experts & Implementers; Dedicated, Transformative Supporters & Stewardship in the context of international community and global partnerships</li>
                 <li>Civic and Community Involvement</li>
@@ -133,7 +196,67 @@
                 <li>Student and Faculty Mobility</li>
             </ul>
         </div>
+    </div> 
+    
+    <div id="imageModal" class="image-modal">
+        <span class="modal-close-button" id="modalCloseButton">&times;</span>
+        <img class="modal-content" id="modalImage" src="" alt="Maximized Image">
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Image Modal Logic
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalCloseButton = document.getElementById('modalCloseButton');
+
+            // Function to open modal with a specific image source
+            const openModalWithImage = (imageUrl, imageAlt) => {
+                if (modal && modalImage) {
+                    modalImage.src = imageUrl;
+                    modalImage.alt = imageAlt || "Maximized Image"; 
+                    modal.classList.add('active'); 
+                    document.body.style.overflow = 'hidden'; 
+                }
+            };
+            
+            const orgChartImage = document.getElementById('orgChartImage');
+            const prismImage = document.getElementById('prismImage');
+
+            if (orgChartImage) {
+                orgChartImage.addEventListener('click', () => {
+                    openModalWithImage('org-chart.png', orgChartImage.alt); 
+                });
+            }
+
+            if (prismImage) {
+                prismImage.addEventListener('click', () => {
+                    openModalWithImage('prism.png', prismImage.alt); 
+                });
+            }
+
+            if (modal && modalCloseButton) {
+                const closeModal = () => {
+                    modal.classList.remove('active'); 
+                    document.body.style.overflow = ''; 
+                };
+
+                modalCloseButton.addEventListener('click', closeModal);
+
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) { 
+                        closeModal();
+                    }
+                });
+
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && modal.classList.contains('active')) {
+                        closeModal();
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
