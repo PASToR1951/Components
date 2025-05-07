@@ -5,19 +5,403 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Research Agenda</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* --- Theme Colors (Combined & Prefixed) --- */
+        :root {
+            /* Footer Colors */
+            --ft-theme-gold: #FDB813;
+            --ft-theme-green-dark: #006A4E;
+            --ft-neutral-border-color: #e5e7eb; 
+            --ft-pastel-gold: #FFF5CC;
+            --ft-pastel-green: #D0EAD0;
+            --ft-glass-bg-color: rgba(255, 255, 255, 0.25); 
+            --ft-glass-border-color: rgba(255, 255, 255, 0.4); 
+            --ft-glass-blur-radius: 6px; 
+
+            /* Navbar Colors (Using ft- prefix where applicable) */
+            --nav-theme-gold: var(--ft-theme-gold); /* #FDB813; */
+            --nav-theme-gold-darker: #EAA10F; 
+            --nav-theme-gold-darkest: #D48F0D; 
+            --nav-theme-gold-light-bg: rgba(253, 184, 19, 0.2);
+            --nav-theme-gold-lighter-bg: rgba(253, 184, 19, 0.1); 
+            --nav-theme-gold-highlight: rgba(253, 184, 19, 0.4);
+
+            --nav-theme-green-dark: var(--ft-theme-green-dark); /* #006A4E; */
+            --nav-theme-green-darker-text: #00523D; 
+            --nav-theme-green-light-bg: rgba(0, 106, 78, 0.3);
+            --nav-theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
+            --nav-theme-green-border: rgba(0, 106, 78, 0.7);
+            --nav-theme-navbar-bg: #C8E6C9; /* Darker Greenish Background for Navbar */
+            --nav-neutral-border-color: #b0bec5; 
+            --nav-input-border-color: #b0bec5;
+            --nav-placeholder-text-color: #78909c; 
+            --nav-off-white-text: #F5F5F5; 
+        }
+
+        /* Basic HTML and Body setup for sticky footer */
+        html {
+            height: 100%;
+            margin: 0;
+            cursor: url('peas.ico'), auto; /* Custom cursor for the whole page */
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-image: linear-gradient(to bottom right, #fdfae8, #e6f4ea);
-            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            min-height: 100%; 
+            margin: 0;
             position: relative; 
-            overflow-x: hidden;
+            overflow-x: hidden; 
         }
-        .section-title { 
-            user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;
-            margin-bottom: 1rem; 
+
+        /* Wrapper for main page content (below navbar, above footer) */
+        #page-content-container {
+            flex-grow: 1; 
+            padding-top: 4rem; /* Add padding to offset sticky navbar height (h-16 = 4rem) */
         }
+
+        /* Canvas for confetti - ensuring it's on top */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000; /* Ensure confetti is above other elements */
+        }
+
+        /* --- Navbar Styling --- */
+        nav.sticky { /* Applied via class in HTML */
+            background-color: var(--nav-theme-navbar-bg) !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.08) !important; 
+            border-bottom: 1px solid var(--nav-theme-green-light-bg) !important;
+        }
+        /* Default Nav Link Color */
+        .md\\:block .ml-10 a.nav-link-desktop,
+        #mobile-menu a.nav-link-mobile,
+        #mobile-menu button.nav-link-mobile {
+            color: var(--nav-theme-green-darker-text) !important; 
+            transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease, font-weight 0.2s ease;
+            position: relative;
+            overflow: visible !important;
+            padding-bottom: 5px;
+        }
+        /* Nav links hover effect */
+        .md\\:block .ml-10 a.nav-link-desktop:hover,
+        #mobile-menu a.nav-link-mobile:hover,
+        #mobile-menu button.nav-link-mobile:hover {
+            background-color: var(--nav-theme-gold-light-bg) !important;
+            color: var(--nav-theme-gold-darker) !important;
+            transform: translateY(-2px);
+            font-weight: 600 !important;
+        }
+        /* Nav link hover bar */
+        .md\\:block .ml-10 a.nav-link-desktop::after,
+        #mobile-menu a.nav-link-mobile::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 3px;
+            background-color: var(--nav-theme-gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease-out;
+        }
+        .md\\:block .ml-10 a.nav-link-desktop:hover::after,
+        #mobile-menu a.nav-link-mobile:hover::after {
+            transform: scaleX(1);
+        }
+         #mobile-menu button.nav-link-mobile::after { content: none !important; }
+         #mobile-menu button.nav-link-mobile { padding-bottom: 0; }
+        /* Logo hover effect */
+        .flex-shrink-0 img.navbar-logo { transition: transform 0.3s ease, opacity 0.3s ease; } /* Added specific class */
+        .flex-shrink-0 img.navbar-logo:hover { transform: scale(1.08); opacity: 0.85; }
+        /* Desktop Search Button */
+        #search-open-button {
+            background-color: rgba(255, 255, 255, 0.85); 
+            border: 1px solid var(--nav-theme-green-border);
+            border-radius: 0.375rem;
+            padding: 0.4rem 0.75rem;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: var(--nav-placeholder-text-color); 
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            cursor: pointer;
+        }
+        #search-open-button:hover {
+            background-color: rgba(255, 255, 255, 0.95); 
+            border-color: var(--nav-theme-green-dark);
+        }
+        #search-open-button:focus {
+            outline: none;
+            border-color: var(--nav-theme-gold) !important;
+            box-shadow: 0 0 0 2px var(--nav-theme-gold-lighter-bg) !important;
+        }
+        #search-open-button .search-bar-icon {
+            color: var(--nav-theme-green-dark);
+            margin-right: 0.5rem; flex-shrink: 0; height: 1.25rem; width: 1.25rem;
+            transition: color 0.2s ease;
+        }
+        #search-open-button:hover .search-bar-icon { color: var(--nav-theme-gold); }
+        #search-open-button .search-bar-placeholder-text {
+            color: var(--nav-theme-green-darker-text); 
+            font-size: inherit; font-weight: normal; flex-grow: 1;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        /* Keyboard Shortcut Hint Styling */
+        .kbd-shortcut {
+            display: inline-flex; align-items: center; justify-content: center;
+            font-family: 'Inter', sans-serif; background-color: #e5e7eb;
+            color: #4b5563; border: 1px solid #9ca3af;
+            border-bottom-width: 2px; border-radius: 0.25rem;
+            padding: 0.1rem 0.35rem; font-size: 0.7em;
+            font-weight: 600; line-height: 1; white-space: nowrap;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        #search-open-button-mobile .kbd-shortcut {
+            background-color: var(--nav-theme-green-dark); color: var(--nav-theme-gold);
+            border-color: var(--nav-theme-gold-darker);
+        }
+        #search-open-button-mobile:hover .kbd-shortcut {
+            background-color: var(--nav-theme-green-darker-text) !important; color: white !important;
+            border-color: var(--nav-theme-green-dark) !important;
+        }
+        #searchPlaceholderOverlay .kbd-shortcut {
+            background-color: #f3f4f6; color: #6b7280; border-color: #d1d5db;
+            font-size: 0.85em; font-weight: 500; padding: 0.05rem 0.25rem;
+            margin: 0 0.1rem; border-bottom-width: 1px;
+        }
+        #searchPlaceholderOverlay .kbd-shortcut:hover {
+            background-color: #f3f4f6; color: #6b7280; border-color: #d1d5db;
+        }
+        /* Keyframes for moving gradient */
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* Enhanced Login Button Styling */
+        #login-button, #mobile-login-button {
+            background-image: linear-gradient(to right, var(--nav-theme-gold) 0%, var(--nav-theme-gold-darker) 50%, var(--nav-theme-gold) 100%);
+            background-size: 200% auto;
+            color: var(--nav-off-white-text);
+            padding: 0.6rem 1.2rem; border-radius: 0.5rem;
+            font-weight: 600; font-size: 0.875rem; line-height: 1.25rem;
+            transition: background-position 0.4s ease-out, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+            border: none; display: inline-flex; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.08);
+            position: relative; overflow: hidden;
+            animation: moveGradient 4s linear infinite;
+        }
+        #login-button:hover, #mobile-login-button:hover {
+            background-position: right center; color: var(--nav-off-white-text);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 8px rgba(234, 161, 15, 0.3), 0 2px 4px rgba(234, 161, 15, 0.2);
+        }
+        #login-button:active, #mobile-login-button:active {
+            transform: translateY(0px) scale(0.98);
+            background-image: linear-gradient(to right, var(--nav-theme-gold-darker) 0%, var(--nav-theme-gold-darkest) 50%, var(--nav-theme-gold-darker) 100%);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); color: var(--nav-off-white-text);
+        }
+        #login-button:focus, #mobile-login-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--nav-theme-gold-light-bg), 0 4px 8px rgba(234, 161, 15, 0.3);
+        }
+        #mobile-login-button { width: 100%; margin-top: 0.75rem; padding: 0.75rem 1.2rem; }
+        /* Mobile Menu Toggle Button Theming */
+        .mobile-menu-button {
+            color: var(--nav-theme-green-darker-text) !important; 
+            background-color: transparent !important;
+            transition: color 0.2s ease, background-color 0.2s ease;
+        }
+        .mobile-menu-button:hover {
+            background-color: var(--nav-theme-gold-light-bg) !important;
+            color: var(--nav-theme-gold-darker) !important;
+        }
+        .mobile-menu-button.focus\:ring-green-500:focus { --tw-ring-color: var(--nav-theme-gold) !important; }
+        /* Mobile menu general styling */
+        #mobile-menu { background-color: var(--nav-theme-navbar-bg); }
+        #mobile-menu .border-t { border-top-color: var(--nav-theme-green-light-bg); }
+        #mobile-menu a.hover\:bg-amber-100:hover {
+            background-color: var(--nav-theme-gold-light-bg) !important;
+            color: var(--nav-theme-green-darker-text) !important;
+        }
+        /* --- Search Overlay Styles with Animated Blob Background --- */
+        #search-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            background-color: rgba(0, 40, 29, 0.65);
+            z-index: 40; /* Higher than navbar (z-30) */
+            opacity: 0; transition: opacity 0.3s ease-in-out;
+            pointer-events: none; display: flex; padding: 2rem;
+            justify-content: center; align-items: center; overflow: hidden;
+        }
+        #search-overlay.visible { opacity: 1; pointer-events: auto; }
+        /* Animated Blobs */
+        #search-overlay::before, #search-overlay::after {
+            content: ''; position: absolute; border-radius: 50%;
+            filter: blur(70px); opacity: 0;
+        }
+        #search-overlay::before { /* Gold Blob */
+            width: 45vw; height: 45vw; min-width: 280px; max-width: 450px;
+            min-height: 280px; max-height: 450px; background: var(--nav-theme-gold);
+            top: 5%; left: 5%; animation: moveBlob1 20s infinite alternate ease-in-out;
+        }
+        #search-overlay::after { /* Green Blob */
+            width: 55vw; height: 55vw; min-width: 320px; max-width: 550px;
+            min-height: 320px; max-height: 550px; background: var(--nav-theme-green-dark);
+            bottom: 2%; right: 2%; animation: moveBlob2 24s infinite alternate ease-in-out 2.5s;
+        }
+        @keyframes moveBlob1 {
+            0%   { transform: translate(-15%, -15%) scale(0.8); opacity: 0.25; }
+            25%  { transform: translate(15%, -5%) scale(1.1); opacity: 0.4; }
+            50%  { transform: translate(5%, 15%) scale(0.9); opacity: 0.3; }
+            75%  { transform: translate(-10%, 5%) scale(1.2); opacity: 0.45; }
+            100% { transform: translate(-15%, -15%) scale(0.8); opacity: 0.25; }
+        }
+        @keyframes moveBlob2 {
+            0%   { transform: translate(10%, 10%) scale(0.9); opacity: 0.3; }
+            25%  { transform: translate(-5%, 15%) scale(0.7); opacity: 0.2; }
+            50%  { transform: translate(-15%, -10%) scale(1.15); opacity: 0.4; }
+            75%  { transform: translate(0%, -15%) scale(0.8); opacity: 0.25; }
+            100% { transform: translate(10%, 10%) scale(0.9); opacity: 0.3; }
+        }
+        /* Content within the search overlay */
+        .search-overlay-content {
+            background-color: rgba(248, 249, 247, 0.85);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            width: 100%; max-width: 48rem; border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            border: 1px solid var(--nav-neutral-border-color);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease, backdrop-filter 0.3s ease;
+            position: relative; z-index: 1; max-height: calc(100vh - 4rem);
+            display: flex; flex-direction: column;
+        }
+        #search-overlay.visible .search-overlay-content { transform: translateY(0); }
+        .search-input-wrapper-overlay {
+            display: flex; align-items: center; padding: 1rem;
+            border-bottom: 1px solid var(--nav-neutral-border-color);
+            flex-shrink: 0; position: relative; 
+        }
+        .search-icon-overlay { width: 1.5rem; height: 1.5rem; color: var(--nav-theme-green-dark); margin-right: 0.75rem; flex-shrink: 0; }
+        #searchInputOverlay {
+            width: 100%; font-size: 1rem; line-height: 1.5rem;
+            color: var(--nav-theme-green-darker-text); background-color: transparent;
+            border: none; outline: none; padding-right: 7.5rem; 
+        }
+        #searchInputOverlay::placeholder { color: #6c757d; opacity: 0.8; }
+        /* Clear Search Input Button (Text Button) */
+        #clearSearchInputButton {
+            position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            background-color: transparent; color: var(--nav-theme-green-dark);
+            font-size: 0.875rem; font-weight: 500; padding: 0.25rem 0.5rem; 
+            border-radius: 0.375rem; border: 1px solid transparent; 
+            display: none; cursor: pointer;
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            z-index: 20; white-space: nowrap; 
+        }
+        #clearSearchInputButton:hover {
+            color: var(--nav-theme-gold-darker); background-color: var(--nav-theme-gold-lighter-bg);
+            border-color: var(--nav-theme-gold);
+        }
+        #clearSearchInputButton.visible { display: inline-flex; align-items: center; }
+        #loadingSpinnerOverlay {
+            position: absolute; right: 4.5rem; top: 50%; transform: translateY(-50%);
+            display: none; z-index: 10;
+        }
+        #loadingSpinnerOverlay.visible { display: inline-block; }
+        #loadingSpinnerOverlay svg { animation: spin 1s linear infinite; height: 1.25rem; width: 1.25rem; color: var(--nav-theme-green-dark); }
+        /* Main Close Button for the entire overlay (Top Right of Viewport) */
+        .search-overlay-close-btn {
+            position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.5rem;
+            border-radius: 9999px; background-color: rgba(255, 255, 255, 0.1); 
+            color: #e5e7eb; transition: background-color 0.2s, color 0.2s;
+            z-index: 50; cursor: pointer;
+        }
+        .search-overlay-close-btn:hover { background-color: rgba(255, 255, 255, 0.25); color: #ffffff; }
+        .search-overlay-close-btn svg { width: 1.5rem; height: 1.5rem; }
+        .sample-searches-overlay { padding: 0.75rem 1rem; border-bottom: 1px solid var(--nav-neutral-border-color); display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; flex-shrink: 0; background-color: rgba(248, 249, 247, 0.5); }
+        .sample-searches-label-overlay { font-size: 0.875rem; color: var(--nav-theme-green-dark); margin-right: 0.75rem; font-weight: 500; }
+        .sample-search-item-overlay { font-size: 0.875rem; color: var(--nav-theme-green-dark); background-color: var(--nav-theme-green-lighter-bg); padding: 0.25rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; border: 1px solid var(--nav-theme-green-border); }
+        .sample-search-item-overlay:hover { background-color: var(--nav-theme-gold-light-bg); color: var(--nav-theme-green-darker-text); border-color: var(--nav-theme-gold); }
+        .filters-container-overlay { padding: 0.75rem 1rem 1rem; background-color: rgba(248, 249, 247, 0.5); border-bottom: 1px solid var(--nav-neutral-border-color); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; flex-shrink: 0; }
+        .filter-item-overlay { display: flex; flex-direction: column; }
+        .filter-item-overlay label { font-size: 0.75rem; font-weight: 500; color: var(--nav-theme-green-dark); margin-bottom: 0.25rem; }
+        .filter-item-overlay select { width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; border: 1px solid var(--nav-theme-green-border); border-radius: 0.375rem; background-color: rgba(255,255,255,0.8); transition: border-color 0.2s ease, box-shadow 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23006A4E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
+        .filter-item-overlay select:focus { outline: none; border-color: var(--nav-theme-gold); box-shadow: 0 0 0 2px var(--nav-theme-gold-lighter-bg); }
+        /* Search Results Area - Enhanced Layout */
+        #search-results-overlay { padding: 0.5rem; overflow-y: auto; flex-grow: 1; }
+        .search-result-item {
+            display: block; padding: 0.75rem 1rem; border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            text-decoration: none; margin-bottom: 0.5rem; border: 1px solid transparent;
+        }
+        .search-result-item:hover {
+            background-color: var(--nav-theme-gold-lighter-bg); border-color: var(--nav-theme-gold);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .search-result-title {
+            font-weight: 600; font-size: 1rem; color: var(--nav-theme-green-dark);
+            margin-bottom: 0.25rem; transition: color 0.2s ease-in-out;
+        }
+        .search-result-item:hover .search-result-title { color: var(--nav-theme-green-darker-text); }
+        .search-result-meta-primary {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75rem; color: #4b5563; margin-bottom: 0.375rem;
+        }
+        .search-result-item:hover .search-result-meta-primary { color: var(--nav-theme-green-dark); }
+        .search-result-author { font-weight: 500; }
+        .search-result-year { color: #6b7280; }
+        .search-result-item:hover .search-result-year { color: var(--nav-theme-green-dark); }
+        .search-result-category-keywords {
+            margin-bottom: 0.5rem; display: flex; align-items: center;
+            flex-wrap: wrap; gap: 0.5rem;
+        }
+        .search-result-category-tag {
+            font-size: 0.7rem; font-weight: 500; padding: 0.125rem 0.5rem;
+            border-radius: 9999px; background-color: var(--nav-theme-green-lighter-bg);
+            color: var(--nav-theme-green-darker-text); text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .search-result-item:hover .search-result-category-tag {
+            background-color: var(--nav-theme-green-dark); color: white;
+        }
+        .search-result-keywords-container { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+        .keyword-pill {
+            font-size: 0.7rem; background-color: #e5e7eb; color: #4b5563;
+            padding: 0.125rem 0.625rem; border-radius: 9999px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .search-result-item:hover .keyword-pill {
+            background-color: var(--nav-theme-gold); color: var(--nav-theme-green-darker-text);
+        }
+        .search-result-desc {
+            font-size: 0.875rem; color: #6b7280; line-height: 1.5;
+            transition: color 0.2s ease-in-out;
+        }
+        .search-result-item:hover .search-result-desc { color: #374151; }
+        .search-no-results { text-align: center; padding: 1rem; color: #6b7280; }
+        .highlight { background-color: var(--nav-theme-gold-light-bg) !important; color: var(--nav-theme-green-darker-text) !important; font-weight: 600; padding: 0 2px; border-radius: 3px; }
+        #search-results-overlay::-webkit-scrollbar { width: 6px; }
+        #search-results-overlay::-webkit-scrollbar-track { background: var(--nav-theme-green-lighter-bg); border-radius: 10px; }
+        #search-results-overlay::-webkit-scrollbar-thumb { background: var(--nav-theme-green-light-bg); border-radius: 10px; }
+        #search-results-overlay::-webkit-scrollbar-thumb:hover { background: var(--nav-theme-green-dark); }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (min-width: 768px) { /* md breakpoint */
+            #searchInputOverlay { font-size: 1.125rem; line-height: 1.75rem; }
+        }
+
+        /* --- Original Page Styles --- */
         .main-title { 
             user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;
             margin-top: 2.5rem; 
@@ -32,7 +416,8 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); 
             user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            cursor: pointer; overflow: hidden; 
+            cursor: pointer; 
+            overflow: hidden; 
         }
         .research-image-display:hover {
             transform: scale(1.02); 
@@ -62,7 +447,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
         }
         .agenda-list li:hover::before { transform: translateY(-50%) scale(1.2); }
-
         .image-modal {
             display: none; position: fixed; z-index: 10000; left: 0; top: 0;
             width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.85); 
@@ -83,215 +467,679 @@
             cursor: pointer; user-select: none;
         }
         .modal-close-button:hover, .modal-close-button:focus { color: #bbb; text-decoration: none; }
-
-        .interactive-separator-wrapper { 
-            text-align: center; 
-            /* Add margin to create space around the separator */
-            margin-top: 2rem; /* Adjust as needed */
-            margin-bottom: 2rem; /* Adjust as needed */
+        .d-animated-gradient-line { 
+            height: 3px; width: 60%; margin: 2rem auto; 
+            border-radius: 1.5px; background-color: #D1D5DB; 
         }
-        .interactive-hr {
-            display: inline-block; width: 30%; height: 3px; border: none; border-radius: 1.5px; 
-            background: linear-gradient(to right, transparent, #4ade80, transparent); 
-            opacity: 0.7; 
-            transition: width 0.3s ease-out, opacity 0.3s ease-out, background 0.3s ease-out, box-shadow 0.3s ease-out;
-            /* Removed margin-top/bottom from hr itself, handled by wrapper now */
-        }
-        .interactive-separator-wrapper:hover .interactive-hr {
-            width: 50%; opacity: 1; 
-            background: linear-gradient(to right, transparent, #22c55e, transparent); 
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); 
-        }
-
-        /* Keyframes for subtle background movement */
         @keyframes subtleBgMove {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
-        /* Apply animation to hero section */
         .hero-section {
-            background-size: 200% 200%; /* Make gradient larger */
-            animation: subtleBgMove 25s ease infinite; /* Apply animation */
+            background-size: 200% 200%; 
+            animation: subtleBgMove 25s ease infinite; 
         }
-
-
-        #heroCarousel { /* Glassmorphism for the main carousel box */
+        #heroCarousel { 
             background: rgba(255, 255, 255, 0.15); 
-            backdrop-filter: blur(10px);          
-            -webkit-backdrop-filter: blur(10px);  
-            /* Cursor is handled by JS adding/removing classes */
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            cursor: pointer; 
         }
-        
-        /* Keyframes for the pulsing glow effect (this will be the border) */
-        @keyframes movingGlowEffect {
-            0% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7), inset 0 0 5px 2px rgba(255, 215, 0, 0.35); } /* Gold glow */
-            33% { box-shadow: 0 0 22px 9px rgba(60, 179, 113, 0.7), inset 0 0 7px 3px rgba(60, 179, 113, 0.35); }  /* Green glow */
-            66% { box-shadow: 0 0 18px 7px rgba(218, 165, 32, 0.7), inset 0 0 6px 2px rgba(218, 165, 32, 0.35); }  /* Goldenrod (mix) glow */
-            100% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7), inset 0 0 5px 2px rgba(255, 215, 0, 0.35); } /* Gold glow */
+        @keyframes movingGlowEffect { 
+            0% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7), inset 0 0 5px 2px rgba(255, 215, 0, 0.35); } 
+            33% { box-shadow: 0 0 22px 9px rgba(60, 179, 113, 0.7), inset 0 0 7px 3px rgba(60, 179, 113, 0.35); }  
+            66% { box-shadow: 0 0 18px 7px rgba(218, 165, 32, 0.7), inset 0 0 6px 2px rgba(218, 165, 32, 0.35); }  
+            100% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7), inset 0 0 5px 2px rgba(255, 215, 0, 0.35); } 
         }
-
-        .carousel-item { /* Container for each image, now directly applying border effects */
-            transition-property: opacity, transform; 
-            transition-duration: 700ms; 
-            transition-timing-function: ease-in-out; 
-            position: relative; 
-            animation: movingGlowEffect 5s ease-in-out infinite alternate;
+        .carousel-item { 
+            transition-property: opacity, transform; transition-duration: 700ms; 
+            transition-timing-function: ease-in-out; position: relative; 
+            animation: movingGlowEffect 5s ease-in-out infinite alternate; 
+            overflow: hidden; 
         }
-
-
-        .carousel-item img {
-             position: relative; 
-             z-index: 0; 
+        .carousel-item::after {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(253, 184, 19, 0.2), rgba(0, 106, 78, 0.2),   
+                rgba(255, 245, 204, 0.15), rgba(208, 234, 208, 0.15),
+                rgba(253, 184, 19, 0.2)  
+            );
+            background-size: 400% 400%; 
+            animation: movingGradientOverlay 10s ease-in-out infinite; 
+            z-index: 1; pointer-events: none; 
         }
-        /* Custom cursor styles for carousel navigation zones */
-        .cursor-prev { cursor: w-resize; /* West resize arrow */ }
-        .cursor-next { cursor: e-resize; /* East resize arrow */ }
-        .cursor-default { cursor: default; }
-
-        /* Scroll Reveal Animation Styles */
+        @keyframes movingGradientOverlay {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .carousel-item img { position: relative; z-index: 0; }
         .scroll-reveal-section {
-            opacity: 0;
-            transform: translateY(30px); /* Start slightly lower */
+            opacity: 0; transform: translateY(30px); 
             transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-            will-change: opacity, transform; /* Hint browser for optimization */
+            will-change: opacity, transform; 
         }
-        .scroll-reveal-section.is-visible {
-            opacity: 1;
-            transform: translateY(0); /* End at original position */
+        .scroll-reveal-section.is-visible { opacity: 1; transform: translateY(0); }
+        
+        /* --- Footer Styles --- */
+        @keyframes subtleGradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-
-
+        .footer-wrapper { margin-top: auto; width: 100%; }
+        .site-footer {
+            position: relative; overflow: hidden;   
+            background-color: var(--ft-glass-bg-color);
+            -webkit-backdrop-filter: blur(var(--ft-glass-blur-radius)); 
+            backdrop-filter: blur(var(--ft-glass-blur-radius));
+            border: 1px solid var(--ft-glass-border-color);
+            border-radius: 0; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            color: #374151; 
+        }
+        .site-footer::before {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1; 
+            background: linear-gradient(45deg, var(--ft-pastel-gold), var(--ft-pastel-green), var(--ft-pastel-gold));
+            background-size: 200% 200%; 
+            animation: subtleGradientAnimation 18s ease infinite;
+        }
+        .footer-content-padding {
+            position: relative; z-index: 1; 
+            padding-top: 2rem; padding-bottom: 2rem; 
+            padding-left: 1.5rem; padding-right: 1.5rem;  
+            max-width: 80rem; margin-left: auto; margin-right: auto;     
+        }
+        @media (min-width: 640px) { 
+            .footer-content-padding { padding-left: 2rem; padding-right: 2rem; }
+        }
+        @media (min-width: 1024px) { 
+            .footer-content-padding { padding-left: 2.5rem; padding-right: 2.5rem; }
+        }
+        .footer-link {
+            color: var(--ft-theme-green-dark);
+            transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            text-decoration: none; font-weight: 500; 
+        }
+        .footer-link:hover { color: var(--ft-theme-gold); opacity: 1; }
+        .copyright-text { color: #6b7280; }
     </style>
 </head>
-<body class="p-4 md:p-8">
-
-    <div class="hero-section relative overflow-hidden bg-gradient-to-br from-yellow-50 via-lime-50 to-green-100 rounded-xl shadow-lg py-12 md:py-16 mb-12 md:mb-16">
-        <div class="absolute inset-0 z-0 flex justify-center items-center pointer-events-none p-4 md:p-8">
-            <img src="peas.png" alt="Background Logo Watermark" class="opacity-[0.035] w-auto h-full max-h-[60vh] md:max-h-[70vh] object-contain">
+<body> 
+    <canvas id="confetti-canvas"></canvas>
+    <nav class="shadow-md sticky top-0 z-30"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img class="h-20 w-auto navbar-logo" src="spud-logo.png" alt="MySite Logo" onerror="this.onerror=null; this.src='https://placehold.co/100x80/F9F6EE/006A4E?text=Logo';">
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#" class="nav-link-desktop text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                            <a href="#" class="nav-link-desktop text-gray-700 px-3 py-2 rounded-md text-sm font-medium">About</a>
+                            <a href="#" class="nav-link-desktop text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:flex md:items-center md:ml-6">
+                    <div class="ml-4 flex items-center space-x-4">
+                        <button id="search-open-button" type="button" class="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-600 flex items-center">
+                            <svg class="search-bar-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="search-bar-placeholder-text">Search (Ctrl+K)</span>
+                        </button>
+                        <button type="button" id="login-button" class="ml-3">
+                            Login
+                        </button>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="mobile-menu-button bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="container mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
-                <div class="hero-carousel-column">
-                    <div id="heroCarousel" class="relative w-full max-w-xl mx-auto shadow-2xl rounded-lg overflow-hidden border border-white/20 aspect-[4/3]">
-                        <div class="carousel-inner relative w-full h-full">
-                            <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
-                                <img src="1.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 1" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+1+Not+Found';">
-                            </div>
-                            <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
-                                <img src="2.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 2" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+2+Not+Found';">
-                            </div>
-                            <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
-                                <img src="3.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 3" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+3+Not+Found';">
-                            </div>
-                            <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
-                                <img src="4.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 4" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+4+Not+Found';">
-                            </div>
-                        </div>
-                        <div class="carousel-indicators absolute bottom-2 sm:bottom-3 left-1/2 transform -translate-x-1/2 z-20 flex space-x-1.5 sm:space-x-2">
-                            <button type="button" data-slide-to="0" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
-                            <button type="button" data-slide-to="1" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
-                            <button type="button" data-slide-to="2" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
-                            <button type="button" data-slide-to="3" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
-                        </div>
-                    </div>
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">About</a>
+                <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                 <button id="search-open-button-mobile" type="button" class="nav-link-mobile w-full mt-2 text-left text-gray-700 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between">
+                    Search
+                    <span class="kbd-shortcut">Ctrl+K</span>
+                </button>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="px-2">
+                     <button type="button" id="mobile-login-button" class="w-full">
+                        Login
+                    </button>
                 </div>
+            </div>
+        </div>
+    </nav>
 
-                <div class="hero-text-column">
-                    <h1 class="text-3xl lg:text-4xl font-bold text-green-800 mb-5 sm:mb-6">Welcome to the Office of Research &amp; Publications</h1>
-                    <div class="space-y-4 text-base md:text-lg leading-relaxed text-gray-700">
-                        <p>The Office of Research &amp; Publications of St. Paul University Dumaguete is proud to share the institution’s research activities, initiatives and publications in this website.</p>
-                        <p>Our innovations and scientific discoveries are expanding human knowledge and extending help to improve the institution and the public community.</p>
-                        <p>The office provides standards aligned with its newly crafted research agenda and in parallel with the priorities mandated by several agencies towards sustainability and development goals of our country.</p>
-                        <p>This is an avenue that would allow both faculty and students to engage in meaningful research and innovations to improve our understanding of the population we serve. The office strives for excellence, integrity, and ethics in our work, and dedicates all outputs to the pursuit of truth, knowledge, freedom, and holistic formation.</p>
-                    </div>
+    <div id="search-overlay" class="hidden">
+        <button id="search-close-button" type="button" class="search-overlay-close-btn">
+            <span class="sr-only">Close search</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="search-overlay-content">
+            <div class="search-input-wrapper-overlay">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon-overlay">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+                <input type="text" id="searchInputOverlay" placeholder="Search articles, documents..." autocomplete="off" class=""/>
+                <button id="clearSearchInputButton" type="button" aria-label="Clear search input">
+                    Clear
+                </button>
+                 <div id="loadingSpinnerOverlay" aria-label="Loading search results">
+                    <svg viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 </div>
+            </div>
+            <div class="sample-searches-overlay" id="sampleSearchesContainerOverlay">
+                <span class="sample-searches-label-overlay">Trending</span>
+                <span class="sample-search-item-overlay" data-query="JavaScript">JavaScript</span>
+                <span class="sample-search-item-overlay" data-query="React">React</span>
+                <span class="sample-search-item-overlay" data-query="API">API</span>
+                <span class="sample-search-item-overlay" data-query="Design">Design</span>
+                <span class="sample-search-item-overlay" data-query="Python">Python</span>
+            </div>
+            <div class="filters-container-overlay">
+                <div class="filter-item-overlay">
+                    <label for="categoryFilterOverlay">Category</label>
+                    <select id="categoryFilterOverlay">
+                        <option value="">All</option>
+                        <option value="Thesis">Thesis</option>
+                        <option value="Synergy">Synergy</option>
+                        <option value="Confluence">Confluence</option>
+                        <option value="Dissertation">Dissertation</option>
+                    </select>
+                </div>
+                <div class="filter-item-overlay">
+                    <label for="authorFilterOverlay">Author</label>
+                    <select id="authorFilterOverlay">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="filter-item-overlay">
+                    <label for="keywordsFilterOverlay">Keyword(s)</label>
+                    <select id="keywordsFilterOverlay">
+                        <option value="">All</option>
+                         </select>
+                </div>
+                <div class="filter-item-overlay">
+                    <label for="yearFilterOverlay">Year</label>
+                    <select id="yearFilterOverlay">
+                        <option value="">All</option>
+                    </select>
+                </div>
+            </div>
+            <div id="search-results-overlay">
+                 <p id="searchPlaceholderOverlay" class="search-no-results">Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.</p>
             </div>
         </div>
     </div>
 
-    <div class="interactive-separator-wrapper">
-        <hr class="interactive-hr">
-    </div>
-
-    <div class="container mx-auto"> 
-        <div class="scroll-reveal-section">
-            <h2 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Organizational Chart</h2>
-            <img src="org-chart.png"
-                 alt="Organization Chart (Click to enlarge)"
-                 id="orgChartImage"
-                 class="research-image-display"
-                 onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Org+Chart+Not+Found';"> 
+    <div id="page-content-container" class="px-4 py-6 sm:px-6 lg:px-8"> <div class="hero-section relative overflow-hidden bg-gradient-to-br from-yellow-50 via-lime-50 to-green-100 rounded-xl shadow-lg py-12 md:py-16 mb-12 md:mb-16">
+            <div class="absolute inset-0 z-0 flex justify-center items-center pointer-events-none p-4 md:p-8">
+                <img src="peas.png" alt="Background Logo Watermark" class="opacity-[0.035] w-auto h-full max-h-[60vh] md:max-h-[70vh] object-contain">
+            </div>
+            <div class="container mx-auto relative z-10 px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+                    <div class="hero-carousel-column">
+                        <div id="heroCarousel" class="relative w-full max-w-xl mx-auto shadow-2xl rounded-lg overflow-hidden border border-white/20 aspect-[4/3]">
+                            <div class="carousel-inner relative w-full h-full">
+                                <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
+                                    <img src="1.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 1" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+1+Not+Found';">
+                                </div>
+                                <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
+                                    <img src="2.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 2" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+2+Not+Found';">
+                                </div>
+                                <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
+                                    <img src="3.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 3" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+3+Not+Found';">
+                                </div>
+                                <div class="carousel-item absolute inset-0 opacity-0 scale-95 p-1 rounded-[2rem] overflow-hidden">
+                                    <img src="4.jpg" class="block w-full h-full object-cover" alt="Research Initiative Photo 4" onerror="this.onerror=null;this.src='https://placehold.co/800x600/e2e8f0/94a3b8?text=Image+4+Not+Found';">
+                                </div>
+                            </div>
+                            <div class="carousel-indicators absolute bottom-2 sm:bottom-3 left-1/2 transform -translate-x-1/2 z-20 flex space-x-1.5 sm:space-x-2">
+                                <button type="button" data-slide-to="0" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
+                                <button type="button" data-slide-to="1" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
+                                <button type="button" data-slide-to="2" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
+                                <button type="button" data-slide-to="3" class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-white/40 hover:bg-white/70 rounded-full transition-colors"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-text-column text-center lg:text-left"> 
+                        <img src="peas.png" 
+                             alt="PeAS Logo" 
+                             class="h-20 w-auto mb-4 mx-auto lg:mx-0" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/150x80/006A4E/FFFFFF?text=PeAS+Logo';">
+                        
+                        <h1 class="text-3xl lg:text-4xl font-bold text-green-800 mb-5 sm:mb-6">Welcome to the Office of Research &amp; Publications</h1>
+                        <div class="space-y-4 text-base md:text-lg leading-relaxed text-gray-700">
+                            <p>The Office of Research &amp; Publications of St. Paul University Dumaguete is proud to share the institution’s research activities, initiatives and publications in this website.</p>
+                            <p>Our innovations and scientific discoveries are expanding human knowledge and extending help to improve the institution and the public community.</p>
+                            <p>The office provides standards aligned with its newly crafted research agenda and in parallel with the priorities mandated by several agencies towards sustainability and development goals of our country.</p>
+                            <p>This is an avenue that would allow both faculty and students to engage in meaningful research and innovations to improve our understanding of the population we serve. The office strives for excellence, integrity, and ethics in our work, and dedicates all outputs to the pursuit of truth, knowledge, freedom, and holistic formation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="interactive-separator-wrapper">
-            <hr class="interactive-hr">
-        </div>
 
-        <div class="scroll-reveal-section">
-            <h1 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Research Agenda</h1>
+        <div class="d-animated-gradient-line" title="Divider"></div>
 
-            <img src="prism.png"
-                 alt="Research Prism Diagram (Click to enlarge)"
-                 id="prismImage"
-                 class="research-image-display"
-                 onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Prism+Diagram+Not+Found';"> 
+        <div class="container mx-auto"> 
+            <div class="scroll-reveal-section">
+                <h2 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Organizational Chart</h2>
+                <img src="org-chart.png"
+                     alt="Organization Chart (Click to enlarge)"
+                     id="orgChartImage"
+                     class="research-image-display"
+                     onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Org+Chart+Not+Found';"> 
+            </div>
             
-            <div class="agenda-container">
-                <ul class="agenda-list" id="researchAgendaList">
-                    <li>Paulinian Spirituality/Identity and its impact to international community and global partnerships</li>
-                    <li>Paulinian Mission / Vision / Philosophy / Goals</li>
-                    <li>Paulinian Roots and Formation</li>
-                    <li>Advocacy (Peace, Pro-Life, Environment, Disaster & Risks Management)</li>
-                    <li>Global Mental Health and Wellness</li>
-                    <li>Synodal Church: Communion, Participation, and Mission</li>
-                    <li>Inclusivity and Equity in Education</li>
-                    <li>Curriculum development and Innovation geared towards internalization and global partnership</li>
-                    <li>OBE - Instruction</li>
-                    <li>Technology Integration</li>
-                    <li>Faculty / Staff Development</li>
-                    <li>Infrastructure / Software Development and Innovation</li>
-                    <li>Financial Management, Sustainability, and Energy Security</li>
-                    <li>Environmental Discipline and Stewardship</li>
-                    <li>Ethical Leaders & Professionals</li>
-                    <li>Cutting-edge Resilient Visionaries & Innovators; Engaging, Trustworthy Team Builders & Mentors; Reliable, Productive Experts & Implementers; Dedicated, Transformative Supporters & Stewardship in the context of international community and global partnerships</li>
-                    <li>Civic and Community Involvement</li>
-                    <li>Equality and Diversity</li>
-                    <li>Economic cooperation and integration</li>
-                    <li>Student and Faculty Mobility</li>
-                </ul>
+            <div class="d-animated-gradient-line" title="Divider"></div>
+
+            <div class="scroll-reveal-section">
+                <h1 class="main-title text-4xl font-bold text-center mb-10 md:mb-16 text-green-700">Research Agenda</h1>
+                <img src="prism.png"
+                     alt="Research Prism Diagram (Click to enlarge)"
+                     id="prismImage"
+                     class="research-image-display"
+                     onerror="this.onerror=null;this.src='https://placehold.co/768x500/e0e0e0/757575?text=Prism+Diagram+Not+Found';"> 
+                
+                <div class="agenda-container">
+                    <ul class="agenda-list" id="researchAgendaList">
+                        <li>Paulinian Spirituality/Identity and its impact to international community and global partnerships</li>
+                        <li>Paulinian Mission / Vision / Philosophy / Goals</li>
+                        <li>Paulinian Roots and Formation</li>
+                        <li>Advocacy (Peace, Pro-Life, Environment, Disaster & Risks Management)</li>
+                        <li>Global Mental Health and Wellness</li>
+                        <li>Synodal Church: Communion, Participation, and Mission</li>
+                        <li>Inclusivity and Equity in Education</li>
+                        <li>Curriculum development and Innovation geared towards internalization and global partnership</li>
+                        <li>OBE - Instruction</li>
+                        <li>Technology Integration</li>
+                        <li>Faculty / Staff Development</li>
+                        <li>Infrastructure / Software Development and Innovation</li>
+                        <li>Financial Management, Sustainability, and Energy Security</li>
+                        <li>Environmental Discipline and Stewardship</li>
+                        <li>Ethical Leaders & Professionals</li>
+                        <li>Cutting-edge Resilient Visionaries & Innovators; Engaging, Trustworthy Team Builders & Mentors; Reliable, Productive Experts & Implementers; Dedicated, Transformative Supporters & Stewardship in the context of international community and global partnerships</li>
+                        <li>Civic and Community Involvement</li>
+                        <li>Equality and Diversity</li>
+                        <li>Economic cooperation and integration</li>
+                        <li>Student and Faculty Mobility</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="imageModal" class="image-modal">
-        <span class="modal-close-button" id="modalCloseButton">&times;</span>
-        <img class="modal-content" id="modalImage" src="" alt="Maximized Image">
+        <div id="imageModal" class="image-modal">
+            <span class="modal-close-button" id="modalCloseButton">&times;</span>
+            <img class="modal-content" id="modalImage" src="" alt="Maximized Image">
+        </div>
+    </div> 
+
+    <div class="footer-wrapper"> 
+        <footer class="site-footer">
+            <div class="footer-content-padding"> 
+                <div class="flex flex-col lg:flex-row lg:justify-between items-center lg:items-start gap-16 text-center lg:text-left">
+                    <div class="flex-shrink-0">
+                        <div class="flex flex-col items-center text-center sm:items-start sm:text-left mb-3">
+                            <img class="h-16 w-auto sm:h-20 mb-2 sm:mb-0"
+                                 src="spud-logo.png" 
+                                 alt="Spud Logo Placeholder"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/100x40/006A4E/FFFFFF?text=Spud';">
+                        </div>
+                        <p class="text-xs copyright-text">&copy; <span id="footerCurrentYear"></span> PeAS. All Rights Reserved.</p>
+                    </div>
+                    <nav class="flex flex-col items-center lg:items-start space-y-2 text-sm">
+                        <a href="#" class="footer-link">Home</a>
+                        <a href="#" class="footer-link">Contact</a>
+                        <a href="#" class="footer-link">Terms & Conditions</a>
+                        <a href="#" class="footer-link">Privacy Policy</a>
+                    </nav>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Navbar & Search Logic ---
+            const DEBOUNCE_DELAY = 300;
+            const DATABASE_SEARCH_BACKEND_URL = '/api/search'; // Example backend URL
+            const TRENDING_TOPICS_URL = '/api/trending-topics'; // Example backend URL
+            let originalBodyOverflow = '';
+
+            // Mock data (replace with actual API calls)
+            const mockSearchResultsData = [
+                { title: "Understanding JavaScript Closures", description: "A deep dive into closures...", url: "#/js-closures", category: "Thesis", author: "Dr. Ellie Script", keywords: "JavaScript, Closures, Scope, Functions", year: "2023" },
+                { title: "Advanced React Patterns", description: "Explore advanced patterns in React...", url: "#/react-advanced", category: "Dissertation", author: "Prof. Ada Component", keywords: "React, JavaScript, Frontend, Patterns, Web", year: "2024" },
+                { title: "Intro to Python for Thesis Research", description: "A beginner-friendly guide to Python...", url: "#/python-data-science", category: "Thesis", author: "Dr. Guido Byte", keywords: "Python, Data Analysis, Pandas, AI, Research", year: "2023" },
+                { title: "The Confluence of Design and Development", description: "How Tailwind CSS helps bridge the gap...", url: "#/tailwind-guide", category: "Confluence", author: "Mr. Adam Utility", keywords: "TailwindCSS, CSS, Frontend, Design, UI, Confluence", year: "2022" },
+                { title: "The Future of AI in Dissertation Writing", description: "Exploring ethical implications of AI...", url: "#/ai-thesis", category: "Dissertation", author: "Dr. Alan Intellect", keywords: "AI, Academia, Ethics, Research, Artificial Intelligence", year: "2024" },
+                { title: "Synergy in Collaborative Software Projects", description: "Best practices for teamwork...", url: "#/software-synergy", category: "Synergy", author: "Ms. Team Lead", keywords: "Teamwork, Software, Collaboration, Agile, Synergy", year: "2023" },
+                { title: "Crafting a Compelling Thesis", description: "A guide to structuring a thesis...", url: "#/thesis-crafting", category: "Thesis", author: "Dr. Jane Structure", keywords: "Thesis, Writing, Research, Academia", year: "2022" },
+                { title: "Dissertation Defense: Strategies", description: "Prepare for your dissertation defense...", url: "#/dissertation-defense", category: "Dissertation", author: "Prof. Max Argument", keywords: "Dissertation, Defense, Academia, Presentation", year: "2024" }
+            ];
+
+            const bodyElement = document.body;
+            const mobileMenuButton = document.querySelector('.mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuOpenIcon = mobileMenuButton?.querySelector('svg:not(.hidden)');
+            const mobileMenuCloseIcon = mobileMenuButton?.querySelector('svg.hidden');
+            const searchOpenButton = document.getElementById('search-open-button');
+            const searchOpenButtonMobile = document.getElementById('search-open-button-mobile');
+            const searchOverlay = document.getElementById('search-overlay');
+            const searchCloseButton = document.getElementById('search-close-button');
+            const searchInputOverlay = document.getElementById('searchInputOverlay');
+            const clearSearchInputButton = document.getElementById('clearSearchInputButton');
+            const searchResultsOverlay = document.getElementById('search-results-overlay');
+            const loadingSpinnerOverlay = document.getElementById('loadingSpinnerOverlay');
+            const sampleSearchesContainerOverlay = document.getElementById('sampleSearchesContainerOverlay');
+            const categoryFilterOverlay = document.getElementById('categoryFilterOverlay');
+            const authorFilterOverlay = document.getElementById('authorFilterOverlay');
+            const keywordsFilterOverlay = document.getElementById('keywordsFilterOverlay');
+            const yearFilterOverlay = document.getElementById('yearFilterOverlay');
+            const loginButtonDesktop = document.getElementById('login-button');
+            const loginButtonMobile = document.getElementById('mobile-login-button');
+            const confettiCanvas = document.getElementById('confetti-canvas');
+
+            let myConfetti = null;
+            if (confettiCanvas && typeof confetti === 'function') {
+                 myConfetti = confetti.create(confettiCanvas, { resize: true, useWorker: true });
+            } else { console.warn("Confetti canvas or library not found."); }
+
+            function toggleMobileMenu(forceClose = false) {
+                 if (!mobileMenu || !mobileMenuButton || !mobileMenuOpenIcon || !mobileMenuCloseIcon) return;
+                const isCurrentlyExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                const openMenu = forceClose ? false : !isCurrentlyExpanded;
+                mobileMenuButton.setAttribute('aria-expanded', openMenu.toString());
+                mobileMenu.classList.toggle('hidden', !openMenu);
+                mobileMenuOpenIcon.classList.toggle('hidden', openMenu);
+                mobileMenuCloseIcon.classList.toggle('hidden', !openMenu);
+            }
+
+            function openSearch() {
+                 if (!searchOverlay || !searchInputOverlay || !bodyElement) return;
+                originalBodyOverflow = bodyElement.style.overflow;
+                bodyElement.style.overflow = 'hidden';
+                searchOverlay.classList.remove('hidden');
+                searchOverlay.classList.add('visible');
+                setTimeout(() => {
+                    searchInputOverlay.focus();
+                    if (clearSearchInputButton) {
+                        clearSearchInputButton.classList.toggle('visible', searchInputOverlay.value.length > 0);
+                    }
+                }, 50);
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    toggleMobileMenu(true);
+                }
+                const currentPlaceholderText = `Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.`;
+                if (searchInputOverlay.value === '' && (categoryFilterOverlay?.value || authorFilterOverlay?.value || keywordsFilterOverlay?.value || yearFilterOverlay?.value)) {
+                    performSearchOverlay();
+                } else if (searchInputOverlay.value === '' && searchResultsOverlay) {
+                    searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
+                    const newPlaceholder = document.getElementById('searchPlaceholderOverlay');
+                    if(newPlaceholder) newPlaceholder.classList.remove('hidden');
+                } else if (searchResultsOverlay && searchResultsOverlay.innerHTML.trim() === '') {
+                     searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
+                }
+            }
+
+            function closeSearch() {
+                 if (!searchOverlay || !searchInputOverlay || !bodyElement) return;
+                bodyElement.style.overflow = originalBodyOverflow;
+                searchOverlay.classList.remove('visible');
+                // Use setTimeout to allow fade-out animation before hiding completely
+                setTimeout(() => {
+                    searchOverlay.classList.add('hidden');
+                }, 300); // Match transition duration
+                searchInputOverlay.value = '';
+                if (clearSearchInputButton) {
+                    clearSearchInputButton.classList.remove('visible');
+                }
+            }
+
+            function highlightText(text, query) {
+                if (!query || typeof text !== 'string') return text || '';
+                const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                return text.replace(regex, '<span class="highlight">$1</span>');
+            }
+
+            let debounceTimerOverlay;
+            function debounceOverlay(func, delay) {
+                return function(...args) {
+                    clearTimeout(debounceTimerOverlay);
+                    debounceTimerOverlay = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            function populateSelectWithOptions(selectElement, optionsData, valueField, textField = null) {
+                if (!selectElement) return;
+                const currentVal = selectElement.value;
+                while (selectElement.options.length > 1) { selectElement.remove(1); }
+                if (!Array.isArray(optionsData)) { console.warn("populateSelectWithOptions: optionsData is not an array.", optionsData); return; }
+                optionsData.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = typeof item === 'object' ? item[valueField] : item;
+                    option.textContent = textField && typeof item === 'object' ? item[textField] : option.value;
+                    selectElement.appendChild(option);
+                });
+                if (currentVal && Array.from(selectElement.options).some(opt => opt.value === currentVal)) {
+                    selectElement.value = currentVal;
+                }
+            }
+            async function initializeFiltersOverlay() { 
+                // Placeholder: In a real app, fetch filter options from backend
+                const authors = [...new Set(mockSearchResultsData.map(item => item.author).filter(Boolean))].sort();
+                const keywords = [...new Set(mockSearchResultsData.flatMap(item => item.keywords ? item.keywords.split(',').map(k => k.trim()) : []).filter(Boolean))].sort();
+                const years = [...new Set(mockSearchResultsData.map(item => item.year).filter(Boolean))].sort((a, b) => b - a); // Sort descending
+                
+                populateSelectWithOptions(authorFilterOverlay, authors);
+                populateSelectWithOptions(keywordsFilterOverlay, keywords);
+                populateSelectWithOptions(yearFilterOverlay, years);
+            }
+
+            async function performSearchOverlay() {
+                if (!searchResultsOverlay || !searchInputOverlay || !loadingSpinnerOverlay ) return;
+                const query = searchInputOverlay.value.trim().toLowerCase();
+                const selectedCategory = categoryFilterOverlay?.value || "";
+                const selectedAuthor = authorFilterOverlay?.value || "";
+                const selectedKeywords = keywordsFilterOverlay?.value.toLowerCase() || "";
+                const selectedYear = yearFilterOverlay?.value || "";
+                const hasQuery = !!query;
+                const hasFilters = !!(selectedCategory || selectedAuthor || selectedKeywords || selectedYear);
+                const currentPlaceholderText = `Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.`;
+                let placeholderEl = document.getElementById('searchPlaceholderOverlay');
+
+                if (!hasQuery && !hasFilters) {
+                    searchResultsOverlay.innerHTML = '';
+                    if (!placeholderEl) {
+                        searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
+                        placeholderEl = document.getElementById('searchPlaceholderOverlay');
+                    } else { placeholderEl.innerHTML = currentPlaceholderText; }
+                    if(placeholderEl) placeholderEl.classList.remove('hidden');
+                    loadingSpinnerOverlay.classList.remove('visible');
+                    if (clearSearchInputButton) clearSearchInputButton.classList.remove('visible');
+                    return;
+                }
+
+                if(placeholderEl) placeholderEl.classList.add('hidden');
+                loadingSpinnerOverlay.classList.add('visible');
+                searchResultsOverlay.innerHTML = '';
+
+                // --- Replace this setTimeout with actual API fetch ---
+                setTimeout(() => { 
+                    let filteredResults = mockSearchResultsData;
+                    if (query) {
+                        filteredResults = filteredResults.filter(item => 
+                            item.title.toLowerCase().includes(query) || 
+                            item.description.toLowerCase().includes(query) || 
+                            (item.keywords && item.keywords.toLowerCase().includes(query)) ||
+                            (item.author && item.author.toLowerCase().includes(query))
+                        );
+                    }
+                    if (selectedCategory) { filteredResults = filteredResults.filter(item => item.category === selectedCategory); }
+                    if (selectedAuthor) { filteredResults = filteredResults.filter(item => item.author === selectedAuthor); }
+                    if (selectedKeywords) { filteredResults = filteredResults.filter(item => item.keywords && item.keywords.toLowerCase().split(',').map(k=>k.trim()).includes(selectedKeywords)); }
+                    if (selectedYear) { filteredResults = filteredResults.filter(item => item.year === selectedYear); }
+                    displaySearchResultsOverlay(filteredResults, searchInputOverlay.value.trim());
+                    loadingSpinnerOverlay.classList.remove('visible');
+                }, 500);
+                // --- End of mock search ---
+            }
+
+            function displaySearchResultsOverlay(hits, query) {
+                if (!searchResultsOverlay) return;
+                let placeholderEl = document.getElementById('searchPlaceholderOverlay');
+                if(placeholderEl) placeholderEl.classList.add('hidden');
+                searchResultsOverlay.innerHTML = '';
+                if (!Array.isArray(hits)) {
+                    searchResultsOverlay.innerHTML = `<p class="search-no-results">Invalid search results format.</p>`; return;
+                }
+                if (hits.length === 0) {
+                    let message = "No results found";
+                    if (query) message += ` for "${highlightText(query, query)}"`;
+                    if (categoryFilterOverlay?.value || authorFilterOverlay?.value || keywordsFilterOverlay?.value || yearFilterOverlay?.value) { message += " with current filters"; }
+                    searchResultsOverlay.innerHTML = `<p class="search-no-results">${message}. Try different search/filters.</p>`; return;
+                }
+                const fragment = document.createDocumentFragment();
+                hits.forEach(item => {
+                    const resultElement = document.createElement('a');
+                    resultElement.href = item.url || '#';
+                    resultElement.classList.add('search-result-item');
+                    resultElement.target = "_blank"; resultElement.rel = "noopener noreferrer";
+                    const titleHighlighted = highlightText(item.title, query);
+                    const descHighlighted = highlightText(item.description, query);
+                    let keywordsHTML = '';
+                    if (item.keywords) {
+                        const keywordsArray = item.keywords.split(',').map(kw => kw.trim()).filter(kw => kw);
+                        keywordsHTML = keywordsArray.map(kw => `<span class="keyword-pill">${highlightText(kw, query)}</span>`).join(''); // Highlight keywords too
+                    }
+                    const authorHighlighted = item.author ? highlightText(item.author, query) : '';
+
+                    resultElement.innerHTML = `
+                        <div class="search-result-title">${titleHighlighted || 'No Title'}</div>
+                        <div class="search-result-meta-primary">
+                            ${authorHighlighted ? `<span class="search-result-author">By: ${authorHighlighted}</span>` : ''}
+                            ${item.year ? `<span class="search-result-year">${item.year}</span>` : ''}
+                        </div>
+                        <div class="search-result-category-keywords">
+                            ${item.category ? `<span class="search-result-category-tag">${item.category}</span>` : ''}
+                            ${keywordsHTML ? `<div class="search-result-keywords-container">${keywordsHTML}</div>` : ''}
+                        </div>
+                        <div class="search-result-desc">${descHighlighted || 'No description.'}</div>
+                    `;
+                    fragment.appendChild(resultElement);
+                });
+                searchResultsOverlay.appendChild(fragment);
+            }
+
+            const debouncedPerformSearch = debounceOverlay(performSearchOverlay, DEBOUNCE_DELAY);
+            if (searchInputOverlay) {
+                searchInputOverlay.addEventListener('input', () => {
+                    debouncedPerformSearch();
+                    if (clearSearchInputButton) {
+                        clearSearchInputButton.classList.toggle('visible', searchInputOverlay.value.length > 0);
+                    }
+                });
+            }
+            if (clearSearchInputButton) {
+                clearSearchInputButton.addEventListener('click', () => {
+                    searchInputOverlay.value = '';
+                    clearSearchInputButton.classList.remove('visible');
+                    performSearchOverlay(); searchInputOverlay.focus();
+                });
+            }
+            [categoryFilterOverlay, authorFilterOverlay, keywordsFilterOverlay, yearFilterOverlay].forEach(filterEl => {
+                if (filterEl) filterEl.addEventListener('change', performSearchOverlay);
+            });
+            if (sampleSearchesContainerOverlay) {
+                sampleSearchesContainerOverlay.addEventListener('click', (event) => {
+                    const target = event.target.closest('.sample-search-item-overlay');
+                    if (target && target.dataset.query && searchInputOverlay) {
+                        searchInputOverlay.value = target.dataset.query;
+                        if (clearSearchInputButton) clearSearchInputButton.classList.add('visible');
+                        performSearchOverlay(); searchInputOverlay.focus();
+                    }
+                });
+            }
+
+            if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => toggleMobileMenu());
+            if (searchOpenButton) searchOpenButton.addEventListener('click', (e) => { e.stopPropagation(); openSearch(); });
+            if (searchOpenButtonMobile) searchOpenButtonMobile.addEventListener('click', (e) => { e.stopPropagation(); openSearch(); });
+            if (searchCloseButton) searchCloseButton.addEventListener('click', closeSearch);
+            if (searchOverlay) {
+                searchOverlay.addEventListener('click', (event) => {
+                    if (event.target === searchOverlay) closeSearch();
+                });
+            }
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    if (searchOverlay && searchOverlay.classList.contains('visible')) { closeSearch(); event.preventDefault(); return; }
+                }
+                const isInputFocused = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable;
+                if (event.key === '/' && !isInputFocused && searchOverlay && !searchOverlay.classList.contains('visible')) {
+                    event.preventDefault(); openSearch();
+                }
+                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+                    event.preventDefault();
+                    if (searchOverlay && searchOverlay.classList.contains('visible')) {
+                        if (document.activeElement !== searchInputOverlay) searchInputOverlay?.focus();
+                    } else { openSearch(); }
+                }
+            });
+
+            function handleLogin(event) {
+                console.log("Login button clicked. Implement login functionality here.");
+                if (myConfetti) {
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const originX = (rect.left + rect.width / 2) / window.innerWidth;
+                    const originY = (rect.top + rect.height / 2) / window.innerHeight;
+                    myConfetti({ particleCount: 150, spread: 90, angle: 90, origin: { x: originX, y: originY }, colors: ['#FDB813', '#EAA10F', '#006A4E', '#FFFFFF', '#F9F6EE'], scalar: 1.2, drift: 0.1, gravity: 0.8, ticks: 300 });
+                    function fire(particleRatio, opts) { myConfetti(Object.assign({}, { origin: { x: originX, y: originY }, particleCount: Math.floor(200 * particleRatio), colors: ['#FDB813', '#EAA10F', '#006A4E', '#FFFFFF'], }, opts)); }
+                    fire(0.25, { spread: 26, startVelocity: 55 }); fire(0.2, { spread: 60 }); fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 }); fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 }); fire(0.1, { spread: 120, startVelocity: 45 });
+                }
+            }
+
+            if (loginButtonDesktop) loginButtonDesktop.addEventListener('click', handleLogin);
+            if (loginButtonMobile) loginButtonMobile.addEventListener('click', handleLogin);
+
+            initializeFiltersOverlay(); // Populate filters on load
+
+            // --- Original Page Logic ---
             // Scroll Reveal Logic
             const revealElements = document.querySelectorAll('.scroll-reveal-section');
-            
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target); // Stop observing once visible
+                        observer.unobserve(entry.target); 
                     }
                 });
-            }, {
-                threshold: 0.1 // Trigger when 10% of the element is visible
-            });
+            }, { threshold: 0.1 });
+            revealElements.forEach(el => { revealObserver.observe(el); });
 
-            revealElements.forEach(el => {
-                revealObserver.observe(el);
-            });
-
-            // --- Existing Carousel Logic ---
+            // Carousel Logic
             const carousel = document.getElementById('heroCarousel');
             if (carousel) {
                 const items = carousel.querySelectorAll('.carousel-item');
@@ -299,7 +1147,6 @@
                 let currentIndex = 0;
                 const totalItems = items.length;
                 let autoSlideInterval;
-
                 function showSlide(index) {
                     currentIndex = (index + totalItems) % totalItems; 
                     items.forEach((item, i) => {
@@ -316,67 +1163,33 @@
                         indicator.classList.toggle('bg-white/40', i !== currentIndex); 
                     });
                 }
-
                 function nextSlide() { showSlide(currentIndex + 1); }
                 function prevSlide() { showSlide(currentIndex - 1); }
-
                 function startAutoSlide() {
                     stopAutoSlide(); 
-                    if (totalItems > 1) { 
-                        autoSlideInterval = setInterval(nextSlide, 5000); 
-                    }
+                    if (totalItems > 1) { autoSlideInterval = setInterval(nextSlide, 3000); }
                 }
                 function stopAutoSlide() { clearInterval(autoSlideInterval); }
-
                 if (totalItems > 0) {
-                    carousel.addEventListener('mousemove', (e) => {
-                        const rect = carousel.getBoundingClientRect();
-                        const x = e.clientX - rect.left; 
-                        if (x < rect.width / 2) { 
-                            carousel.classList.remove('cursor-next', 'cursor-default');
-                            carousel.classList.add('cursor-prev');
-                        } else { 
-                            carousel.classList.remove('cursor-prev', 'cursor-default');
-                            carousel.classList.add('cursor-next');
-                        }
-                    });
-
-                    carousel.addEventListener('mouseleave', () => {
-                        carousel.classList.remove('cursor-prev', 'cursor-next');
-                        carousel.classList.add('cursor-default'); 
-                        startAutoSlide(); 
-                    });
-                    
-                    carousel.addEventListener('mouseenter', () => {
-                        stopAutoSlide(); 
-                    });
-
                     carousel.addEventListener('click', (e) => {
+                        if (e.target.closest('.carousel-indicators button')) return; 
                         const rect = carousel.getBoundingClientRect();
                         const x = e.clientX - rect.left;
-                        if (x < rect.width / 2) { 
-                            prevSlide();
-                        } else { 
-                            nextSlide();
-                        }
-                        stopAutoSlide(); 
-                        startAutoSlide(); 
+                        if (x < rect.width / 2) { prevSlide(); } else { nextSlide(); }
+                        stopAutoSlide(); startAutoSlide(); 
                     });
-
+                    carousel.addEventListener('mouseenter', stopAutoSlide);
+                    carousel.addEventListener('mouseleave', startAutoSlide);
                     indicators.forEach((indicator, i) => {
                         indicator.addEventListener('click', (e) => { 
-                            e.stopPropagation(); 
-                            showSlide(i); 
-                            stopAutoSlide(); 
-                            startAutoSlide(); 
+                            e.stopPropagation(); showSlide(i); stopAutoSlide(); startAutoSlide(); 
                         });
                     });
-                    
-                    if (items[0]) {
+                    if (items[0]) { 
                         items[0].classList.remove('opacity-0', 'scale-95');
                         items[0].classList.add('opacity-100', 'scale-100', 'z-10');
                     }
-                     if (indicators[0]) {
+                     if (indicators[0]) { 
                         indicators[0].classList.remove('bg-white/40');
                         indicators[0].classList.add('bg-white');
                     }
@@ -384,7 +1197,7 @@
                 }
             }
 
-            // --- Existing Image Modal Logic ---
+            // Image Modal Logic
             const modal = document.getElementById('imageModal');
             const modalImage = document.getElementById('modalImage');
             const modalCloseButton = document.getElementById('modalCloseButton');
@@ -398,30 +1211,22 @@
             };
             const orgChartImage = document.getElementById('orgChartImage');
             const prismImage = document.getElementById('prismImage');
-            if (orgChartImage) {
-                orgChartImage.addEventListener('click', () => {
-                    openModalWithImage(orgChartImage.src, orgChartImage.alt); 
-                });
-            }
-            if (prismImage) {
-                prismImage.addEventListener('click', () => {
-                    openModalWithImage(prismImage.src, prismImage.alt); 
-                });
-            }
+            if (orgChartImage) { orgChartImage.addEventListener('click', () => { openModalWithImage(orgChartImage.src, orgChartImage.alt); }); }
+            if (prismImage) { prismImage.addEventListener('click', () => { openModalWithImage(prismImage.src, prismImage.alt); }); }
             if (modal && modalCloseButton) {
-                const closeModal = () => {
-                    modal.classList.remove('active'); 
-                    document.body.style.overflow = ''; 
-                };
+                const closeModal = () => { modal.classList.remove('active'); document.body.style.overflow = ''; };
                 modalCloseButton.addEventListener('click', closeModal);
-                modal.addEventListener('click', (event) => {
-                    if (event.target === modal) { closeModal(); }
-                });
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape' && modal.classList.contains('active')) { closeModal(); }
-                });
+                modal.addEventListener('click', (event) => { if (event.target === modal) { closeModal(); } });
+                document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && modal.classList.contains('active')) { closeModal(); } });
             }
+
+            // Footer Year Logic
+            const yearElement = document.getElementById('footerCurrentYear');
+            if (yearElement) { yearElement.textContent = new Date().getFullYear(); }
+
+            console.log("All UI scripts initialized.");
         });
     </script>
+   
 </body>
 </html>
