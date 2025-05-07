@@ -26,13 +26,13 @@
         :root {
             --theme-gold: #FDB813; /* Vibrant Gold from image */
             --theme-gold-darker: #EAA10F; /* Darker gold for hover */
-            --theme-gold-light-bg: rgba(253, 184, 19, 0.2);
+            --theme-gold-light-bg: rgba(253, 184, 19, 0.2); 
             --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1);
             --theme-gold-highlight: rgba(253, 184, 19, 0.4);
 
             --theme-green-dark: #006A4E; /* Classic Green from image */
             --theme-green-darker-text: #00523D; /* Darker version for text */
-            --theme-green-light-bg: rgba(0, 106, 78, 0.3);
+            --theme-green-light-bg: rgba(0, 106, 78, 0.3); 
             --theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
             --theme-green-border: rgba(0, 106, 78, 0.7);
             --theme-navbar-bg: #F9F6EE; /* Bone White */
@@ -43,7 +43,7 @@
 
         /* --- Navbar Styling (Bonewhite Background) --- */
         nav.sticky {
-            background-color: var(--theme-navbar-bg) !important; /* Bonewhite */
+            background-color: var(--theme-navbar-bg) !important; 
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
             border-bottom: 1px solid var(--neutral-border-color) !important;
         }
@@ -62,7 +62,7 @@
         /* Nav links hover effect */
         .md\\:block .ml-10 a.nav-link-desktop:hover,
         #mobile-menu a.nav-link-mobile:hover,
-        #mobile-menu button.nav-link-mobile:hover { /* This also styles mobile search button's main part */
+        #mobile-menu button.nav-link-mobile:hover {
             background-color: var(--theme-gold-light-bg) !important;
             color: var(--theme-gold) !important;
             transform: translateY(-2px);
@@ -71,7 +71,7 @@
 
         /* Nav link hover bar */
         .md\\:block .ml-10 a.nav-link-desktop::after,
-        #mobile-menu a.nav-link-mobile::after { /* Excludes button.nav-link-mobile */
+        #mobile-menu a.nav-link-mobile::after {
             content: '';
             position: absolute;
             bottom: 0; left: 0; width: 100%; height: 3px;
@@ -89,39 +89,39 @@
 
 
         /* Logo hover effect */
-        .flex-shrink-0 img.h-8 { transition: transform 0.3s ease, opacity 0.3s ease; }
-        .flex-shrink-0 img.h-8:hover { transform: scale(1.08); opacity: 0.85; }
+        .flex-shrink-0 img.h-20 { transition: transform 0.3s ease, opacity 0.3s ease; }
+        .flex-shrink-0 img.h-20:hover { transform: scale(1.08); opacity: 0.85; }
 
-        /* Desktop Search Button - Styled as a Search Bar (Themed & Responsive) */
+        /* Desktop Search Button */
         #search-open-button {
-            background-color: #FDFCF9; /* Slightly off-white, complements navbar */
-            border: 1px solid var(--theme-green-light-bg); /* Subtle green border */
-            border-radius: 0.375rem; /* rounded-md */
+            background-color: #FDFCF9;
+            border: 1px solid var(--theme-green-light-bg);
+            border-radius: 0.375rem;
             padding: 0.4rem 0.75rem;
-            max-width: 300px; /* Optional: Limit max width on larger screens */
+            max-width: 300px;
             display: flex;
             align-items: center;
             text-align: left;
             font-size: 0.875rem;
             line-height: 1.25rem;
-            color: var(--placeholder-text-color); /* Standard placeholder color */
+            color: var(--placeholder-text-color);
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            cursor: pointer; /* Ensure pointer cursor */
+            cursor: pointer;
         }
         #search-open-button:hover {
-            background-color: var(--theme-navbar-bg); /* Match navbar bg on hover */
-            border-color: var(--theme-green-dark); /* Darker green border */
+            background-color: var(--theme-navbar-bg);
+            border-color: var(--theme-green-dark);
         }
         #search-open-button:focus {
             outline: none;
-            border-color: var(--theme-gold) !important; /* Gold border on focus */
-            box-shadow: 0 0 0 2px var(--theme-gold-lighter-bg) !important; /* Gold ring */
+            border-color: var(--theme-gold) !important;
+            box-shadow: 0 0 0 2px var(--theme-gold-lighter-bg) !important;
         }
         #search-open-button .search-bar-icon {
-            color: var(--theme-green-dark); /* Use theme green for icon */
+            color: var(--theme-green-dark);
             margin-right: 0.5rem;
             flex-shrink: 0;
             height: 1.25rem;
@@ -129,7 +129,7 @@
             transition: color 0.2s ease;
         }
         #search-open-button:hover .search-bar-icon {
-            color: var(--theme-gold); /* Gold icon on hover */
+            color: var(--theme-gold);
         }
         #search-open-button .search-bar-placeholder-text {
             color: inherit;
@@ -141,55 +141,34 @@
             text-overflow: ellipsis;
         }
 
-        /* General Key-like Shortcut Hint Styling */
+        /* Keyboard Shortcut Hint Styling */
         .kbd-shortcut {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', sans-serif;
-            background-color: #e5e7eb; /* Tailwind gray-200 */
-            color: #4b5563; /* Tailwind gray-600 */
-            border: 1px solid #9ca3af; /* Tailwind gray-400 */
-            border-bottom-width: 2px; /* Subtle 3D effect */
-            border-radius: 0.25rem; /* rounded-sm */
-            padding: 0.1rem 0.35rem;
-            font-size: 0.7em; /* Small and discreet */
-            font-weight: 600; /* Semibold for keycaps */
-            line-height: 1;
-            white-space: nowrap;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-family: 'Inter', sans-serif; background-color: #e5e7eb;
+            color: #4b5563; border: 1px solid #9ca3af;
+            border-bottom-width: 2px; border-radius: 0.25rem;
+            padding: 0.1rem 0.35rem; font-size: 0.7em;
+            font-weight: 600; line-height: 1; white-space: nowrap;
             transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
-
-        /* Hint styling for the mobile search button */
         #search-open-button-mobile .kbd-shortcut {
-            background-color: var(--theme-green-dark);
-            color: var(--theme-gold);
+            background-color: var(--theme-green-dark); color: var(--theme-gold);
             border-color: var(--theme-gold-darker);
         }
         #search-open-button-mobile:hover .kbd-shortcut {
-            background-color: var(--theme-green-darker-text) !important;
-            color: white !important;
+            background-color: var(--theme-green-darker-text) !important; color: white !important;
             border-color: var(--theme-green-dark) !important;
         }
-
-        /* Hint styling for placeholder text within search overlay */
         #searchPlaceholderOverlay .kbd-shortcut {
-            background-color: #f3f4f6;
-            color: #6b7280;
-            border-color: #d1d5db;
-            font-size: 0.85em;
-            font-weight: 500;
-            padding: 0.05rem 0.25rem;
-            margin: 0 0.1rem;
-            border-bottom-width: 1px;
+            background-color: #f3f4f6; color: #6b7280; border-color: #d1d5db;
+            font-size: 0.85em; font-weight: 500; padding: 0.05rem 0.25rem;
+            margin: 0 0.1rem; border-bottom-width: 1px;
         }
         #searchPlaceholderOverlay .kbd-shortcut:hover {
-            background-color: #f3f4f6;
-            color: #6b7280;
-            border-color: #d1d5db;
+            background-color: #f3f4f6; color: #6b7280; border-color: #d1d5db;
         }
 
-        /* Profile badge theming */
+        /* Profile Badge Theming */
         #profile-badge-button.bg-green-600 { background-color: var(--theme-gold) !important; transition: background-color 0.2s ease; }
         #profile-badge-button.hover\:bg-green-700:hover { background-color: var(--theme-gold-darker) !important; }
         #profile-badge-button.focus\:ring-green-600:focus { --tw-ring-color: var(--theme-gold) !important; }
@@ -207,9 +186,29 @@
         .dropdown-greeting-container { padding: 0.5rem 1rem; border-bottom: 1px solid rgba(253, 184, 19, 0.25); margin-bottom: 0.25rem; line-height: 1.4; }
         .greeting-text { color: #6b7280; font-size: 0.875rem; display: block; }
         .greeting-name { color: var(--theme-green-dark) !important; font-size: 0.875rem; font-weight: 500; display: block; word-break: break-word; overflow-wrap: break-word; white-space: normal; cursor: pointer; }
+        
+        .dropdown-menu a.group { display: flex; align-items: center; }
+        .dropdown-menu a.group svg {
+            margin-right: 0.75rem; width: 1.25rem; height: 1.25rem;
+            color: #9ca3af; transition: color 0.15s ease-in-out;
+        }
+        .dropdown-menu a.group:hover svg { color: var(--theme-green-dark); }
         .dropdown-menu a.text-gray-700.hover\:bg-amber-100:hover,
-        .dropdown-menu a.group.text-gray-700.hover\:bg-amber-100:hover { background-color: var(--theme-gold-light-bg) !important; color: var(--theme-green-dark) !important; }
-        .dropdown-menu a.text-red-600.hover\:bg-red-200:hover { background-color: rgba(220, 38, 38, 0.15) !important; color: #DC2626 !important; }
+        .dropdown-menu a.group.text-gray-700.hover\:bg-amber-100:hover { 
+            background-color: var(--theme-gold-light-bg) !important; 
+            color: var(--theme-green-dark) !important; 
+        }
+        .dropdown-menu a.group.text-gray-700.hover\:bg-amber-100:hover svg {
+            color: var(--theme-green-dark) !important;
+        }
+        .dropdown-menu a.text-red-600.hover\:bg-red-200:hover { 
+            background-color: rgba(220, 38, 38, 0.15) !important; 
+            color: #DC2626 !important; 
+        }
+        .dropdown-menu a.group.text-red-600 svg { color: #f87171; } 
+        .dropdown-menu a.group.text-red-600.hover\:bg-red-200:hover svg {
+            color: #EF4444 !important; 
+        }
         .count-badge { margin-left: auto; padding: 0.125rem 0.5rem; border-radius: 9999px; background-color: var(--theme-gold-light-bg) !important; font-size: 0.75rem; font-weight: 500; color: var(--theme-green-dark) !important; transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out; }
         .dropdown-menu a.group:hover .count-badge { background-color: var(--theme-green-dark) !important; color: white !important; }
 
@@ -218,33 +217,107 @@
         #mobile-menu a.text-red-600:hover { background-color: rgba(220, 38, 38, 0.15) !important; color: #DC2626 !important; }
         #mobile-menu .bg-amber-100.text-green-800 { background-color: var(--theme-gold-light-bg) !important; color: var(--theme-green-dark) !important; }
 
-        /* Search Overlay Styles */
-        #search-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--theme-green-light-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 40; opacity: 0; transition: opacity 0.3s ease-in-out; pointer-events: none; display: flex; padding-top: 3rem; /* Reduced top padding for smaller screens */ padding-left: 1rem; padding-right: 1rem; justify-content: center; align-items: flex-start; }
+        /* --- Search Overlay Styles with Animated Blob Background --- */
+        #search-overlay {
+            position: fixed; /* Ensures it covers the viewport */
+            top: 0; left: 0; right: 0; bottom: 0;
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
+            background-color: rgba(0, 40, 29, 0.65); 
+            z-index: 40; /* Higher than navbar */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+            display: flex;
+            padding: 2rem; 
+            justify-content: center; 
+            align-items: center; 
+            /* Removed 'position: relative;' which was overriding 'position: fixed;' */
+            overflow: hidden;   
+        }
         #search-overlay.visible { opacity: 1; pointer-events: auto; }
-        .search-overlay-content { background-color: rgba(248, 249, 247, 0.80); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); width: 100%; max-width: 48rem; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); border: 1px solid var(--neutral-border-color); transform: translateY(-20px); transition: transform 0.3s ease-in-out, background-color 0.3s ease, backdrop-filter 0.3s ease; position: relative; max-height: calc(100vh - 6rem); /* Adjusted max-height */ display: flex; flex-direction: column; }
-        #search-overlay.visible .search-overlay-content { transform: translateY(0); }
+
+        /* Animated Blobs */
+        #search-overlay::before,
+        #search-overlay::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%; 
+            filter: blur(70px); 
+            opacity: 0; 
+        }
+
+        #search-overlay::before { /* Gold Blob */
+            width: 45vw; height: 45vw;
+            min-width: 280px; max-width: 450px;
+            min-height: 280px; max-height: 450px;
+            background: var(--theme-gold); 
+            top: 5%; left: 5%; 
+            animation: moveBlob1 20s infinite alternate ease-in-out;
+        }
+
+        #search-overlay::after { /* Green Blob */
+            width: 55vw; height: 55vw;
+            min-width: 320px; max-width: 550px;
+            min-height: 320px; max-height: 550px;
+            background: var(--theme-green-dark); 
+            bottom: 2%; right: 2%; 
+            animation: moveBlob2 24s infinite alternate ease-in-out 2.5s; 
+        }
+
+        @keyframes moveBlob1 { 
+            0%   { transform: translate(-15%, -15%) scale(0.8); opacity: 0.25; } 
+            25%  { transform: translate(15%, -5%) scale(1.1); opacity: 0.4; }   
+            50%  { transform: translate(5%, 15%) scale(0.9); opacity: 0.3; }    
+            75%  { transform: translate(-10%, 5%) scale(1.2); opacity: 0.45; }  
+            100% { transform: translate(-15%, -15%) scale(0.8); opacity: 0.25; } 
+        }
+
+        @keyframes moveBlob2 { 
+            0%   { transform: translate(10%, 10%) scale(0.9); opacity: 0.3; }  
+            25%  { transform: translate(-5%, 15%) scale(0.7); opacity: 0.2; }  
+            50%  { transform: translate(-15%, -10%) scale(1.15); opacity: 0.4; } 
+            75%  { transform: translate(0%, -15%) scale(0.8); opacity: 0.25; }  
+            100% { transform: translate(10%, 10%) scale(0.9); opacity: 0.3; }  
+        }
+        
+        /* Content within the search overlay */
+        .search-overlay-content {
+            background-color: rgba(248, 249, 247, 0.85); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%; max-width: 48rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            border: 1px solid var(--neutral-border-color);
+            transform: translateY(-20px); 
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease, backdrop-filter 0.3s ease;
+            position: relative; 
+            z-index: 1;         
+            max-height: calc(100vh - 4rem); 
+            display: flex; flex-direction: column;
+        }
+        #search-overlay.visible .search-overlay-content { transform: translateY(0); } 
+        
         .search-input-wrapper-overlay { display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid var(--neutral-border-color); flex-shrink: 0; }
         .search-icon-overlay { width: 1.5rem; height: 1.5rem; color: var(--theme-green-dark); margin-right: 0.75rem; flex-shrink: 0; }
-        #searchInputOverlay { width: 100%; font-size: 1rem; /* Slightly smaller on mobile */ line-height: 1.5rem; color: var(--theme-green-darker-text); background-color: transparent; border: none; outline: none; }
+        #searchInputOverlay { width: 100%; font-size: 1rem; line-height: 1.5rem; color: var(--theme-green-darker-text); background-color: transparent; border: none; outline: none; }
         #searchInputOverlay::placeholder { color: #6c757d; opacity: 0.8; }
         .search-overlay-close-btn { position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.5rem; border-radius: 9999px; background-color: transparent; color: #9ca3af; transition: background-color 0.2s, color 0.2s; z-index: 10; }
         .search-overlay-close-btn:hover { background-color: var(--theme-green-lighter-bg); color: var(--theme-green-dark); }
         .search-overlay-close-btn svg { width: 1.25rem; height: 1.25rem; }
 
-        /* Sample Searches Container */
         .sample-searches-overlay { padding: 0.75rem 1rem; border-bottom: 1px solid var(--neutral-border-color); display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; flex-shrink: 0; background-color: rgba(248, 249, 247, 0.5); }
         .sample-searches-label-overlay { font-size: 0.875rem; color: var(--theme-green-dark); margin-right: 0.75rem; font-weight: 500; }
         .sample-search-item-overlay { font-size: 0.875rem; color: var(--theme-green-dark); background-color: var(--theme-green-lighter-bg); padding: 0.25rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; border: 1px solid var(--theme-green-border); }
         .sample-search-item-overlay:hover { background-color: var(--theme-gold-light-bg); color: var(--theme-green-darker-text); border-color: var(--theme-gold); }
 
-        /* Filters Container */
         .filters-container-overlay { padding: 0.75rem 1rem 1rem; background-color: rgba(248, 249, 247, 0.5); border-bottom: 1px solid var(--neutral-border-color); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; flex-shrink: 0; }
         .filter-item-overlay { display: flex; flex-direction: column; }
         .filter-item-overlay label { font-size: 0.75rem; font-weight: 500; color: var(--theme-green-dark); margin-bottom: 0.25rem; }
         .filter-item-overlay select { width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; border: 1px solid var(--theme-green-border); border-radius: 0.375rem; background-color: rgba(255,255,255,0.8); transition: border-color 0.2s ease, box-shadow 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23006A4E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
         .filter-item-overlay select:focus { outline: none; border-color: var(--theme-gold); box-shadow: 0 0 0 2px var(--theme-gold-lighter-bg); }
 
-        /* Search Results Area */
         #search-results-overlay { padding: 0.5rem; overflow-y: auto; flex-grow: 1; }
         .search-result-item { display: block; padding: 0.75rem; border-radius: 0.375rem; transition: background-color 0.15s ease-in-out; text-decoration: none; margin-bottom: 0.25rem; }
         .search-result-item:hover { background-color: var(--theme-green-lighter-bg); }
@@ -258,23 +331,15 @@
         #search-results-overlay::-webkit-scrollbar-thumb { background: var(--theme-green-light-bg); border-radius: 10px; }
         #search-results-overlay::-webkit-scrollbar-thumb:hover { background: var(--theme-green-dark); }
 
-        /* Loading Spinner */
         #loadingSpinnerOverlay { margin-left: 0.75rem; display: none; }
         #loadingSpinnerOverlay.visible { display: inline-block; }
         #loadingSpinnerOverlay svg { animation: spin 1s linear infinite; height: 1.25rem; width: 1.25rem; color: var(--theme-green-dark); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Responsive Adjustments */
         @media (min-width: 768px) { /* md breakpoint */
-            #search-overlay {
-                padding-top: 5rem; /* Restore original padding on larger screens */
-            }
-             #searchInputOverlay {
-                 font-size: 1.125rem; /* Restore larger font size */
-                 line-height: 1.75rem;
-             }
+            /* #search-overlay { padding-top: 5rem; } /* Keep uniform padding for centering */
+            #searchInputOverlay { font-size: 1.125rem; line-height: 1.75rem; }
         }
-
     </style>
 </head>
 <body class="bg-gray-100">
@@ -283,7 +348,7 @@
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <img class="h-20 w-auto" src="spud-logo.png" alt="MySite Logo">
+                        <img class="h-20 w-auto" src="spud-logo.png" alt="SPUD Logo and Office of Research and Publications" onerror="this.onerror=null; this.src='https://placehold.co/100x80/F9F6EE/006A4E?text=Logo';">
                     </div>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
@@ -293,7 +358,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="hidden md:flex md:items-center md:ml-6"> <div class="ml-4 flex items-center space-x-4"> <button id="search-open-button" type="button" class="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-600 flex items-center">
+                <div class="hidden md:flex md:items-center md:ml-6">
+                    <div class="ml-4 flex items-center space-x-4">
+                        <button id="search-open-button" type="button" class="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-600 flex items-center">
                             <svg class="search-bar-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                             </svg>
@@ -302,29 +369,47 @@
                         <div class="relative inline-block text-left" id="profile-badge-container">
                             <div>
                                 <button type="button" id="profile-badge-button" class="flex items-center justify-center w-10 h-10 bg-green-600 rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-600 profile-initials text-lg select-none" aria-expanded="false" aria-haspopup="true">
-                                    <span class="text-white font-medium">JD</span>
-                                </button>
+                                    <span class="text-white font-medium">JD</span> </button>
                             </div>
-                            <div id="dropdown-menu" class="dropdown-menu origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none opacity-0 transform scale-95 pointer-events-none z-50 select-none" role="menu" aria-orientation="vertical" aria-labelledby="profile-badge-button" tabindex="-1">
+                            <div id="dropdown-menu" class="dropdown-menu origin-top-right absolute right-0 mt-2 w-60 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none opacity-0 transform scale-95 pointer-events-none z-50 select-none" role="menu" aria-orientation="vertical" aria-labelledby="profile-badge-button" tabindex="-1">
                                 <div class="dropdown-greeting-container" role="none">
                                     <span id="greeting-part" class="greeting-text"></span>
                                     <span id="user-name-part" class="greeting-name"></span>
                                 </div>
                                 <div class="py-1" role="none">
-                                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-0">Profile</a>
-                                    <a href="#" class="text-gray-700 block px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-1">History</a>
+                                    <a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                        </svg>
+                                        Profile
+                                    </a>
+                                    <a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        History
+                                    </a>
                                     <a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                                        </svg>
                                         Library
-                                        <span class="count-badge group-hover:bg-green-600 group-hover:text-white">5</span>
+                                        <span class="count-badge">5</span>
                                     </a>
                                     <div class="dropdown-divider mx-1" role="separator"></div>
-                                    <a href="#" class="text-red-600 block px-4 py-2 text-sm hover:bg-red-200 hover:text-red-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-3">Log Out</a>
+                                    <a href="#" class="group text-red-600 flex items-center px-4 py-2 text-sm hover:bg-red-200 hover:text-red-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                                        </svg>
+                                        Log Out
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="-mr-2 flex md:hidden"> <button type="button" class="mobile-menu-button bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500" aria-controls="mobile-menu" aria-expanded="false">
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="mobile-menu-button bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500" aria-controls="mobile-menu" aria-expanded="false">
                         <span class="sr-only">Open main menu</span>
                         <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                         <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -332,6 +417,7 @@
                 </div>
             </div>
         </div>
+
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">Home</a>
@@ -339,7 +425,8 @@
                 <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
                  <button id="search-open-button-mobile" type="button" class="nav-link-mobile w-full mt-2 text-left text-gray-700 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between">
                     Search
-                    <span class="kbd-shortcut">Ctrl+K</span> </button>
+                    <span class="kbd-shortcut">Ctrl+K</span>
+                </button>
             </div>
             <div class="pt-4 pb-3 border-t border-gray-200">
                 <div class="flex items-center px-5">
@@ -422,24 +509,31 @@
                 </div>
             </div>
             <div id="search-results-overlay">
-                 <p id="searchPlaceholderOverlay" class="search-no-results">Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.</p> </div>
+                 <p id="searchPlaceholderOverlay" class="search-no-results">Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.</p>
+            </div>
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8"> <div class="py-6 sm:px-0"> <div class="border-4 border-dashed border-gray-200 rounded-lg min-h-[24rem] flex items-center justify-center"> <h1 class="text-2xl font-semibold text-gray-900 p-4 text-center">Page Content Area</h1>
+    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="py-6 sm:px-0">
+            <div class="border-4 border-dashed border-gray-200 rounded-lg min-h-[24rem] flex items-center justify-center">
+                <h1 class="text-2xl font-semibold text-gray-900 p-4 text-center">Page Content Area</h1>
             </div>
         </div>
-         <div class="py-6 sm:px-0 mt-8"> <div class="bg-white shadow rounded-lg p-6">
+         <div class="py-6 sm:px-0 mt-8">
+            <div class="bg-white shadow rounded-lg p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Another Section</h2>
                 <p class="text-gray-600">Some more content goes here to make the page longer and demonstrate how the sticky navbar works.</p>
             </div>
         </div>
-         <div class="py-6 sm:px-0 mt-8"> <div class="bg-white shadow rounded-lg p-6">
+         <div class="py-6 sm:px-0 mt-8">
+            <div class="bg-white shadow rounded-lg p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Yet Another Section</h2>
                 <p class="text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
             </div>
         </div>
-         <div class="py-6 sm:px-0 mt-8 min-h-[24rem]"> <div class="bg-white shadow rounded-lg p-6 h-full flex items-center justify-center">
+         <div class="py-6 sm:px-0 mt-8 min-h-[24rem]">
+             <div class="bg-white shadow rounded-lg p-6 h-full flex items-center justify-center">
                  <p class="text-gray-500">More content to ensure scrolling...</p>
              </div>
          </div>
@@ -447,18 +541,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM fully loaded and parsed");
-
             // --- Constants & Global Variables ---
             const RAINBOW_GRADIENT = 'linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #8b5cf6)';
-            const DEBOUNCE_DELAY = 300;
-            // --- DATABASE INTEGRATION POINT 1: Define Backend URL ---
-            // Replace '/api/search' with the actual URL of your backend endpoint
-            // that will query your database. For example: '/api/database-search'
-            const DATABASE_SEARCH_BACKEND_URL = '/api/search'; // <<<--- REPLACE THIS
+            const DEBOUNCE_DELAY = 300; 
+            const DATABASE_SEARCH_BACKEND_URL = '/api/search'; 
 
             let isDropdownOpen = false;
-            let originalBodyOverflow = ''; // To store original body overflow style
+            let originalBodyOverflow = ''; 
 
             // --- DOM Element Selection ---
             const bodyElement = document.body;
@@ -479,7 +568,6 @@
             const searchCloseButton = document.getElementById('search-close-button');
             const searchInputOverlay = document.getElementById('searchInputOverlay');
             const searchResultsOverlay = document.getElementById('search-results-overlay');
-            // const searchPlaceholderOverlay = document.getElementById('searchPlaceholderOverlay'); // Can be dynamically created
             const loadingSpinnerOverlay = document.getElementById('loadingSpinnerOverlay');
             const sampleSearchesContainerOverlay = document.getElementById('sampleSearchesContainerOverlay');
 
@@ -493,7 +581,7 @@
                  if (!greetingPartElement || !userNamePartElement) return;
                 const currentTime = new Date();
                 const currentHour = currentTime.getHours();
-                const userName = "Alexander Montgomery"; // Example user name
+                const userName = "Alexander Montgomery"; 
                 let greeting;
                 let emoji;
 
@@ -507,7 +595,6 @@
 
             function handleUserNameClick(event) {
                  if (!userNamePartElement) return;
-                console.log("User name clicked!");
                 userNamePartElement.style.backgroundImage = RAINBOW_GRADIENT;
                 userNamePartElement.style.webkitBackgroundClip = 'text';
                 userNamePartElement.style.backgroundClip = 'text';
@@ -518,7 +605,7 @@
                     userNamePartElement.style.backgroundImage = '';
                     userNamePartElement.style.webkitBackgroundClip = '';
                     userNamePartElement.style.backgroundClip = '';
-                    userNamePartElement.style.color = '';
+                    userNamePartElement.style.color = ''; 
                     userNamePartElement.style.webkitTextFillColor = '';
                 }, 1000);
 
@@ -528,7 +615,7 @@
                     confetti({ ...baseConfettiOptions, angle: 60, origin: { ...baseConfettiOptions.origin, x: 0 } });
                     confetti({ ...baseConfettiOptions, angle: 120, origin: { ...baseConfettiOptions.origin, x: 1 } });
                 } else {
-                    console.warn("Confetti library not found.");
+                    console.warn("Confetti library (confetti.js) not found or loaded.");
                 }
             }
 
@@ -546,7 +633,7 @@
 
             function toggleMobileMenu(forceClose = false) {
                  if (!mobileMenu || !mobileMenuButton || !mobileMenuOpenIcon || !mobileMenuCloseIcon) {
-                     console.error("Mobile menu elements missing!"); return;
+                     console.error("Essential mobile menu elements are missing from the DOM."); return;
                  }
                 const isCurrentlyExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
                 const openMenu = forceClose ? false : !isCurrentlyExpanded;
@@ -558,45 +645,43 @@
             }
 
             function openSearch() {
-                 if (!searchOverlay || !searchInputOverlay) return;
-                originalBodyOverflow = bodyElement.style.overflow;
-                bodyElement.style.overflow = 'hidden';
+                 if (!searchOverlay || !searchInputOverlay || !bodyElement) return;
+                originalBodyOverflow = bodyElement.style.overflow; 
+                bodyElement.style.overflow = 'hidden'; 
 
-                searchOverlay.classList.remove('hidden');
-                searchOverlay.classList.add('visible');
-                setTimeout(() => searchInputOverlay.focus(), 50);
+                searchOverlay.classList.remove('hidden'); 
+                searchOverlay.classList.add('visible'); 
+                setTimeout(() => searchInputOverlay.focus(), 50); 
 
-                console.log("Search overlay opened");
                 if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                    toggleMobileMenu(true);
+                    toggleMobileMenu(true); 
                 }
 
                 const currentPlaceholderText = `Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.`;
                 if (searchInputOverlay.value === '' && (categoryFilterOverlay.value || authorFilterOverlay.value || agendaFilterOverlay.value || yearFilterOverlay.value)) {
-                    performSearchOverlay();
+                    performSearchOverlay(); 
                 } else if (searchInputOverlay.value === '' && searchResultsOverlay) {
                     searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
                     const newPlaceholder = document.getElementById('searchPlaceholderOverlay');
                     if(newPlaceholder) newPlaceholder.classList.remove('hidden');
-                } else if (searchResultsOverlay.innerHTML.trim() === '') {
+                } else if (searchResultsOverlay.innerHTML.trim() === '') { 
                      searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
                 }
             }
 
             function closeSearch() {
-                 if (!searchOverlay || !searchInputOverlay) return;
-                bodyElement.style.overflow = originalBodyOverflow;
+                 if (!searchOverlay || !searchInputOverlay || !bodyElement) return;
+                bodyElement.style.overflow = originalBodyOverflow; 
 
-                searchOverlay.classList.remove('visible');
-                searchOverlay.classList.add('hidden');
-                searchInputOverlay.value = '';
-                console.log("Search overlay closed");
+                searchOverlay.classList.remove('visible'); 
+                searchOverlay.classList.add('hidden');    
+                searchInputOverlay.value = ''; 
             }
 
             function highlightText(text, query) {
                 if (!query || typeof text !== 'string') return text || '';
-                const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); 
+                const regex = new RegExp(`(${escapedQuery})`, 'gi'); 
                 return text.replace(regex, '<span class="highlight">$1</span>');
             }
 
@@ -610,18 +695,18 @@
 
             function populateSelectWithOptions(selectElement, optionsData, valueField, textField = null) {
                 if (!selectElement) return;
-                const currentVal = selectElement.value;
+                const currentVal = selectElement.value; 
                 while (selectElement.options.length > 1) {
                     selectElement.remove(1);
                 }
                 if (!Array.isArray(optionsData)) {
-                    console.warn("populateSelectWithOptions: optionsData is not an array", optionsData);
+                    console.warn("populateSelectWithOptions: optionsData is not an array.", optionsData);
                     return;
                 }
                 optionsData.forEach(item => {
                     const option = document.createElement('option');
                     option.value = typeof item === 'object' ? item[valueField] : item;
-                    option.textContent = textField ? item[textField] : option.value;
+                    option.textContent = textField && typeof item === 'object' ? item[textField] : option.value;
                     selectElement.appendChild(option);
                 });
                 if (currentVal && Array.from(selectElement.options).some(opt => opt.value === currentVal)) {
@@ -630,27 +715,8 @@
             }
 
             async function initializeFiltersOverlay() {
-                console.log("Initializing filters (placeholder)...");
-                // --- DATABASE INTEGRATION POINT 2: Populate Filters ---
-                // Instead of using static options, fetch distinct values for filters
-                // from your database via a backend endpoint.
-                // Example:
-                // try {
-                //     const response = await fetch('/api/get-filter-options'); // Your endpoint
-                //     if (!response.ok) throw new Error('Failed to fetch filter options');
-                //     const options = await response.json(); // Expects e.g., { categories: [...], authors: [...], years: [...] }
-                //
-                //     // Assuming options.categories is an array of strings or objects
-                //     populateSelectWithOptions(categoryFilterOverlay, options.categories || [], 'value', 'label'); // Adjust value/label fields if needed
-                //     populateSelectWithOptions(authorFilterOverlay, options.authors || [], 'value', 'label');
-                //     populateSelectWithOptions(agendaFilterOverlay, options.agendas || [], 'value', 'label');
-                //     populateSelectWithOptions(yearFilterOverlay, options.years || [], 'year', 'year'); // Assuming year is just a number
-                //
-                // } catch (error) {
-                //     console.error("Failed to initialize filters from database:", error);
-                //     // Handle error, maybe show a message to the user
-                // }
-                console.warn("Filter population needs implementation: Fetch data from backend or use Meilisearch facets for dynamic filter options.");
+                console.log("Initializing filters (placeholder - connect to backend)...");
+                console.warn("Filter population needs implementation: Fetch data from backend or use a search service like Meilisearch/Algolia for dynamic filter options.");
             }
 
             async function performSearchOverlay() {
@@ -672,11 +738,11 @@
                 let placeholderEl = document.getElementById('searchPlaceholderOverlay');
 
                 if (!hasQuery && !hasFilters) {
-                    searchResultsOverlay.innerHTML = '';
-                    if (!placeholderEl) {
+                    searchResultsOverlay.innerHTML = ''; 
+                    if (!placeholderEl) { 
                         searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
                         placeholderEl = document.getElementById('searchPlaceholderOverlay');
-                    } else {
+                    } else { 
                          placeholderEl.innerHTML = currentPlaceholderText;
                     }
                     if(placeholderEl) placeholderEl.classList.remove('hidden');
@@ -684,12 +750,10 @@
                     return;
                 }
 
-                if(placeholderEl) placeholderEl.classList.add('hidden');
-                loadingSpinnerOverlay.classList.add('visible');
-                searchResultsOverlay.innerHTML = '';
+                if(placeholderEl) placeholderEl.classList.add('hidden'); 
+                loadingSpinnerOverlay.classList.add('visible'); 
+                searchResultsOverlay.innerHTML = ''; 
 
-                // --- DATABASE INTEGRATION POINT 3: Prepare Data for Backend ---
-                // Option 1: Send individual filter values
                 const searchParams = {
                     q: query,
                     category: selectedCategory,
@@ -697,72 +761,45 @@
                     agenda: selectedAgenda,
                     year: selectedYear
                 };
-                // Option 2: Send pre-combined filter string (if your backend prefers it)
-                // const filters = [];
-                // if (selectedCategory) filters.push(`category = "${selectedCategory}"`); // Adjust syntax for your backend/DB
-                // if (selectedAuthor) filters.push(`author = "${selectedAuthor}"`);
-                // if (selectedAgenda) filters.push(`researchAgenda = "${selectedAgenda}"`);
-                // if (selectedYear) filters.push(`year = ${selectedYear}`);
-                // const filterString = filters.join(' AND '); // Adjust separator ('AND', 'OR') as needed
-                // const searchParams = { q: query, filter: filterString };
-
-                console.log(`Sending search request to backend:`, searchParams);
+                console.log(`Sending search request to backend: ${DATABASE_SEARCH_BACKEND_URL}`, searchParams);
 
                 try {
-                    // --- DATABASE INTEGRATION POINT 4: Call Backend Endpoint ---
-                    // Replace the URL with the one defined in DATABASE_SEARCH_BACKEND_URL
                     const response = await fetch(DATABASE_SEARCH_BACKEND_URL, {
-                        method: 'POST', // Or 'GET' if using query parameters
+                        method: 'POST', 
                         headers: { 'Content-Type': 'application/json' },
-                        // Send the parameters collected above
                         body: JSON.stringify(searchParams),
-                        // If using GET, construct URL query string instead:
-                        // const url = new URL(DATABASE_SEARCH_BACKEND_URL, window.location.origin);
-                        // Object.keys(searchParams).forEach(key => {
-                        //     if (searchParams[key]) url.searchParams.append(key, searchParams[key]);
-                        // });
-                        // const response = await fetch(url);
                     });
 
                     if (!response.ok) {
-                        const errorData = await response.text();
+                        const errorData = await response.text(); 
                         throw new Error(`Backend API error! Status: ${response.status}. Response: ${errorData}`);
                     }
-
-                    // --- DATABASE INTEGRATION POINT 5: Process Backend Response ---
-                    // Assuming the backend returns JSON in the format: { hits: [...] }
-                    // where each hit is an object like: { title: "...", description: "...", url: "...", category: "...", ... }
                     const results = await response.json();
-
-                    // The display function expects an array of hits and the original query
                     displaySearchResultsOverlay(results.hits || [], query);
 
                 } catch (error) {
                     console.error("Search API call failed:", error);
-                    searchResultsOverlay.innerHTML = `<p class="search-no-results">Search failed: ${error.message}. Please try again.</p>`;
+                    searchResultsOverlay.innerHTML = `<p class="search-no-results">Search failed: ${error.message}. Please try again or check console.</p>`;
                 } finally {
-                     loadingSpinnerOverlay.classList.remove('visible');
+                     loadingSpinnerOverlay.classList.remove('visible'); 
                 }
             }
 
             function displaySearchResultsOverlay(hits, query) {
-                // This function should work as is, provided the 'hits' array
-                // contains objects with the expected properties (title, description, url, etc.)
-                // and the highlightText function correctly highlights based on the query.
                 if (!searchResultsOverlay) return;
                 let placeholderEl = document.getElementById('searchPlaceholderOverlay');
-                if(placeholderEl) placeholderEl.classList.add('hidden');
-                searchResultsOverlay.innerHTML = '';
+                if(placeholderEl) placeholderEl.classList.add('hidden'); 
+                searchResultsOverlay.innerHTML = ''; 
 
                 if (!Array.isArray(hits)) {
-                    console.error("displaySearchResultsOverlay: 'hits' is not an array", hits);
+                    console.error("displaySearchResultsOverlay: 'hits' is not an array.", hits);
                     searchResultsOverlay.innerHTML = `<p class="search-no-results">Received invalid search results format.</p>`;
                     return;
                 }
 
                 if (hits.length === 0) {
                     let message = "No results found";
-                    if (query) message += ` for "${highlightText(query, query)}"`;
+                    if (query) message += ` for "${highlightText(query, query)}"`; 
                     if (categoryFilterOverlay.value || authorFilterOverlay.value || agendaFilterOverlay.value || yearFilterOverlay.value) {
                         message += " with the current filters";
                     }
@@ -773,20 +810,17 @@
                 const fragment = document.createDocumentFragment();
                 hits.forEach(item => {
                     const resultElement = document.createElement('a');
-                    resultElement.href = item.url || '#'; // Ensure URL exists or provide fallback
+                    resultElement.href = item.url || '#'; 
                     resultElement.classList.add('search-result-item');
-                    resultElement.target = "_blank";
-                    resultElement.rel = "noopener noreferrer";
+                    resultElement.target = "_blank"; 
+                    resultElement.rel = "noopener noreferrer"; 
 
-                    // Use highlightText for basic highlighting.
-                    // If your backend provides pre-formatted snippets (_formatted), use those.
-                    const titleHighlighted = /* item._formatted?.title || */ highlightText(item.title, query);
-                    const descHighlighted = /* item._formatted?.description || */ highlightText(item.description, query);
+                    const titleHighlighted = highlightText(item.title, query);
+                    const descHighlighted = highlightText(item.description, query);
 
-                    // Ensure meta fields exist on the item object returned from your DB
                     const metaParts = [
                         item.category, item.author, item.researchAgenda, item.year?.toString()
-                    ].filter(Boolean); // Remove undefined/null/empty strings
+                    ].filter(Boolean); 
                     const metaInfo = metaParts.join(' • ');
 
                     resultElement.innerHTML = `
@@ -796,27 +830,24 @@
                     `;
                     fragment.appendChild(resultElement);
                 });
-                searchResultsOverlay.appendChild(fragment);
+                searchResultsOverlay.appendChild(fragment); 
             }
 
             // --- Event Listeners Setup ---
             const debouncedPerformSearch = debounceOverlay(performSearchOverlay, DEBOUNCE_DELAY);
             if (searchInputOverlay) searchInputOverlay.addEventListener('input', debouncedPerformSearch);
-            if (categoryFilterOverlay) categoryFilterOverlay.addEventListener('change', performSearchOverlay);
-            if (authorFilterOverlay) authorFilterOverlay.addEventListener('change', performSearchOverlay);
-            if (agendaFilterOverlay) agendaFilterOverlay.addEventListener('change', performSearchOverlay);
-            if (yearFilterOverlay) yearFilterOverlay.addEventListener('change', performSearchOverlay);
+            
+            [categoryFilterOverlay, authorFilterOverlay, agendaFilterOverlay, yearFilterOverlay].forEach(filterElement => {
+                if (filterElement) filterElement.addEventListener('change', performSearchOverlay);
+            });
 
             if (sampleSearchesContainerOverlay) {
                 sampleSearchesContainerOverlay.addEventListener('click', (event) => {
                     const target = event.target.closest('.sample-search-item-overlay');
-                    if (target) {
-                        const query = target.dataset.query;
-                        if (query && searchInputOverlay) {
-                            searchInputOverlay.value = query;
-                            performSearchOverlay();
-                            searchInputOverlay.focus();
-                        }
+                    if (target && target.dataset.query && searchInputOverlay) {
+                        searchInputOverlay.value = target.dataset.query;
+                        performSearchOverlay(); 
+                        searchInputOverlay.focus(); 
                     }
                 });
             }
@@ -826,9 +857,10 @@
             if (searchOpenButton) searchOpenButton.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
             if (searchOpenButtonMobile) searchOpenButtonMobile.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
             if (searchCloseButton) searchCloseButton.addEventListener('click', closeSearch);
+            
             if (searchOverlay) {
                 searchOverlay.addEventListener('click', (event) => {
-                    if (event.target === searchOverlay) closeSearch();
+                    if (event.target === searchOverlay) closeSearch(); 
                 });
             }
 
@@ -836,7 +868,7 @@
 
             document.addEventListener('click', (event) => {
                 if (isDropdownOpen && profileBadgeContainer && !profileBadgeContainer.contains(event.target)) {
-                     toggleDropdown(true);
+                     toggleDropdown(true); 
                 }
             });
 
@@ -845,25 +877,29 @@
                     if (isDropdownOpen) { toggleDropdown(true); event.preventDefault(); return; }
                     if (searchOverlay.classList.contains('visible')) { closeSearch(); event.preventDefault(); return; }
                 }
-                const isInputFocused = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable;
+                
+                const isInputFocused = document.activeElement?.tagName === 'INPUT' ||
+                                     document.activeElement?.tagName === 'TEXTAREA' ||
+                                     document.activeElement?.isContentEditable;
+
                 if (event.key === '/' && !isInputFocused && !searchOverlay.classList.contains('visible')) {
                     event.preventDefault(); openSearch();
                 }
-                if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { 
                     event.preventDefault();
                     if (searchOverlay.classList.contains('visible')) {
-                        if (document.activeElement !== searchInputOverlay) { closeSearch(); }
+                        if (document.activeElement !== searchInputOverlay) { searchInputOverlay.focus(); }
                     } else { openSearch(); }
                 }
             });
 
             // --- Initialization ---
-            setGreeting();
-            initializeFiltersOverlay(); // Will attempt to fetch filters from backend
+            setGreeting(); 
+            initializeFiltersOverlay(); 
 
             const essentialElements = {
                 bodyElement, greetingPartElement, userNamePartElement, profileButton, dropdownMenu, profileBadgeContainer,
-                mobileMenuButton, mobileMenu, mobileMenuOpenIcon, mobileMenuCloseIcon,
+                mobileMenuButton, mobileMenu, 
                 searchOpenButton, searchOpenButtonMobile, searchOverlay, searchCloseButton, searchInputOverlay, searchResultsOverlay,
                 loadingSpinnerOverlay, sampleSearchesContainerOverlay,
                 categoryFilterOverlay, authorFilterOverlay, agendaFilterOverlay, yearFilterOverlay
@@ -873,7 +909,7 @@
                     console.error(`Essential UI element "${name}" was not found. Some functionality may be broken.`);
                 }
             }
-            console.log("UI scripts initialized for database search integration.");
+            console.log("UI scripts initialized. Navbar ready.");
         });
     </script>
 </body>
