@@ -27,13 +27,13 @@
             --theme-gold: #FDB813; /* Vibrant Gold from image */
             --theme-gold-darker: #EAA10F; /* Darker gold for hover */
             --theme-gold-light-bg: rgba(253, 184, 19, 0.2); 
-            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1);
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1); /* Used for search result hover */
             --theme-gold-highlight: rgba(253, 184, 19, 0.4);
 
             --theme-green-dark: #006A4E; /* Classic Green from image */
             --theme-green-darker-text: #00523D; /* Darker version for text */
             --theme-green-light-bg: rgba(0, 106, 78, 0.3); 
-            --theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
+            --theme-green-lighter-bg: rgba(0, 106, 78, 0.15); 
             --theme-green-border: rgba(0, 106, 78, 0.7);
             --theme-navbar-bg: #F9F6EE; /* Bone White */
             --neutral-border-color: #e5e7eb; /* Standard gray border, like Tailwind's gray-200 */
@@ -232,7 +232,6 @@
             padding: 2rem; 
             justify-content: center; 
             align-items: center; 
-            /* Removed 'position: relative;' which was overriding 'position: fixed;' */
             overflow: hidden;   
         }
         #search-overlay.visible { opacity: 1; pointer-events: auto; }
@@ -299,13 +298,89 @@
         }
         #search-overlay.visible .search-overlay-content { transform: translateY(0); } 
         
-        .search-input-wrapper-overlay { display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid var(--neutral-border-color); flex-shrink: 0; }
+        .search-input-wrapper-overlay { 
+            display: flex; 
+            align-items: center; 
+            padding: 1rem; 
+            border-bottom: 1px solid var(--neutral-border-color); 
+            flex-shrink: 0; 
+            position: relative; /* For positioning the clear button & spinner */
+        }
         .search-icon-overlay { width: 1.5rem; height: 1.5rem; color: var(--theme-green-dark); margin-right: 0.75rem; flex-shrink: 0; }
-        #searchInputOverlay { width: 100%; font-size: 1rem; line-height: 1.5rem; color: var(--theme-green-darker-text); background-color: transparent; border: none; outline: none; }
+        #searchInputOverlay { 
+            width: 100%; 
+            font-size: 1rem; 
+            line-height: 1.5rem; 
+            color: var(--theme-green-darker-text); 
+            background-color: transparent; 
+            border: none; 
+            outline: none;
+            padding-right: 7.5rem; /* Increased padding for "Clear" text button AND spinner */
+        }
         #searchInputOverlay::placeholder { color: #6c757d; opacity: 0.8; }
-        .search-overlay-close-btn { position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.5rem; border-radius: 9999px; background-color: transparent; color: #9ca3af; transition: background-color 0.2s, color 0.2s; z-index: 10; }
-        .search-overlay-close-btn:hover { background-color: var(--theme-green-lighter-bg); color: var(--theme-green-dark); }
-        .search-overlay-close-btn svg { width: 1.25rem; height: 1.25rem; }
+        
+        /* Clear Search Input Button (Text Button) */
+        #clearSearchInputButton {
+            position: absolute;
+            right: 0.75rem; 
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: transparent;
+            color: var(--theme-green-dark); 
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* medium */
+            padding: 0.25rem 0.5rem; /* py-1 px-2 */
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid transparent; /* For consistent height with potential bordered buttons */
+            display: none; /* JS toggles this with .visible */
+            cursor: pointer;
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            z-index: 20; 
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        #clearSearchInputButton:hover {
+            color: var(--theme-gold-darker);
+            background-color: var(--theme-gold-lighter-bg);
+            border-color: var(--theme-gold);
+        }
+        #clearSearchInputButton.visible {
+            display: inline-flex; 
+            align-items: center; /* Vertically align text if needed */
+        }
+        
+        #loadingSpinnerOverlay { 
+            position: absolute; 
+            right: 4.5rem; /* Positioned to the left of the text "Clear" button */
+            top: 50%;
+            transform: translateY(-50%);
+            display: none; 
+            z-index: 10; 
+        }
+        #loadingSpinnerOverlay.visible { display: inline-block; }
+        #loadingSpinnerOverlay svg { animation: spin 1s linear infinite; height: 1.25rem; width: 1.25rem; color: var(--theme-green-dark); }
+
+
+        /* Main Close Button for the entire overlay (Top Right of Viewport) */
+        .search-overlay-close-btn {
+            position: absolute;
+            top: 1.5rem; /* Distance from top of viewport */
+            right: 1.5rem; /* Distance from right of viewport */
+            padding: 0.5rem;
+            border-radius: 9999px; /* Fully rounded */
+            background-color: rgba(255, 255, 255, 0.1); /* Subtle background for visibility */
+            color: #e5e7eb; /* Light color for visibility against dark overlay */
+            transition: background-color 0.2s, color 0.2s;
+            z-index: 50; /* Ensure it's above everything in the overlay */
+            cursor: pointer;
+        }
+        .search-overlay-close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+        }
+        .search-overlay-close-btn svg {
+            width: 1.5rem; /* w-6 */
+            height: 1.5rem; /* h-6 */
+        }
 
         .sample-searches-overlay { padding: 0.75rem 1rem; border-bottom: 1px solid var(--neutral-border-color); display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; flex-shrink: 0; background-color: rgba(248, 249, 247, 0.5); }
         .sample-searches-label-overlay { font-size: 0.875rem; color: var(--theme-green-dark); margin-right: 0.75rem; font-weight: 500; }
@@ -318,26 +393,114 @@
         .filter-item-overlay select { width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; border: 1px solid var(--theme-green-border); border-radius: 0.375rem; background-color: rgba(255,255,255,0.8); transition: border-color 0.2s ease, box-shadow 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23006A4E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
         .filter-item-overlay select:focus { outline: none; border-color: var(--theme-gold); box-shadow: 0 0 0 2px var(--theme-gold-lighter-bg); }
 
+        /* Search Results Area - Enhanced Layout */
         #search-results-overlay { padding: 0.5rem; overflow-y: auto; flex-grow: 1; }
-        .search-result-item { display: block; padding: 0.75rem; border-radius: 0.375rem; transition: background-color 0.15s ease-in-out; text-decoration: none; margin-bottom: 0.25rem; }
-        .search-result-item:hover { background-color: var(--theme-green-lighter-bg); }
-        .search-result-title { font-weight: 500; color: var(--theme-green-dark); margin-bottom: 0.125rem; }
-        .search-result-desc { font-size: 0.875rem; color: #6b7280; }
-        .result-meta-overlay { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; }
+        .search-result-item { 
+            display: block; 
+            padding: 0.75rem 1rem; 
+            border-radius: 0.5rem; 
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
+            text-decoration: none; 
+            margin-bottom: 0.5rem; 
+            border: 1px solid transparent; 
+        }
+        .search-result-item:hover { 
+            background-color: var(--theme-gold-lighter-bg); 
+            border-color: var(--theme-gold); 
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1); 
+        }
+        .search-result-title { 
+            font-weight: 600; 
+            font-size: 1rem; 
+            color: var(--theme-green-dark); 
+            margin-bottom: 0.25rem; 
+            transition: color 0.2s ease-in-out;
+        }
+        .search-result-item:hover .search-result-title {
+            color: var(--theme-green-darker-text); 
+        }
+        
+        .search-result-meta-primary { 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            font-size: 0.75rem; 
+            color: #4b5563; 
+            margin-bottom: 0.375rem; 
+        }
+        .search-result-item:hover .search-result-meta-primary {
+            color: var(--theme-green-dark);
+        }
+        .search-result-author {
+            font-weight: 500;
+        }
+        .search-result-year {
+            color: #6b7280; 
+        }
+        .search-result-item:hover .search-result-year {
+            color: var(--theme-green-dark);
+        }
+
+        .search-result-category-keywords { 
+            margin-bottom: 0.5rem; 
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap; 
+            gap: 0.5rem; 
+        }
+        .search-result-category-tag {
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px; 
+            background-color: var(--theme-green-lighter-bg);
+            color: var(--theme-green-darker-text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .search-result-item:hover .search-result-category-tag {
+            background-color: var(--theme-green-dark);
+            color: white;
+        }
+
+        .search-result-keywords-container { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem; 
+        }
+        .keyword-pill {
+            font-size: 0.7rem; 
+            background-color: #e5e7eb; 
+            color: #4b5563; 
+            padding: 0.125rem 0.625rem; 
+            border-radius: 9999px; 
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .search-result-item:hover .keyword-pill {
+            background-color: var(--theme-gold);
+            color: var(--theme-green-darker-text);
+        }
+
+        .search-result-desc { 
+            font-size: 0.875rem; 
+            color: #6b7280; 
+            line-height: 1.5; 
+            transition: color 0.2s ease-in-out;
+        }
+        .search-result-item:hover .search-result-desc {
+            color: #374151; 
+        }
+        
         .search-no-results { text-align: center; padding: 1rem; color: #6b7280; }
-        .highlight { background-color: var(--theme-green-lighter-bg) !important; color: var(--theme-green-darker-text) !important; font-weight: 600; padding: 0 2px; border-radius: 3px; }
+        .highlight { background-color: var(--theme-gold-light-bg) !important; color: var(--theme-green-darker-text) !important; font-weight: 600; padding: 0 2px; border-radius: 3px; }
         #search-results-overlay::-webkit-scrollbar { width: 6px; }
         #search-results-overlay::-webkit-scrollbar-track { background: var(--theme-green-lighter-bg); border-radius: 10px; }
         #search-results-overlay::-webkit-scrollbar-thumb { background: var(--theme-green-light-bg); border-radius: 10px; }
         #search-results-overlay::-webkit-scrollbar-thumb:hover { background: var(--theme-green-dark); }
 
-        #loadingSpinnerOverlay { margin-left: 0.75rem; display: none; }
-        #loadingSpinnerOverlay.visible { display: inline-block; }
-        #loadingSpinnerOverlay svg { animation: spin 1s linear infinite; height: 1.25rem; width: 1.25rem; color: var(--theme-green-dark); }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         @media (min-width: 768px) { /* md breakpoint */
-            /* #search-overlay { padding-top: 5rem; } /* Keep uniform padding for centering */
             #searchInputOverlay { font-size: 1.125rem; line-height: 1.75rem; }
         }
     </style>
@@ -348,7 +511,7 @@
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <img class="h-20 w-auto" src="spud-logo.png" alt="SPUD Logo and Office of Research and Publications" onerror="this.onerror=null; this.src='https://placehold.co/100x80/F9F6EE/006A4E?text=Logo';">
+                        <img class="h-20 w-auto" src="spud-logo.png" alt="MySite Logo" onerror="this.onerror=null; this.src='https://placehold.co/100x80/F9F6EE/006A4E?text=Logo';">
                     </div>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
@@ -394,8 +557,7 @@
                                           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                                         </svg>
                                         Library
-                                        <span class="count-badge">5</span>
-                                    </a>
+                                        <span class="count-badge">5</span> </a>
                                     <div class="dropdown-divider mx-1" role="separator"></div>
                                     <a href="#" class="group text-red-600 flex items-center px-4 py-2 text-sm hover:bg-red-200 hover:text-red-800 rounded-md mx-1" role="menuitem" tabindex="-1" id="menu-item-3">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3">
@@ -451,12 +613,21 @@
     </nav>
 
     <div id="search-overlay" class="hidden">
+        <button id="search-close-button" type="button" class="search-overlay-close-btn">
+            <span class="sr-only">Close search</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </button>
         <div class="search-overlay-content">
             <div class="search-input-wrapper-overlay">
                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon-overlay">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                 </svg>
                 <input type="text" id="searchInputOverlay" placeholder="Search articles, documents..." autocomplete="off" class=""/>
+                <button id="clearSearchInputButton" type="button" aria-label="Clear search input">
+                    Clear
+                </button>
                  <div id="loadingSpinnerOverlay" aria-label="Loading search results">
                     <svg viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -464,12 +635,6 @@
                     </svg>
                 </div>
             </div>
-            <button id="search-close-button" type="button" class="search-overlay-close-btn">
-                <span class="sr-only">Close search</span>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
-            </button>
             <div class="sample-searches-overlay" id="sampleSearchesContainerOverlay">
                 <span class="sample-searches-label-overlay">Trending</span>
                 <span class="sample-search-item-overlay" data-query="JavaScript">JavaScript</span>
@@ -496,10 +661,10 @@
                     </select>
                 </div>
                 <div class="filter-item-overlay">
-                    <label for="agendaFilterOverlay">Research Agenda</label>
-                    <select id="agendaFilterOverlay">
+                    <label for="keywordsFilterOverlay">Keyword(s)</label>
+                    <select id="keywordsFilterOverlay">
                         <option value="">All</option>
-                    </select>
+                         </select>
                 </div>
                 <div class="filter-item-overlay">
                     <label for="yearFilterOverlay">Year</label>
@@ -540,14 +705,115 @@
     </main>
 
     <script>
+        /*
+        ---------------------------------------------------------------------------
+        DATABASE CONNECTION & DYNAMIC DATA - GENERAL NOTES FOR WEB DEVELOPMENT:
+        ---------------------------------------------------------------------------
+        Frontend JavaScript (like this file) CANNOT directly connect to a database (e.g., PostgreSQL, MySQL)
+        for security and technical reasons. Instead, the frontend communicates with a backend API.
+        The backend API (e.g., built with Python/Flask, Node.js/Express, Java/Spring) handles
+        database connections, queries, and business logic.
+
+        Workflow:
+        1. Frontend (this JS) makes an HTTP request (e.g., using `fetch`) to a backend API endpoint.
+        2. Backend API receives the request, performs database operations (connects, queries, etc.).
+        3. Backend API sends data back to the frontend, usually in JSON format.
+        4. Frontend JavaScript processes the JSON response and updates the HTML dynamically.
+
+        This script includes placeholders and comments where such API calls would be made.
+        The `DATABASE_SEARCH_BACKEND_URL`, `TRENDING_TOPICS_URL`, and `LIBRARY_COUNT_URL`
+        constants are examples of backend API endpoints you would need to create.
+        ---------------------------------------------------------------------------
+        */
         document.addEventListener('DOMContentLoaded', () => {
             // --- Constants & Global Variables ---
             const RAINBOW_GRADIENT = 'linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #8b5cf6)';
             const DEBOUNCE_DELAY = 300; 
-            const DATABASE_SEARCH_BACKEND_URL = '/api/search'; 
+            
+            // --- DATABASE INTEGRATION POINT: Backend API Endpoints ---
+            // Replace these with your actual backend API endpoint URLs.
+            const DATABASE_SEARCH_BACKEND_URL = '/api/search'; // For fetching search results
+            const TRENDING_TOPICS_URL = '/api/trending-topics'; // For fetching trending topics
+            const LIBRARY_COUNT_URL = '/api/user/library/count'; // For fetching library item count for the current user
 
             let isDropdownOpen = false;
             let originalBodyOverflow = ''; 
+
+            // --- Mock Search Results Data (Remove or comment out when using a real backend) ---
+            const mockSearchResultsData = [
+                {
+                    title: "Understanding JavaScript Closures",
+                    description: "A deep dive into closures in JavaScript, how they work, and common use cases. Essential for advanced JS development.",
+                    url: "#/js-closures",
+                    category: "Thesis", // Aligned with filter
+                    author: "Dr. Ellie Script",
+                    keywords: "JavaScript, Closures, Scope, Functions", 
+                    year: "2023"
+                },
+                {
+                    title: "Advanced React Patterns for Modern Web Apps",
+                    description: "Explore advanced patterns in React development, including HOCs, render props, and context API for scalable applications.",
+                    url: "#/react-advanced",
+                    category: "Dissertation", // Aligned with filter
+                    author: "Prof. Ada Component",
+                    keywords: "React, JavaScript, Frontend, Patterns, Web",
+                    year: "2024"
+                },
+                {
+                    title: "Introduction to Python for Thesis Research",
+                    description: "A beginner-friendly guide to using Python for data analysis in academic thesis projects, with Pandas and Matplotlib.",
+                    url: "#/python-data-science",
+                    category: "Thesis", // Aligned with filter
+                    author: "Dr. Guido Byte",
+                    keywords: "Python, Data Analysis, Pandas, AI, Research",
+                    year: "2023"
+                },
+                {
+                    title: "The Confluence of Design and Development",
+                    description: "How Tailwind CSS helps bridge the gap between design and development for modern UIs.",
+                    url: "#/tailwind-guide",
+                    category: "Confluence", // Aligned with filter
+                    author: "Mr. Adam Utility",
+                    keywords: "TailwindCSS, CSS, Frontend, Design, UI, Confluence",
+                    year: "2022"
+                },
+                {
+                    title: "The Future of AI in Dissertation Writing",
+                    description: "Exploring the ethical implications and practical applications of artificial intelligence in academic research and dissertation composition.",
+                    url: "#/ai-thesis",
+                    category: "Dissertation", // Aligned with filter
+                    author: "Dr. Alan Intellect",
+                    keywords: "AI, Academia, Ethics, Research, Artificial Intelligence",
+                    year: "2024"
+                },
+                 {
+                    title: "Synergy in Collaborative Software Projects for Academic Synergy",
+                    description: "Best practices for achieving synergy and effective teamwork in large-scale software development projects, fostering academic synergy.",
+                    url: "#/software-synergy",
+                    category: "Synergy", // Aligned with filter
+                    author: "Ms. Team Lead",
+                    keywords: "Teamwork, Software Development, Collaboration, Agile, Synergy",
+                    year: "2023"
+                },
+                {
+                    title: "Crafting a Compelling Thesis with Modern Tools",
+                    description: "A guide to structuring and writing a thesis using contemporary research and writing software.",
+                    url: "#/thesis-crafting",
+                    category: "Thesis", // Aligned with filter
+                    author: "Dr. Jane Structure",
+                    keywords: "Thesis, Writing, Research, Academia",
+                    year: "2022"
+                },
+                {
+                    title: "Dissertation Defense: Strategies for Success",
+                    description: "Prepare for your dissertation defense with proven strategies for presentation and Q&A.",
+                    url: "#/dissertation-defense",
+                    category: "Dissertation", // Aligned with filter
+                    author: "Prof. Max Argument",
+                    keywords: "Dissertation, Defense, Academia, Presentation",
+                    year: "2024"
+                }
+            ];
 
             // --- DOM Element Selection ---
             const bodyElement = document.body;
@@ -556,6 +822,7 @@
             const profileButton = document.getElementById('profile-badge-button');
             const dropdownMenu = document.getElementById('dropdown-menu');
             const profileBadgeContainer = document.getElementById('profile-badge-container');
+            const libraryCountBadge = document.querySelector('#menu-item-2 .count-badge'); 
 
             const mobileMenuButton = document.querySelector('.mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
@@ -565,15 +832,16 @@
             const searchOpenButton = document.getElementById('search-open-button');
             const searchOpenButtonMobile = document.getElementById('search-open-button-mobile');
             const searchOverlay = document.getElementById('search-overlay');
-            const searchCloseButton = document.getElementById('search-close-button');
+            const searchCloseButton = document.getElementById('search-close-button'); // Main overlay close button
             const searchInputOverlay = document.getElementById('searchInputOverlay');
+            const clearSearchInputButton = document.getElementById('clearSearchInputButton'); // Input clear button
             const searchResultsOverlay = document.getElementById('search-results-overlay');
             const loadingSpinnerOverlay = document.getElementById('loadingSpinnerOverlay');
             const sampleSearchesContainerOverlay = document.getElementById('sampleSearchesContainerOverlay');
 
             const categoryFilterOverlay = document.getElementById('categoryFilterOverlay');
             const authorFilterOverlay = document.getElementById('authorFilterOverlay');
-            const agendaFilterOverlay = document.getElementById('agendaFilterOverlay');
+            const keywordsFilterOverlay = document.getElementById('keywordsFilterOverlay'); 
             const yearFilterOverlay = document.getElementById('yearFilterOverlay');
 
             // --- Utility Functions ---
@@ -643,7 +911,7 @@
                 mobileMenuOpenIcon.classList.toggle('hidden', openMenu);
                 mobileMenuCloseIcon.classList.toggle('hidden', !openMenu);
             }
-
+            
             function openSearch() {
                  if (!searchOverlay || !searchInputOverlay || !bodyElement) return;
                 originalBodyOverflow = bodyElement.style.overflow; 
@@ -651,14 +919,21 @@
 
                 searchOverlay.classList.remove('hidden'); 
                 searchOverlay.classList.add('visible'); 
-                setTimeout(() => searchInputOverlay.focus(), 50); 
+                setTimeout(() => {
+                    searchInputOverlay.focus();
+                    if (clearSearchInputButton) {
+                        clearSearchInputButton.classList.toggle('visible', searchInputOverlay.value.length > 0);
+                    }
+                }, 50); 
+
 
                 if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
                     toggleMobileMenu(true); 
                 }
 
                 const currentPlaceholderText = `Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.`;
-                if (searchInputOverlay.value === '' && (categoryFilterOverlay.value || authorFilterOverlay.value || agendaFilterOverlay.value || yearFilterOverlay.value)) {
+                if (searchInputOverlay.value === '' && 
+                    (categoryFilterOverlay.value || authorFilterOverlay.value || keywordsFilterOverlay.value || yearFilterOverlay.value)) { 
                     performSearchOverlay(); 
                 } else if (searchInputOverlay.value === '' && searchResultsOverlay) {
                     searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
@@ -676,6 +951,9 @@
                 searchOverlay.classList.remove('visible'); 
                 searchOverlay.classList.add('hidden');    
                 searchInputOverlay.value = ''; 
+                if (clearSearchInputButton) { 
+                    clearSearchInputButton.classList.remove('visible');
+                }
             }
 
             function highlightText(text, query) {
@@ -713,10 +991,9 @@
                     selectElement.value = currentVal;
                 }
             }
-
+            
             async function initializeFiltersOverlay() {
-                console.log("Initializing filters (placeholder - connect to backend)...");
-                console.warn("Filter population needs implementation: Fetch data from backend or use a search service like Meilisearch/Algolia for dynamic filter options.");
+                // Placeholder for fetching dynamic filter options
             }
 
             async function performSearchOverlay() {
@@ -725,14 +1002,14 @@
                      return;
                 }
 
-                const query = searchInputOverlay.value.trim();
+                const query = searchInputOverlay.value.trim().toLowerCase();
                 const selectedCategory = categoryFilterOverlay.value;
-                const selectedAuthor = authorFilterOverlay.value;
-                const selectedAgenda = agendaFilterOverlay.value;
+                const selectedAuthor = authorFilterOverlay.value; 
+                const selectedKeywords = keywordsFilterOverlay.value.toLowerCase();
                 const selectedYear = yearFilterOverlay.value;
-
+                
                 const hasQuery = !!query;
-                const hasFilters = !!(selectedCategory || selectedAuthor || selectedAgenda || selectedYear);
+                const hasFilters = !!(selectedCategory || selectedAuthor || selectedKeywords || selectedYear); 
                 const currentPlaceholderText = `Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.`;
 
                 let placeholderEl = document.getElementById('searchPlaceholderOverlay');
@@ -747,42 +1024,44 @@
                     }
                     if(placeholderEl) placeholderEl.classList.remove('hidden');
                     loadingSpinnerOverlay.classList.remove('visible');
+                    if (clearSearchInputButton) clearSearchInputButton.classList.remove('visible'); 
                     return;
                 }
 
                 if(placeholderEl) placeholderEl.classList.add('hidden'); 
                 loadingSpinnerOverlay.classList.add('visible'); 
                 searchResultsOverlay.innerHTML = ''; 
+                
+                // --- MOCK SEARCH LOGIC ---
+                console.log("Using MOCK search results.");
+                setTimeout(() => {
+                    let filteredResults = mockSearchResultsData;
 
-                const searchParams = {
-                    q: query,
-                    category: selectedCategory,
-                    author: selectedAuthor,
-                    agenda: selectedAgenda,
-                    year: selectedYear
-                };
-                console.log(`Sending search request to backend: ${DATABASE_SEARCH_BACKEND_URL}`, searchParams);
-
-                try {
-                    const response = await fetch(DATABASE_SEARCH_BACKEND_URL, {
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(searchParams),
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.text(); 
-                        throw new Error(`Backend API error! Status: ${response.status}. Response: ${errorData}`);
+                    if (query) {
+                        filteredResults = filteredResults.filter(item => 
+                            item.title.toLowerCase().includes(query) || 
+                            item.description.toLowerCase().includes(query) ||
+                            (item.keywords && item.keywords.toLowerCase().includes(query))
+                        );
                     }
-                    const results = await response.json();
-                    displaySearchResultsOverlay(results.hits || [], query);
+                    if (selectedCategory) {
+                        filteredResults = filteredResults.filter(item => item.category === selectedCategory);
+                    }
+                    if (selectedAuthor && authorFilterOverlay.options.length > 1) { 
+                        filteredResults = filteredResults.filter(item => item.author === selectedAuthor);
+                    }
+                    if (selectedKeywords && keywordsFilterOverlay.options.length > 1) { 
+                        filteredResults = filteredResults.filter(item => 
+                            item.keywords && item.keywords.toLowerCase().includes(selectedKeywords)
+                        );
+                    }
+                    if (selectedYear && yearFilterOverlay.options.length > 1) { 
+                        filteredResults = filteredResults.filter(item => item.year === selectedYear);
+                    }
 
-                } catch (error) {
-                    console.error("Search API call failed:", error);
-                    searchResultsOverlay.innerHTML = `<p class="search-no-results">Search failed: ${error.message}. Please try again or check console.</p>`;
-                } finally {
-                     loadingSpinnerOverlay.classList.remove('visible'); 
-                }
+                    displaySearchResultsOverlay(filteredResults, searchInputOverlay.value.trim()); 
+                    loadingSpinnerOverlay.classList.remove('visible');
+                }, 500); 
             }
 
             function displaySearchResultsOverlay(hits, query) {
@@ -800,7 +1079,7 @@
                 if (hits.length === 0) {
                     let message = "No results found";
                     if (query) message += ` for "${highlightText(query, query)}"`; 
-                    if (categoryFilterOverlay.value || authorFilterOverlay.value || agendaFilterOverlay.value || yearFilterOverlay.value) {
+                    if (categoryFilterOverlay.value || authorFilterOverlay.value || keywordsFilterOverlay.value || yearFilterOverlay.value) { 
                         message += " with the current filters";
                     }
                     searchResultsOverlay.innerHTML = `<p class="search-no-results">${message}. Try a different search or clear filters.</p>`;
@@ -817,16 +1096,24 @@
 
                     const titleHighlighted = highlightText(item.title, query);
                     const descHighlighted = highlightText(item.description, query);
-
-                    const metaParts = [
-                        item.category, item.author, item.researchAgenda, item.year?.toString()
-                    ].filter(Boolean); 
-                    const metaInfo = metaParts.join(' • ');
+                    
+                    let keywordsHTML = '';
+                    if (item.keywords) {
+                        const keywordsArray = item.keywords.split(',').map(kw => kw.trim()).filter(kw => kw);
+                        keywordsHTML = keywordsArray.map(kw => `<span class="keyword-pill">${kw}</span>`).join('');
+                    }
 
                     resultElement.innerHTML = `
                         <div class="search-result-title">${titleHighlighted || 'No Title Provided'}</div>
+                        <div class="search-result-meta-primary">
+                            ${item.author ? `<span class="search-result-author">By: ${item.author}</span>` : ''}
+                            ${item.year ? `<span class="search-result-year">${item.year}</span>` : ''}
+                        </div>
+                        <div class="search-result-category-keywords">
+                            ${item.category ? `<span class="search-result-category-tag">${item.category}</span>` : ''}
+                            ${keywordsHTML ? `<div class="search-result-keywords-container">${keywordsHTML}</div>` : ''}
+                        </div>
                         <div class="search-result-desc">${descHighlighted || 'No description available.'}</div>
-                        ${metaInfo ? `<div class="result-meta-overlay">${metaInfo}</div>` : ''}
                     `;
                     fragment.appendChild(resultElement);
                 });
@@ -835,9 +1122,26 @@
 
             // --- Event Listeners Setup ---
             const debouncedPerformSearch = debounceOverlay(performSearchOverlay, DEBOUNCE_DELAY);
-            if (searchInputOverlay) searchInputOverlay.addEventListener('input', debouncedPerformSearch);
             
-            [categoryFilterOverlay, authorFilterOverlay, agendaFilterOverlay, yearFilterOverlay].forEach(filterElement => {
+            if (searchInputOverlay) {
+                searchInputOverlay.addEventListener('input', () => {
+                    debouncedPerformSearch();
+                    if (clearSearchInputButton) { 
+                        clearSearchInputButton.classList.toggle('visible', searchInputOverlay.value.length > 0);
+                    }
+                });
+            }
+
+            if (clearSearchInputButton) {
+                clearSearchInputButton.addEventListener('click', () => {
+                    searchInputOverlay.value = '';
+                    clearSearchInputButton.classList.remove('visible');
+                    performSearchOverlay(); 
+                    searchInputOverlay.focus();
+                });
+            }
+            
+            [categoryFilterOverlay, authorFilterOverlay, keywordsFilterOverlay, yearFilterOverlay].forEach(filterElement => { 
                 if (filterElement) filterElement.addEventListener('change', performSearchOverlay);
             });
 
@@ -846,6 +1150,7 @@
                     const target = event.target.closest('.sample-search-item-overlay');
                     if (target && target.dataset.query && searchInputOverlay) {
                         searchInputOverlay.value = target.dataset.query;
+                        if (clearSearchInputButton) clearSearchInputButton.classList.add('visible'); 
                         performSearchOverlay(); 
                         searchInputOverlay.focus(); 
                     }
@@ -856,11 +1161,18 @@
             if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => toggleMobileMenu());
             if (searchOpenButton) searchOpenButton.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
             if (searchOpenButtonMobile) searchOpenButtonMobile.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
-            if (searchCloseButton) searchCloseButton.addEventListener('click', closeSearch);
+            
+            // Corrected: searchCloseButton refers to the main overlay close button
+            if (searchCloseButton) { 
+                searchCloseButton.addEventListener('click', closeSearch);
+            }
             
             if (searchOverlay) {
                 searchOverlay.addEventListener('click', (event) => {
-                    if (event.target === searchOverlay) closeSearch(); 
+                    // Close only if the click is on the overlay backdrop itself, not its children (like the content box or the new close button)
+                    if (event.target === searchOverlay) {
+                         closeSearch();
+                    }
                 });
             }
 
@@ -896,20 +1208,24 @@
             // --- Initialization ---
             setGreeting(); 
             initializeFiltersOverlay(); 
+            // fetchLibraryCount(); 
 
             const essentialElements = {
                 bodyElement, greetingPartElement, userNamePartElement, profileButton, dropdownMenu, profileBadgeContainer,
                 mobileMenuButton, mobileMenu, 
                 searchOpenButton, searchOpenButtonMobile, searchOverlay, searchCloseButton, searchInputOverlay, searchResultsOverlay,
                 loadingSpinnerOverlay, sampleSearchesContainerOverlay,
-                categoryFilterOverlay, authorFilterOverlay, agendaFilterOverlay, yearFilterOverlay
+                categoryFilterOverlay, authorFilterOverlay, keywordsFilterOverlay, yearFilterOverlay,
+                libraryCountBadge, clearSearchInputButton 
             };
             for (const [name, el] of Object.entries(essentialElements)) {
-                if (!el) {
+                if (!el && name !== 'libraryCountBadge' && name !== 'clearSearchInputButton') { 
                     console.error(`Essential UI element "${name}" was not found. Some functionality may be broken.`);
+                } else if (!el && (name === 'libraryCountBadge' || name === 'clearSearchInputButton')) {
+                    // console.warn(`UI element "${name}" was not found. This might affect some optional features.`);
                 }
             }
-            console.log("UI scripts initialized. Navbar ready.");
+            console.log("UI scripts initialized. Navbar ready for Database Integration.");
         });
     </script>
 </body>
