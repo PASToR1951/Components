@@ -128,6 +128,7 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
             border: 1px solid var(--neutral-border-color); 
             background-color: white;
+            cursor: pointer; /* Add cursor pointer to indicate clickability */
         }
         #document-container:not(.view-table) .document-item-base:hover {
             transform: translateY(-3px);
@@ -156,6 +157,7 @@
             padding: 0.65rem 1rem; border-radius: 0.375rem; font-weight: 500; text-align: center;
             transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.3s ease, transform 0.3s ease;
             display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem; font-size: 0.875rem;
+            cursor: pointer; /* Ensure buttons also have pointer cursor */
         }
         .btn-primary { 
             background-color: var(--theme-green-dark); 
@@ -218,9 +220,6 @@
             border-color: var(--theme-green-dark); 
         }
         .view-btn i { font-size: 0.875rem; margin-right: 0.5rem; } 
-
-        /* Styles for the glassmorphic view switcher container - REMOVED as it's now a popup */
-        /* .view-controls-glass { ... } */
 
         /* Styles for collapsible filters */
         #collapsible-filters {
@@ -711,15 +710,13 @@
         const filterByKeywordsSelect = document.getElementById('filter-by-keywords'); 
         const documentContainer = document.getElementById('document-container');
         const noDocumentsMessage = document.getElementById('no-documents-message');
-        // const viewSwitcher = document.getElementById('view-switcher'); // No longer needed as direct reference
-        // const viewSwitcherContainer = document.getElementById('view-switcher-container'); // No longer needed
         const paginationControlsContainer = document.getElementById('pagination-controls');
         const keywordPopupGlass = document.getElementById('keyword-popup-glass'); 
         const deleteSelectedBtn = document.getElementById('delete-selected-btn');
         const toggleFiltersBtn = document.getElementById('toggle-filters-btn'); 
         const collapsibleFilters = document.getElementById('collapsible-filters'); 
-        const toggleViewsBtn = document.getElementById('toggle-views-btn'); // New Views toggle button
-        const viewOptionsPopup = document.getElementById('view-options-popup'); // New View Options Popup
+        const toggleViewsBtn = document.getElementById('toggle-views-btn'); 
+        const viewOptionsPopup = document.getElementById('view-options-popup'); 
         
         let currentView = 'grid'; 
         let currentPage = 1;
@@ -728,35 +725,35 @@
         const MAX_AUTHOR_LENGTH = 0; 
         let selectedDocuments = []; 
         let filtersExpanded = false; 
-        let viewsPopupActive = false; // Track view popup state
+        let viewsPopupActive = false; 
 
 
-        // Mock data 
+        // Mock data - Added 'url' property to each document
         const mockDocuments = [
-            { id: 1, type: 'pdf', category: 'Synergy', keywords: ['Annual Report', 'Finance', 'Corporate', 'Yearly Review', 'Stakeholders', 'Q1 Performance', 'Q2 Outlook', 'Q3 Strategy', 'Q4 Goals', 'Budgeting Cycle', 'Financial Forecast', 'Investor Relations Update', 'Audit Committee Report', 'Compliance Overview', 'Strategic Initiatives', 'Market Analysis', 'Risk Assessment', 'Shareholder Value', 'Sustainability Report', 'Executive Summary'], title: 'Annual Report for the Fiscal Year Ending 2024', author: 'Corporate Communications Department', date: 'May 1, 2025' }, 
-            { id: 2, type: 'docx', category: 'General Document', keywords: ['Innovation', 'OBE', 'Education', 'Proposal', 'Curriculum'], title: 'Project Proposal Alpha: A New Dawn for Innovation in OBE', author: 'Dr. Eleanor Vance & Team', date: 'April 22, 2025' }, 
-            { id: 3, type: 'jpg', category: 'General Document', keywords: ['Team Building', 'Retreat', 'HR', 'Company Event'], title: 'Team Photo: Q1 Company Retreat in the Bahamas', author: 'HR Department Photography', date: 'March 15, 2025' }, 
-            { id: 4, type: 'txt', category: 'Confluence', keywords: ['Meeting Notes', 'Client Strategy', 'Onboarding', 'Minutes'], title: 'Meeting Notes: Client Onboarding Strategy Discussion (May 6)', author: 'Johnathan M. Smitherson Jr.', date: 'May 6, 2025' },
-            { id: 5, type: 'xlsx', category: 'Synergy', keywords: ['Budget', 'Finance', 'Projections', 'Analysis', 'Spreadsheet'], title: 'Q2 Budget Forecast and Financial Projections Analysis Report', author: 'Finance & Accounting Division', date: 'April 30, 2025' }, 
-            { id: 6, type: 'png', category: 'General Document', keywords: ['Branding', 'Logo', 'Marketing', 'Design', 'Assets'], title: 'Company Logo (Transparent, High Resolution, PNG Format)', author: 'Marketing Design Team', date: 'February 10, 2025' },
-            { id: 7, type: 'pptx', category: 'Synergy', keywords: ['Investment', 'Funding', 'Pitch Deck', 'Startup', 'Presentation'], title: 'Investor Pitch Deck: Series B Funding Round Presentation Slides', author: 'CEO & Founder\'s Office', date: 'May 5, 2025' }, 
-            { id: 8, type: 'pdf', category: 'Thesis', keywords: ['User Manual', 'Product Guide', 'Technology', 'Documentation', 'Instructions'], title: 'Comprehensive User Manual for Product X Model Gamma v2.1', author: 'Technical Writing Department', date: 'March 20, 2025' },
-            { id: 9, type: 'txt', category: 'General Document', keywords: ['Research', 'AI', 'Energy', 'Sustainability', 'Innovation', 'Paulinian'], title: 'Research Paper: The Future of AI in Sustainable Energy Solutions', author: 'Dr. A. K. Singh et al.', date: 'May 10, 2025' },
-            { id: 10, type: 'jpg', category: 'General Document', keywords: ['Travel', 'Photography', 'Personal', 'Vacation'], title: 'Personal Vacation Photographs: Hawaiian Islands Adventure Collection', author: 'Jane Doe (Personal)', date: 'January 15, 2025' },
-            { id: 11, type: 'pdf', category: 'Confluence', keywords: ['Legal', 'Contract', 'Agreement', 'Template', 'Paulinian'], title: 'Master Service Agreement Template (Standard Client Contract)', author: 'Legal Department Review Board', date: 'April 1, 2025' },
-            { id: 12, type: 'docx', category: 'Synergy', keywords: ['Marketing', 'Campaign', 'Strategy', 'Product Launch', 'Paulinian', 'Global Partnership'], title: 'Detailed Marketing Plan: Q3 Product Launch Campaign Strategy', author: 'Global Marketing Strategy Team', date: 'May 2, 2025' },
-            { id: 13, type: 'xlsx', category: 'General Document', keywords: ['Sales Data', 'Analytics', 'Finance', 'Annual Report'], title: 'Consolidated Sales Data: Fiscal Year 2024 (Regional Breakdown)', author: 'Sales Operations & Analytics', date: 'January 5, 2025' },
-            { id: 14, type: 'png', category: 'Dissertation', keywords: ['Web Design', 'UX/UI', 'Mockup', 'Education', 'Inclusivity', 'Technology'], title: 'Website Homepage Redesign Mockup v3 (User Feedback Incorporated)', author: 'UX/UI Design Department', date: 'May 8, 2025' },
-            { id: 15, type: 'pptx', category: 'Confluence', keywords: ['Training', 'HR', 'Onboarding', 'Faculty Development', 'Paulinian'], title: 'New Hire Onboarding & Training Presentation Materials Package', author: 'Human Resources Development', date: 'March 10, 2025' },
-            { id: 16, type: 'pdf', category: 'Dissertation', keywords: ['Newsletter', 'Archive', 'Internal Comms', 'Spirituality', 'Community'], title: 'Archived Internal Company Newsletter - May 2024 Edition (PDF)', author: 'Internal Communications Team', date: 'May 30, 2024' },
-            { id: 17, type: 'txt', category: 'General Document', keywords: ['Security', 'Server Logs', 'IT Audit', 'Technology'], title: 'Critical Server Access Logs: Security Audit May 9th Report', author: 'IT Security Operations Center', date: 'May 9, 2025' },
-            { id: 18, type: 'jpg', category: 'Synergy', keywords: ['Conference', 'Event Design', 'Marketing', 'Expo', 'Global Partnership'], title: 'Finalized Conference Booth Design: Tech Expo 2025 Showcase', author: 'Events and Exhibitions Team', date: 'February 20, 2025' },
-            { id: 19, type: 'pdf', category: 'Thesis', keywords: ['HR Policy', 'Employee Handbook', 'Paulinian', 'Documentation', 'Advocacy'], title: 'Official Employee Handbook - Updated January 2025 Version (PDF)', author: 'Human Resources Policy Division', date: 'January 1, 2025' },
-            { id: 20, type: 'docx', category: 'Confluence', keywords: ['Client Feedback', 'Analysis', 'Q1 Review', 'Advocacy', 'Community'], title: 'Client Feedback Summary & Analysis: Q1 Product Review Cycle', author: 'Customer Success Management', date: 'April 15, 2025' },
-            { id: 21, type: 'xlsx', category: 'General Document', keywords: ['Inventory', 'Logistics', 'Supply Chain', 'Infrastructure', 'Finance'], title: 'Real-time Inventory Stock Levels & Reorder Point Tracking Sheet', author: 'Supply Chain & Logistics Dept.', date: 'May 9, 2025' },
-            { id: 22, type: 'pdf', category: 'Thesis', keywords: ['Paulinian', 'Spirituality', 'Global Partnership', 'Research', 'Education'], title: 'Study on Paulinian Values in Global Partnerships', author: 'Theology Department', date: 'June 1, 2025' },
-            { id: 23, type: 'docx', category: 'Dissertation', keywords: ['Mental Health', 'Wellness', 'Global Study', 'Psychology', 'Advocacy'], title: 'Global Mental Wellness Initiatives: A Comparative Study', author: 'Psychology Faculty', date: 'June 15, 2025' },
-            { id: 24, type: 'pptx', category: 'Synergy', keywords: ['Leadership', 'Ethics', 'Global Context', 'Workshop', 'Paulinian', 'Mobility'], title: 'Developing Ethical Leadership in a Global Context', author: 'Business School Ethics Committee', date: 'July 1, 2025' }
+            { id: 1, type: 'pdf', category: 'Synergy', keywords: ['Annual Report', 'Finance', 'Corporate', 'Yearly Review', 'Stakeholders', 'Q1 Performance', 'Q2 Outlook', 'Q3 Strategy', 'Q4 Goals', 'Budgeting Cycle', 'Financial Forecast', 'Investor Relations Update', 'Audit Committee Report', 'Compliance Overview', 'Strategic Initiatives', 'Market Analysis', 'Risk Assessment', 'Shareholder Value', 'Sustainability Report', 'Executive Summary'], title: 'Annual Report for the Fiscal Year Ending 2024', author: 'Corporate Communications Department', date: 'May 1, 2025', url: '#details?docId=1' }, 
+            { id: 2, type: 'docx', category: 'General Document', keywords: ['Innovation', 'OBE', 'Education', 'Proposal', 'Curriculum'], title: 'Project Proposal Alpha: A New Dawn for Innovation in OBE', author: 'Dr. Eleanor Vance & Team', date: 'April 22, 2025', url: '#details?docId=2' }, 
+            { id: 3, type: 'jpg', category: 'General Document', keywords: ['Team Building', 'Retreat', 'HR', 'Company Event'], title: 'Team Photo: Q1 Company Retreat in the Bahamas', author: 'HR Department Photography', date: 'March 15, 2025', url: '#details?docId=3' }, 
+            { id: 4, type: 'txt', category: 'Confluence', keywords: ['Meeting Notes', 'Client Strategy', 'Onboarding', 'Minutes'], title: 'Meeting Notes: Client Onboarding Strategy Discussion (May 6)', author: 'Johnathan M. Smitherson Jr.', date: 'May 6, 2025', url: '#details?docId=4' },
+            { id: 5, type: 'xlsx', category: 'Synergy', keywords: ['Budget', 'Finance', 'Projections', 'Analysis', 'Spreadsheet'], title: 'Q2 Budget Forecast and Financial Projections Analysis Report', author: 'Finance & Accounting Division', date: 'April 30, 2025', url: '#details?docId=5' }, 
+            { id: 6, type: 'png', category: 'General Document', keywords: ['Branding', 'Logo', 'Marketing', 'Design', 'Assets'], title: 'Company Logo (Transparent, High Resolution, PNG Format)', author: 'Marketing Design Team', date: 'February 10, 2025', url: '#details?docId=6' },
+            { id: 7, type: 'pptx', category: 'Synergy', keywords: ['Investment', 'Funding', 'Pitch Deck', 'Startup', 'Presentation'], title: 'Investor Pitch Deck: Series B Funding Round Presentation Slides', author: 'CEO & Founder\'s Office', date: 'May 5, 2025', url: '#details?docId=7' }, 
+            { id: 8, type: 'pdf', category: 'Thesis', keywords: ['User Manual', 'Product Guide', 'Technology', 'Documentation', 'Instructions'], title: 'Comprehensive User Manual for Product X Model Gamma v2.1', author: 'Technical Writing Department', date: 'March 20, 2025', url: '#details?docId=8' },
+            { id: 9, type: 'txt', category: 'General Document', keywords: ['Research', 'AI', 'Energy', 'Sustainability', 'Innovation', 'Paulinian'], title: 'Research Paper: The Future of AI in Sustainable Energy Solutions', author: 'Dr. A. K. Singh et al.', date: 'May 10, 2025', url: '#details?docId=9' },
+            { id: 10, type: 'jpg', category: 'General Document', keywords: ['Travel', 'Photography', 'Personal', 'Vacation'], title: 'Personal Vacation Photographs: Hawaiian Islands Adventure Collection', author: 'Jane Doe (Personal)', date: 'January 15, 2025', url: '#details?docId=10' },
+            { id: 11, type: 'pdf', category: 'Confluence', keywords: ['Legal', 'Contract', 'Agreement', 'Template', 'Paulinian'], title: 'Master Service Agreement Template (Standard Client Contract)', author: 'Legal Department Review Board', date: 'April 1, 2025', url: '#details?docId=11' },
+            { id: 12, type: 'docx', category: 'Synergy', keywords: ['Marketing', 'Campaign', 'Strategy', 'Product Launch', 'Paulinian', 'Global Partnership'], title: 'Detailed Marketing Plan: Q3 Product Launch Campaign Strategy', author: 'Global Marketing Strategy Team', date: 'May 2, 2025', url: '#details?docId=12' },
+            { id: 13, type: 'xlsx', category: 'General Document', keywords: ['Sales Data', 'Analytics', 'Finance', 'Annual Report'], title: 'Consolidated Sales Data: Fiscal Year 2024 (Regional Breakdown)', author: 'Sales Operations & Analytics', date: 'January 5, 2025', url: '#details?docId=13' },
+            { id: 14, type: 'png', category: 'Dissertation', keywords: ['Web Design', 'UX/UI', 'Mockup', 'Education', 'Inclusivity', 'Technology'], title: 'Website Homepage Redesign Mockup v3 (User Feedback Incorporated)', author: 'UX/UI Design Department', date: 'May 8, 2025', url: '#details?docId=14' },
+            { id: 15, type: 'pptx', category: 'Confluence', keywords: ['Training', 'HR', 'Onboarding', 'Faculty Development', 'Paulinian'], title: 'New Hire Onboarding & Training Presentation Materials Package', author: 'Human Resources Development', date: 'March 10, 2025', url: '#details?docId=15' },
+            { id: 16, type: 'pdf', category: 'Dissertation', keywords: ['Newsletter', 'Archive', 'Internal Comms', 'Spirituality', 'Community'], title: 'Archived Internal Company Newsletter - May 2024 Edition (PDF)', author: 'Internal Communications Team', date: 'May 30, 2024', url: '#details?docId=16' },
+            { id: 17, type: 'txt', category: 'General Document', keywords: ['Security', 'Server Logs', 'IT Audit', 'Technology'], title: 'Critical Server Access Logs: Security Audit May 9th Report', author: 'IT Security Operations Center', date: 'May 9, 2025', url: '#details?docId=17' },
+            { id: 18, type: 'jpg', category: 'Synergy', keywords: ['Conference', 'Event Design', 'Marketing', 'Expo', 'Global Partnership'], title: 'Finalized Conference Booth Design: Tech Expo 2025 Showcase', author: 'Events and Exhibitions Team', date: 'February 20, 2025', url: '#details?docId=18' },
+            { id: 19, type: 'pdf', category: 'Thesis', keywords: ['HR Policy', 'Employee Handbook', 'Paulinian', 'Documentation', 'Advocacy'], title: 'Official Employee Handbook - Updated January 2025 Version (PDF)', author: 'Human Resources Policy Division', date: 'January 1, 2025', url: '#details?docId=19' },
+            { id: 20, type: 'docx', category: 'Confluence', keywords: ['Client Feedback', 'Analysis', 'Q1 Review', 'Advocacy', 'Community'], title: 'Client Feedback Summary & Analysis: Q1 Product Review Cycle', author: 'Customer Success Management', date: 'April 15, 2025', url: '#details?docId=20' },
+            { id: 21, type: 'xlsx', category: 'General Document', keywords: ['Inventory', 'Logistics', 'Supply Chain', 'Infrastructure', 'Finance'], title: 'Real-time Inventory Stock Levels & Reorder Point Tracking Sheet', author: 'Supply Chain & Logistics Dept.', date: 'May 9, 2025', url: '#details?docId=21' },
+            { id: 22, type: 'pdf', category: 'Thesis', keywords: ['Paulinian', 'Spirituality', 'Global Partnership', 'Research', 'Education'], title: 'Study on Paulinian Values in Global Partnerships', author: 'Theology Department', date: 'June 1, 2025', url: '#details?docId=22' },
+            { id: 23, type: 'docx', category: 'Dissertation', keywords: ['Mental Health', 'Wellness', 'Global Study', 'Psychology', 'Advocacy'], title: 'Global Mental Wellness Initiatives: A Comparative Study', author: 'Psychology Faculty', date: 'June 15, 2025', url: '#details?docId=23' },
+            { id: 24, type: 'pptx', category: 'Synergy', keywords: ['Leadership', 'Ethics', 'Global Context', 'Workshop', 'Paulinian', 'Mobility'], title: 'Developing Ethical Leadership in a Global Context', author: 'Business School Ethics Committee', date: 'July 1, 2025', url: '#details?docId=24' }
         ];
         let documentItemsData = [...mockDocuments]; 
 
@@ -1102,7 +1099,6 @@
                 documentContainer.classList.add('view-table'); 
             }
 
-            // Update active state for buttons inside the popup
             viewOptionsPopup.querySelectorAll('.view-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-view') === newView);
             });
@@ -1117,9 +1113,8 @@
         filterByKeywordsSelect.addEventListener('change', () => { currentPage = 1; filterAndDisplayDocuments(); });
         sortBySelect.addEventListener('change', () => { currentPage = 1; filterAndDisplayDocuments(); });
 
-        // View Options Popup Logic
         toggleViewsBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent click from immediately closing popup
+            e.stopPropagation(); 
             viewsPopupActive = !viewsPopupActive;
             viewOptionsPopup.classList.toggle('active', viewsPopupActive);
             toggleViewsBtn.classList.toggle('active', viewsPopupActive);
@@ -1127,7 +1122,6 @@
             if (viewsPopupActive) {
                 const btnRect = toggleViewsBtn.getBoundingClientRect();
                 viewOptionsPopup.style.top = `${btnRect.bottom + window.scrollY + 5}px`;
-                // Align popup to the right of the button
                 viewOptionsPopup.style.left = `${btnRect.left + window.scrollX}px`; 
             }
              const chevronIcon = toggleViewsBtn.querySelector('.chevron-icon');
@@ -1262,60 +1256,99 @@
             });
         }
 
+        // MODIFIED EVENT LISTENER FOR documentContainer
         documentContainer.addEventListener('click', function(e) {
-            const actionButton = e.target.closest('.action-btn');
-            const keywordTrigger = e.target.closest('.keywords-trigger'); 
-            const clickableAuthor = e.target.closest('.clickable-author');
-            const clickableCategory = e.target.closest('.clickable-category');
-            const clickableKeywordPill = e.target.closest('.keywords-pill-container .keyword-pill'); 
+            const itemElement = e.target.closest('[data-id]');
+            if (!itemElement) return; // Click was not on a document item or its child
 
-            if (actionButton) {
-                const itemElement = actionButton.closest('[data-id]'); 
-                const docId = parseInt(itemElement.getAttribute('data-id'));
-                const doc = documentItemsData.find(d => d.id === docId); 
-                const title = doc ? doc.title : 'Unknown Document';
+            const docId = parseInt(itemElement.getAttribute('data-id'));
+            const doc = documentItemsData.find(d => d.id === docId);
+            
+            if (!doc) return; // Document not found
 
-                if (actionButton.classList.contains('delete-btn')) {
-                    if (confirm(`Are you sure you want to delete "${title}"?`)) {
-                        documentItemsData = documentItemsData.filter(d => d.id !== docId); 
-                        selectedDocuments = selectedDocuments.filter(id => id !== docId); 
-                        updateDeleteSelectedButtonState();
-                        filterAndDisplayDocuments(); 
-                    }
-                } else if (actionButton.classList.contains('open-btn')) {
-                    alert(`Simulating opening: "${title}"`); 
-                } else if (actionButton.classList.contains('download-btn')) {
-                    alert(`Simulating download of: "${title}"`); 
+            const target = e.target;
+
+            // Handle specific interactive elements first
+            if (target.closest('.open-btn')) {
+                if (doc.url) {
+                    // console.log(`Open button clicked for: ${doc.title}. Redirecting to: ${doc.url}`);
+                    window.location.href = doc.url;
+                } else {
+                    alert(`No URL available for "${doc.title}"`);
                 }
-            } else if (keywordTrigger) { 
-                const docId = parseInt(keywordTrigger.getAttribute('data-doc-id'));
-                toggleKeywordGlassPopup(docId, keywordTrigger); 
-            } else if (clickableAuthor) {
-                const authorName = clickableAuthor.getAttribute('data-author-name');
-                alert(`Navigating to profile of: ${authorName}`); 
-            } else if (clickableCategory) {
-                const categoryName = clickableCategory.getAttribute('data-category-name');
-                filterByCategorySelect.value = categoryName; 
-                currentPage = 1;
-                filterAndDisplayDocuments(); 
-            } else if (clickableKeywordPill && currentView === 'list') { 
-                const keyword = clickableKeywordPill.textContent;
-                filterByKeywordsSelect.value = keyword; 
+                return;
+            }
+            if (target.closest('.download-btn')) {
+                alert(`Simulating download of: "${doc.title}"`);
+                return;
+            }
+            if (target.closest('.delete-btn')) { // This is for individual delete buttons
+                if (confirm(`Are you sure you want to delete "${doc.title}"?`)) {
+                    documentItemsData = documentItemsData.filter(d => d.id !== docId);
+                    selectedDocuments = selectedDocuments.filter(id => id !== docId);
+                    updateDeleteSelectedButtonState();
+                    filterAndDisplayDocuments();
+                }
+                return;
+            }
+            if (target.closest('.keywords-trigger')) {
+                toggleKeywordGlassPopup(docId, target.closest('.keywords-trigger'));
+                return;
+            }
+            if (target.closest('.clickable-author')) {
+                const authorName = target.closest('.clickable-author').getAttribute('data-author-name');
+                alert(`Navigating to profile of: ${authorName}`);
+                return;
+            }
+            if (target.closest('.clickable-category')) {
+                const categoryName = target.closest('.clickable-category').getAttribute('data-category-name');
+                filterByCategorySelect.value = categoryName;
                 currentPage = 1;
                 filterAndDisplayDocuments();
+                return;
+            }
+            if (target.closest('.keywords-pill-container .keyword-pill') && currentView === 'list') {
+                const keyword = target.closest('.keyword-pill').textContent;
+                // Ensure the keyword exists in the dropdown before setting it
+                const keywordOptionExists = Array.from(filterByKeywordsSelect.options).some(opt => opt.value === keyword);
+                if (keywordOptionExists) {
+                    filterByKeywordsSelect.value = keyword;
+                } else {
+                    // Optionally handle case where keyword is not in select (e.g., add it or alert)
+                    console.warn(`Keyword "${keyword}" not found in filter dropdown.`);
+                    filterByKeywordsSelect.value = 'all'; // Fallback or keep current
+                }
+                currentPage = 1;
+                filterAndDisplayDocuments();
+                return;
+            }
+            if (target.closest('.document-checkbox')) {
+                // Checkbox click is handled by its own 'change' event listener.
+                // No action needed here, just prevent falling through to general redirect.
+                return;
+            }
+
+            // If none of the above specific elements were clicked,
+            // and the click is within a document item, redirect.
+            if (doc.url) {
+                // console.log(`General click on document: ${doc.title}. Redirecting to: ${doc.url}`);
+                window.location.href = doc.url;
+            } else {
+                // Fallback if no URL, perhaps open a modal or alert
+                // For now, we can just log or do nothing if no URL
+                // console.log(`General click on document: ${doc.title}, but no URL defined.`);
+                // alert(`No specific action defined for clicking this document ("${doc.title}").`);
             }
         });
         
         // Global click listener to close popups
         document.addEventListener('click', function(e) { 
-            // Close Keyword Popup
             if (currentKeywordGlassPopup) {
                 if (!currentKeywordGlassPopup.element.contains(e.target) && e.target !== currentKeywordGlassPopup.trigger && !currentKeywordGlassPopup.trigger.contains(e.target) ) {
                     currentKeywordGlassPopup.element.classList.remove('active');
                     currentKeywordGlassPopup = null;
                 }
             }
-            // Close View Options Popup
             if (viewsPopupActive) {
                 if (!viewOptionsPopup.contains(e.target) && e.target !== toggleViewsBtn && !toggleViewsBtn.contains(e.target)) {
                     viewsPopupActive = false;
@@ -1333,7 +1366,14 @@
         keywordPopupGlass.addEventListener('click', function(e) {
             if (e.target.classList.contains('keyword-pill')) {
                 const keyword = e.target.textContent;
-                filterByKeywordsSelect.value = keyword; 
+                 // Ensure the keyword exists in the dropdown before setting it
+                const keywordOptionExists = Array.from(filterByKeywordsSelect.options).some(opt => opt.value === keyword);
+                if (keywordOptionExists) {
+                    filterByKeywordsSelect.value = keyword;
+                } else {
+                    console.warn(`Keyword "${keyword}" from popup not found in filter dropdown.`);
+                    filterByKeywordsSelect.value = 'all'; 
+                }
                 currentPage = 1; 
                 filterAndDisplayDocuments(); 
                 keywordPopupGlass.classList.remove('active'); 
@@ -1351,7 +1391,6 @@
             }
         });
 
-        // Filter Toggle Logic
         toggleFiltersBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             filtersExpanded = !filtersExpanded;
@@ -1367,7 +1406,6 @@
         // Initial Setup
         const preferredView = localStorage.getItem('libraryPreferredView') || 'list'; 
         documentContainer.classList.add('loading-content'); 
-        // Set initial active button in popup
         viewOptionsPopup.querySelectorAll('.view-btn').forEach(btn => {
             btn.classList.toggle('active', btn.getAttribute('data-view') === preferredView);
         });
