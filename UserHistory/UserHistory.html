@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - List View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Theme Variables */
+        :root {
+            --theme-gold: #FDB813;
+            --theme-gold-darker: #EAA10F;
+            --theme-gold-light-bg: rgba(253, 184, 19, 0.2);
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1);
+            --theme-gold-highlight: rgba(253, 184, 19, 0.4);
+
+            --theme-green-dark: #006A4E;
+            --theme-green-darker-text: #00523D;
+            --theme-green-light-bg: rgba(0, 106, 78, 0.3);
+            --theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
+            --theme-green-border: rgba(0, 106, 78, 0.7);
+
+            --theme-navbar-bg: #F9F6EE;
+            --neutral-border-color: #e5e7eb;
+            --input-border-color: #d1d5db;
+            --placeholder-text-color: #9ca3af;
+
+            --text-on-gold: #000000;
+            --text-on-green: #FFFFFF;
+            --primary-text-color: #1a202c;
+
+            --icon-color-synergy: var(--theme-green-dark);
+            --icon-color-dissertation: var(--theme-gold-darker);
+            --icon-color-confluence: #4A5568;
+            --icon-color-thesis: var(--theme-green-darker-text);
+        }
+
+        /* Base Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--theme-navbar-bg);
+            color: var(--primary-text-color);
+            min-height: 100vh;
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        /* Form Input Styles */
+        select.form-input-professional {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300523D' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 2.5rem;
+            border-color: var(--theme-green-darker-text);
+        }
+        .select-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        .select-container .select-icon {
+            position: absolute;
+            left: 0.75rem;
+            pointer-events: none;
+            color: var(--theme-green-dark);
+        }
+         .select-container select.form-input-professional {
+            padding-left: 2.5rem;
+            width: 100%;
+        }
+        .form-input-professional {
+            border-color: var(--input-border-color);
+        }
+        .form-input-professional:focus {
+            border-color: var(--theme-green-dark);
+            box-shadow: 0 0 0 2px var(--theme-green-light-bg);
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bbb; }
+
+        .keywords-pill-container::-webkit-scrollbar { height: 4px; }
+        .keywords-pill-container::-webkit-scrollbar-thumb { background: transparent; border-radius: 2px; }
+        .keywords-pill-container:hover::-webkit-scrollbar-thumb { background: var(--theme-gold-lighter-bg); }
+        .keywords-pill-container { scrollbar-width: thin; scrollbar-color: var(--theme-gold-lighter-bg) transparent; }
+
+        .keyword-popup-glass::-webkit-scrollbar { width: 8px; }
+        .keyword-popup-glass::-webkit-scrollbar-track { background: rgba(249, 246, 238, 0.5); border-radius: 10px; margin: 5px 0; }
+        .keyword-popup-glass::-webkit-scrollbar-thumb { background: var(--theme-green-lighter-bg); border-radius: 10px; border: 2px solid rgba(249, 246, 238, 0.5); }
+        .keyword-popup-glass::-webkit-scrollbar-thumb:hover { background: var(--theme-green-light-bg); }
+
+        /* Document Item Styles */
+        .document-item-base {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, opacity 0.5s ease;
+            border: 1px solid var(--neutral-border-color);
+            background-color: white;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+        .document-item-base:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .document-item-base.selected {
+            background-color: var(--theme-gold-lighter-bg) !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+            border-left: 4px solid var(--theme-gold-darker) !important;
+        }
+
+        /* Deletion Animation */
+        @keyframes fade-to-dust {
+            0% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); height: auto; padding: 0.75rem 1rem; margin-bottom: 0.75rem; border-width: 1px;}
+            50% { opacity: 0.5; transform: scale(1.02) translateY(-5px); filter: blur(1px); }
+            99% { opacity: 0; transform: scale(0.8) translateY(10px); filter: blur(3px); height: auto; padding: 0.75rem 1rem; margin-bottom: 0.75rem; border-width: 1px;}
+            100% { opacity: 0; transform: scale(0.8) translateY(10px); filter: blur(3px); height: 0; padding: 0 1rem; margin-bottom: 0; border-width: 0; }
+        }
+        .document-item-base.deleting {
+            animation: fade-to-dust 0.6s ease-out forwards;
+            transition: none !important;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.65rem 1rem; border-radius: 0.375rem; font-weight: 500; text-align: center;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.3s ease, transform 0.3s ease;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem; font-size: 0.875rem;
+        }
+        .btn-danger { background-color: #b91c1c; color: white; border: 1px solid #b91c1c; }
+        .btn-danger:hover:not(:disabled) { background-color: #991b1b; }
+        .btn-danger:disabled { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; cursor: not-allowed; }
+        .btn-outline-secondary { background-color: transparent; color: var(--theme-gold-darker); border: 1px solid var(--theme-gold); padding: 0.5rem 1rem; }
+        .btn-outline-secondary:hover { background-color: var(--theme-gold-lighter-bg); }
+        .btn-outline-secondary.active { background-color: var(--theme-gold-lighter-bg); }
+        .btn-outline-secondary i.chevron-icon { transition: transform 0.3s ease; }
+        .btn-outline-secondary.active i.chevron-icon { transform: rotate(180deg); }
+        .btn-outline-danger { background-color: transparent; color: #b91c1c; border: 1px solid #b91c1c; }
+        .btn-outline-danger:hover { background-color: rgba(185, 28, 28, 0.05); }
+
+        /* Filter Styles */
+        #collapsible-filters {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease-out, padding-top 0.4s ease-out, padding-bottom 0.4s ease-out, margin-top 0.4s ease-out;
+            padding-top: 0; padding-bottom: 0; margin-top: 0; width: 100%;
+        }
+        #collapsible-filters.expanded { max-height: 500px; padding-top: 1rem; padding-bottom: 0.5rem; margin-top: 1rem; }
+
+        /* Meta Item & Keyword Styles */
+        .truncate-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .meta-item { display: flex; align-items: center; gap: 0.3rem; text-align: left; }
+        .meta-item i { color: #6b7280; flex-shrink: 0; }
+        .meta-item .meta-category-icon { color: var(--theme-green-dark); }
+        .meta-item .meta-keywords-icon { color: var(--theme-gold-darker); }
+        .clickable-meta { cursor: pointer; text-decoration: none; }
+        .clickable-meta:hover { text-decoration: underline; text-decoration-color: currentColor; }
+        .clickable-author:hover { color: var(--theme-green-darker-text); }
+        .clickable-category:hover { color: var(--theme-green-darker-text); }
+        .keywords-pill-container { display: flex; overflow-x: auto; white-space: nowrap; padding-bottom: 4px; margin-top: 0.125rem; }
+        .keyword-pill { display: inline-block; background-color: var(--theme-gold-lighter-bg); color: var(--text-on-gold); padding: 0.125rem 0.5rem; margin-right: 0.25rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 500; white-space: nowrap; cursor: pointer; }
+        .keyword-pill:hover { background-color: var(--theme-gold-light-bg); }
+
+        /* Keyword Popup Styles */
+        .keyword-popup-glass {
+            position: absolute; background: rgba(249, 246, 238, 0.85); backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%); border: 1px solid rgba(0, 106, 78, 0.25);
+            border-radius: 0.375rem; box-shadow: 0 6px 15px rgba(0,0,0,0.15); padding: 0.75rem; z-index: 1050;
+            max-width: 300px; max-height: 200px; overflow-y: auto; display: none;
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out; opacity: 0; transform: translateY(5px);
+        }
+        .keyword-popup-glass.active { display: block; opacity: 1; transform: translateY(0); }
+        .keyword-popup-glass .keyword-pill { background-color: var(--theme-gold); color: var(--text-on-gold); padding: 0.25rem 0.75rem; margin: 0.25rem; border-radius: 0.25rem; font-size: 0.8rem; cursor: pointer; }
+        .keyword-popup-glass .keyword-pill:hover { background-color: var(--theme-gold-darker); }
+
+        /* List View Specific Styles */
+        .list-info-col { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; margin-left: 0.5rem; }
+        .list-info-col .document-title { font-size: 1rem; font-weight: 500; white-space: normal; overflow: visible; text-overflow: clip; }
+        .list-info-col .document-meta-primary { font-size: 0.8rem; color: #4a5568; display: flex; align-items: center; margin-bottom: 0.25rem; }
+        .list-info-col .document-meta-secondary { font-size: 0.75rem; color: #6b7280; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+        .list-info-col .document-meta-secondary .document-category-meta { color: var(--theme-green-dark); font-weight: 500; }
+        .list-info-col .keywords-meta-container { display: flex; align-items: center; gap: 0.25rem; }
+        .list-info-col .keywords-pill-container { max-width: calc(100% - 20px); }
+        .list-actions-col { flex-shrink: 0; margin-left: 1rem; display: flex; gap: 0.5rem; }
+        .list-actions-col .btn { padding: 0.5rem; }
+        .list-actions-col .btn i { margin-right: 0; font-size: 0.9rem; }
+
+        /* Pagination Styles */
+        .pagination-btn {
+            padding: 0.5rem 0.75rem; border: 1px solid var(--input-border-color); background-color: white;
+            color: #374151; border-radius: 0.375rem; transition: background-color 0.2s ease, color 0.2s ease;
+            font-size: 0.875rem; line-height: 1.25rem;
+        }
+        .pagination-btn:hover:not(:disabled) { background-color: #f3f4f6; }
+        .pagination-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination-btn.active { background-color: var(--theme-green-dark); color: var(--text-on-green); border-color: var(--theme-green-dark); }
+
+        /* Checkbox Styles */
+        .document-checkbox-container { display: inline-flex; align-items: center; position: relative; padding-right: 0.5rem; }
+        .document-checkbox {
+            appearance: none; -webkit-appearance: none; -moz-appearance: none; width: 1.5rem; height: 1.5rem;
+            border: 2px solid var(--input-border-color); border-radius: 0.25rem; outline: none; cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease; display: inline-block; vertical-align: middle;
+        }
+        .document-checkbox:checked {
+            background-color: var(--theme-green-dark); border-color: var(--theme-green-dark);
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+            background-size: 100% 100%; background-position: center; background-repeat: no-repeat;
+        }
+        .document-checkbox:focus { box-shadow: 0 0 0 2px var(--theme-green-light-bg); }
+
+        /* Delete Selected Button Styles */
+        #delete-selected-btn-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 1000; }
+        #delete-selected-btn {
+            opacity: 0; transform: translateY(-20px) scale(0.9); pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #delete-selected-btn.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+        /* Toast Notification Styles */
+        #toast-notification {
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            background-color: var(--theme-green-dark); color: var(--text-on-green);
+            padding: 0.75rem 1.25rem; border-radius: 0.375rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); z-index: 1100;
+            opacity: 0; visibility: hidden; transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+        }
+        #toast-notification.show {
+            opacity: 1; visibility: visible; transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+        }
+        #toast-notification.error { background-color: #b91c1c; }
+
+    </style>
+</head>
+<body class="selection:bg-green-700 selection:text-white">
+    <main class="container mx-auto p-4 md:p-6 lg:p-8">
+        <div id="delete-selected-btn-container">
+            <button id="delete-selected-btn" class="btn btn-danger"><i class="fas fa-trash-alt mr-2"></i>Delete Selected</button>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold flex items-center mb-6" style="color: var(--theme-green-dark);">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-10 h-10 mr-3" style="color: var(--theme-gold);">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            History
+        </h1>
+
+        <section class="controls bg-white p-4 md:p-5 mb-6 rounded-lg shadow-sm border var(--neutral-border-color)">
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+                <div class="search-container flex-grow w-full sm:w-auto sm:max-w-xs 2xl:max-w-sm">
+                    <div class="relative">
+                        <input type="text" id="search-bar" placeholder="Search history..." class="form-input-professional w-full pl-10 pr-4 py-2 rounded-md text-gray-700 placeholder-var(--placeholder-text-color) focus:outline-none focus:ring-2 focus:border-transparent transition-shadow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-shrink-0">
+                    <button id="toggle-filters-btn" class="btn btn-outline-secondary">
+                        <i class="fas fa-filter mr-2"></i>
+                        Filters
+                        <i class="fas fa-chevron-down ml-2 text-xs chevron-icon"></i>
+                    </button>
+                    </div>
+            </div>
+            <div id="collapsible-filters" class="flex flex-wrap sm:flex-nowrap gap-3 items-center w-full">
+                <div class="sort-options select-container basis-full sm:basis-auto min-w-[160px] flex-shrink-0">
+                    <i class="fas fa-sort-amount-down select-icon"></i>
+                    <label for="sort-by" class="sr-only">Sort by:</label>
+                    <select id="sort-by" name="sort-by" class="form-input-professional w-full p-2 bg-white rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow">
+                        <option value="date-saved-desc">Date Visited (Newest)</option>
+                        <option value="date-saved-asc">Date Visited (Oldest)</option>
+                        <option value="title-asc">Title (A-Z)</option>
+                        <option value="title-desc">Title (Z-A)</option>
+                        <option value="category">Category</option>
+                    </select>
+                </div>
+                <div class="filter-category-options select-container basis-full sm:basis-auto min-w-[160px] flex-shrink-0">
+                    <i class="fas fa-tags select-icon"></i>
+                    <label for="filter-by-category" class="sr-only">Filter by Category:</label>
+                    <select id="filter-by-category" name="filter-by-category" class="form-input-professional w-full p-2 bg-white rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow">
+                        <option value="all">All Categories</option>
+                        <option value="Synergy">Synergy</option>
+                        <option value="Dissertation">Dissertation</option>
+                        <option value="Confluence">Confluence</option>
+                        <option value="Thesis">Thesis</option>
+                    </select>
+                </div>
+                <div class="filter-keywords-options select-container basis-full sm:basis-auto min-w-[160px] flex-shrink-0">
+                    <i class="fas fa-key select-icon"></i>
+                    <label for="filter-by-keywords" class="sr-only">Filter by Keywords:</label>
+                    <select id="filter-by-keywords" name="filter-by-keywords" class="form-input-professional w-full p-2 bg-white rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:border-transparent transition-shadow">
+                        <option value="all">All Keywords</option>
+                        <option value="Paulinian">Paulinian</option>
+                        <option value="Spirituality">Spirituality</option>
+                        <option value="Global Partnership">Global Partnership</option>
+                        <option value="Advocacy">Advocacy</option>
+                        <option value="Mental Health">Mental Health</option>
+                        <option value="Curriculum">Curriculum</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Innovation">Innovation</option>
+                        <option value="Leadership">Leadership</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Environment">Environment</option>
+                        <option value="Education">Education</option>
+                        <option value="Community">Community</option>
+                        <option value="Mobility">Mobility</option>
+                     </select>
+                </div>
+            </div>
+        </section>
+
+        <section id="document-container" class="document-view-wrapper view-list">
+            </section>
+
+        <section class="no-documents hidden bg-white p-8 md:p-10 rounded-lg shadow-sm border var(--neutral-border-color) text-center" id="no-documents-message">
+            <i class="fas fa-folder-open text-4xl text-gray-400 mb-5"></i>
+            <p class="text-xl text-gray-700 font-semibold mb-2">No items in your history.</p>
+            <p class="text-gray-500">Try adjusting your search or filters.</p>
+        </section>
+
+        <section id="pagination-controls" class="mt-8 flex justify-center items-center space-x-1 sm:space-x-2">
+            </section>
+    </main>
+
+    <div id="keyword-popup-glass" class="keyword-popup-glass">
+        </div>
+
+    <div id="toast-notification" role="alert" aria-live="assertive">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        // --- Constants ---
+        const CSS_CLASSES = {
+            ACTIVE: 'active',
+            DELETING: 'deleting',
+            SELECTED: 'selected',
+            EXPANDED: 'expanded',
+            VISIBLE: 'visible',
+            HIDDEN: 'hidden',
+            SHOW: 'show',
+            ERROR: 'error',
+        };
+        const SELECTORS = {
+            SEARCH_BAR: '#search-bar',
+            SORT_SELECT: '#sort-by',
+            CATEGORY_FILTER: '#filter-by-category',
+            KEYWORD_FILTER: '#filter-by-keywords',
+            DOCUMENT_CONTAINER: '#document-container',
+            NO_DOCUMENTS_MSG: '#no-documents-message',
+            PAGINATION_CONTROLS: '#pagination-controls',
+            KEYWORD_POPUP: '#keyword-popup-glass',
+            DELETE_SELECTED_BTN: '#delete-selected-btn',
+            TOGGLE_FILTERS_BTN: '#toggle-filters-btn',
+            COLLAPSIBLE_FILTERS: '#collapsible-filters',
+            TOAST_NOTIFICATION: '#toast-notification',
+            TOAST_MESSAGE: '#toast-message',
+            DOCUMENT_ITEM: '.document-item-base',
+            DOCUMENT_CHECKBOX: '.document-checkbox',
+            ACTION_BTN: '.action-btn',
+            DELETE_BTN: '.delete-btn',
+            CLICKABLE_AUTHOR: '.clickable-author',
+            CLICKABLE_CATEGORY: '.clickable-category',
+            CLICKABLE_KEYWORD: '.clickable-keyword',
+            CHEVRON_ICON: '.chevron-icon'
+        };
+        const ANIMATION_DURATION = 600; // ms, should match CSS animation duration
+        const TOAST_DURATION = 3000; // ms
+        const ITEMS_PER_PAGE = 10;
+
+        // --- DOM Element References ---
+        const searchBar = document.querySelector(SELECTORS.SEARCH_BAR);
+        const sortBySelect = document.querySelector(SELECTORS.SORT_SELECT);
+        const filterByCategorySelect = document.querySelector(SELECTORS.CATEGORY_FILTER);
+        const filterByKeywordsSelect = document.querySelector(SELECTORS.KEYWORD_FILTER);
+        const documentContainer = document.querySelector(SELECTORS.DOCUMENT_CONTAINER);
+        const noDocumentsMessage = document.querySelector(SELECTORS.NO_DOCUMENTS_MSG);
+        const paginationControlsContainer = document.querySelector(SELECTORS.PAGINATION_CONTROLS);
+        const keywordPopupGlass = document.querySelector(SELECTORS.KEYWORD_POPUP);
+        const deleteSelectedBtn = document.querySelector(SELECTORS.DELETE_SELECTED_BTN);
+        const toggleFiltersBtn = document.querySelector(SELECTORS.TOGGLE_FILTERS_BTN);
+        const collapsibleFilters = document.querySelector(SELECTORS.COLLAPSIBLE_FILTERS);
+        const toastNotification = document.querySelector(SELECTORS.TOAST_NOTIFICATION);
+        const toastMessage = document.querySelector(SELECTORS.TOAST_MESSAGE);
+
+        // --- State Variables ---
+        let currentPage = 1;
+        let selectedDocuments = []; // Array of IDs
+        let filtersExpanded = false;
+        let currentKeywordGlassPopup = null; // { element: popupElement, trigger: triggerElement }
+        let toastTimeout;
+        let currentTotalItems = 0; // Store the total count from the last fetch
+
+        // --- Mock Data --- (Simulates the full dataset available on backend)
+        const allMockDocuments = [
+            { id: 1, type: 'pdf', category: 'Synergy', keywords: ['Annual Report', 'Finance', 'Corporate'], title: 'Annual Report for the Fiscal Year Ending 2024', author: 'Corporate Communications Department', date: 'May 1, 2025' },
+            { id: 4, type: 'txt', category: 'Confluence', keywords: ['Meeting Notes', 'Client Strategy'], title: 'Meeting Notes: Client Onboarding (May 6)', author: 'Johnathan M. Smitherson Jr.', date: 'May 6, 2025' },
+            { id: 5, type: 'xlsx', category: 'Synergy', keywords: ['Budget', 'Finance', 'Projections'], title: 'Q2 Budget Forecast and Financial Projections', author: 'Finance & Accounting Division', date: 'April 30, 2025' },
+            { id: 7, type: 'pptx', category: 'Synergy', keywords: ['Investment', 'Funding', 'Pitch Deck'], title: 'Investor Pitch Deck: Series B Funding', author: 'CEO & Founder\'s Office', date: 'May 5, 2025' },
+            { id: 8, type: 'pdf', category: 'Thesis', keywords: ['User Manual', 'Product Guide', 'Technology'], title: 'User Manual for Product X v2.1', author: 'Technical Writing Department', date: 'March 20, 2025' },
+            { id: 11, type: 'pdf', category: 'Confluence', keywords: ['Legal', 'Contract', 'Template', 'Paulinian'], title: 'Master Service Agreement Template', author: 'Legal Department Review Board', date: 'April 1, 2025' },
+            { id: 12, type: 'docx', category: 'Synergy', keywords: ['Marketing', 'Campaign', 'Global Partnership'], title: 'Marketing Plan: Q3 Product Launch', author: 'Global Marketing Strategy Team', date: 'May 2, 2025' },
+            { id: 14, type: 'png', category: 'Dissertation', keywords: ['Web Design', 'UX/UI', 'Mockup', 'Education'], title: 'Website Homepage Redesign Mockup v3', author: 'UX/UI Design Department', date: 'May 8, 2025' },
+            { id: 15, type: 'pptx', category: 'Confluence', keywords: ['Training', 'HR', 'Onboarding', 'Paulinian'], title: 'New Hire Onboarding Materials', author: 'Human Resources Development', date: 'March 10, 2025' },
+            // Add more mock data for pagination testing
+            { id: 16, type: 'pdf', category: 'Thesis', keywords: ['Research', 'Data Analysis'], title: 'Thesis Chapter 3: Methodology', author: 'Student A', date: 'May 9, 2025' },
+            { id: 17, type: 'docx', category: 'Synergy', keywords: ['Report', 'Sales', 'Q1'], title: 'Q1 Sales Performance Review', author: 'Sales Team Lead', date: 'May 10, 2025' },
+            { id: 18, type: 'pdf', category: 'Dissertation', keywords: ['Literature Review', 'Psychology'], title: 'Dissertation Lit Review Draft', author: 'PhD Candidate', date: 'May 11, 2025' },
+            { id: 19, type: 'txt', category: 'Confluence', keywords: ['Ideas', 'Brainstorming'], title: 'Project Phoenix Ideas', author: 'Team Member', date: 'May 12, 2025' },
+            { id: 20, type: 'xlsx', category: 'Synergy', keywords: ['Finance', 'Expenses'], title: 'Department Expense Tracking Q2', author: 'Admin Assistant', date: 'May 13, 2025' },
+            { id: 21, type: 'pdf', category: 'Thesis', keywords: ['Ethics', 'Approval'], title: 'Ethics Committee Approval Letter', author: 'Ethics Board', date: 'May 14, 2025' },
+            { id: 22, type: 'pptx', category: 'Dissertation', keywords: ['Presentation', 'Defense Prep'], title: 'Dissertation Defense Practice Slides', author: 'PhD Candidate', date: 'May 15, 2025' },
+        ];
+        let documentItemsData = [...allMockDocuments]; // Working copy for deletion simulation
+
+        // --- Utility Functions ---
+        function truncateText(text, maxLength) {
+            if (!text) return "N/A";
+            if (maxLength > 0 && text.length > maxLength) {
+                return text.substring(0, maxLength) + "...";
+            }
+            return text;
+        }
+
+        function getAuthorIcon(authorString) {
+            if (!authorString) return 'fas fa-user';
+            const lowerAuthor = authorString.toLowerCase();
+            if (lowerAuthor.includes('&') || lowerAuthor.includes(' and ') || lowerAuthor.includes('et al.') || lowerAuthor.includes(',')) {
+                return 'fas fa-users';
+            }
+            return 'fas fa-user';
+        }
+
+        function showToast(message, type = 'success', duration = TOAST_DURATION) {
+            clearTimeout(toastTimeout);
+            toastMessage.textContent = message;
+            toastNotification.className = '';
+            toastNotification.classList.add(CSS_CLASSES.SHOW);
+            if (type === CSS_CLASSES.ERROR) {
+                toastNotification.classList.add(CSS_CLASSES.ERROR);
+            }
+            toastTimeout = setTimeout(() => {
+                toastNotification.classList.remove(CSS_CLASSES.SHOW);
+            }, duration);
+        }
+
+        // --- DOM Manipulation ---
+        function createDocumentElement(doc) {
+            const item = document.createElement('div');
+            item.className = 'document-item-base rounded-lg flex items-center';
+            item.setAttribute('data-category', doc.category);
+            item.setAttribute('data-keywords', (doc.keywords || []).join(', '));
+            item.setAttribute('data-id', doc.id);
+
+            const displayedTitle = truncateText(doc.title, 0);
+            const displayedAuthor = truncateText(doc.author, 0);
+            const authorIcon = getAuthorIcon(doc.author);
+
+            let keywordsDisplayHTML = '';
+            if (doc.keywords && doc.keywords.length > 0) {
+                const pills = doc.keywords.map(kw => `<span class="keyword-pill clickable-keyword" data-keyword="${kw}">${kw}</span>`).join('');
+                keywordsDisplayHTML = `<div class="keywords-pill-container">${pills}</div>`;
+            }
+
+            item.innerHTML = `
+                <div class="document-checkbox-container p-2">
+                    <input type="checkbox" class="document-checkbox" data-doc-id="${doc.id}">
+                </div>
+                <div class="list-info-col flex-grow">
+                    <h3 class="document-title" title="${doc.title}">${displayedTitle}</h3>
+                    <div class="document-meta-primary"> <span class="meta-item document-author">
+                            <i class="${authorIcon} fa-fw"></i>
+                            <span class="clickable-author" data-author-name="${doc.author || "N/A"}" title="Author: ${doc.author || "N/A"}">${displayedAuthor}</span>
+                        </span>
+                    </div>
+                    <div class="document-meta-secondary"> <span class="meta-item document-date" title="Visited: ${doc.date}">
+                            <i class="fas fa-calendar-check fa-fw"></i> ${doc.date}
+                        </span>
+                         <span class="meta-item document-category-meta uppercase">
+                            <i class="fas fa-folder-open fa-fw meta-category-icon"></i>
+                            <span class="clickable-category" data-category-name="${doc.category}" title="Filter by Category: ${doc.category}">${doc.category}</span>
+                         </span>
+                    </div>
+                    <div class="mt-1"> <div class="meta-item text-xs keywords-meta-container">
+                             <i class="fas fa-tags fa-fw meta-keywords-icon mr-1"></i>
+                            ${keywordsDisplayHTML || '<span class="text-gray-500 text-xs">No keywords</span>'}
+                         </div>
+                    </div>
+                </div>
+                <div class="list-actions-col">
+                    <button class="action-btn delete-btn btn btn-outline-danger" title="Remove from History"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `;
+            // Check if this item should be marked as selected
+             if (selectedDocuments.includes(doc.id)) {
+                item.classList.add(CSS_CLASSES.SELECTED);
+                const checkbox = item.querySelector(SELECTORS.DOCUMENT_CHECKBOX);
+                if (checkbox) checkbox.checked = true;
+            }
+            return item;
+        }
+
+        function renderPaginationControls(totalFilteredCount) { // Use totalFilteredCount directly
+            paginationControlsContainer.innerHTML = '';
+            const totalPages = Math.ceil(totalFilteredCount / ITEMS_PER_PAGE);
+
+            if (totalPages <= 1) { // No pagination needed if 0 or 1 page
+                 paginationControlsContainer.classList.add(CSS_CLASSES.HIDDEN); // Hide container
+                 return;
+            }
+             paginationControlsContainer.classList.remove(CSS_CLASSES.HIDDEN); // Show container
+
+            const createButton = (text, pageNum, isDisabled = false, isActive = false) => {
+                const button = document.createElement('button');
+                button.classList.add('pagination-btn');
+                button.innerHTML = text;
+                button.disabled = isDisabled;
+                if (isActive) button.classList.add(CSS_CLASSES.ACTIVE);
+                button.addEventListener('click', () => {
+                    if (currentPage !== pageNum) { // Only trigger if page actually changes
+                        currentPage = pageNum;
+                        fetchAndDisplayDocuments(); // Fetch new page data
+                    }
+                });
+                return button;
+            };
+
+            // Previous Button
+            paginationControlsContainer.appendChild(
+                createButton('<i class="fas fa-chevron-left"></i> <span class="hidden sm:inline ml-1">Prev</span>', currentPage - 1, currentPage === 1)
+            );
+
+            // Page Number Logic (Simplified for clarity)
+            let startPage = Math.max(1, currentPage - 1);
+            let endPage = Math.min(totalPages, currentPage + 1);
+            if (currentPage === 1 && totalPages > 2) endPage = 3;
+            if (currentPage === totalPages && totalPages > 2) startPage = totalPages - 2;
+
+            // First page & ellipsis
+            if (startPage > 1) {
+                paginationControlsContainer.appendChild(createButton('1', 1));
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.className = 'px-3 py-1 text-gray-500';
+                    paginationControlsContainer.appendChild(ellipsis);
+                }
+            }
+
+            // Page number buttons
+            for (let i = startPage; i <= endPage; i++) {
+                paginationControlsContainer.appendChild(createButton(i.toString(), i, false, i === currentPage));
+            }
+
+            // Last page & ellipsis
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.className = 'px-3 py-1 text-gray-500';
+                    paginationControlsContainer.appendChild(ellipsis);
+                }
+                paginationControlsContainer.appendChild(createButton(totalPages.toString(), totalPages));
+            }
+
+            // Next Button
+            paginationControlsContainer.appendChild(
+                createButton('<span class="hidden sm:inline mr-1">Next</span> <i class="fas fa-chevron-right"></i>', currentPage + 1, currentPage === totalPages)
+            );
+        }
+
+
+        function renderDocuments(docsToRender) {
+            documentContainer.innerHTML = ''; // Clear previous items
+            if (docsToRender && docsToRender.length > 0) {
+                docsToRender.forEach(doc => {
+                    const docElement = createDocumentElement(doc);
+                    documentContainer.appendChild(docElement);
+                });
+                noDocumentsMessage.classList.add(CSS_CLASSES.HIDDEN);
+                documentContainer.classList.remove(CSS_CLASSES.HIDDEN);
+            } else {
+                noDocumentsMessage.classList.remove(CSS_CLASSES.HIDDEN);
+                documentContainer.classList.add(CSS_CLASSES.HIDDEN);
+            }
+            // Checkboxes listeners are attached within createDocumentElement or need re-attachment if needed globally
+            // Re-attaching here ensures they are always fresh after render
+            attachCheckboxListeners();
+        }
+
+        // --- Core Logic: Fetching and Displaying ---
+
+        /**
+         * Simulates fetching data from a backend based on current filters, sort, and page.
+         * @returns {Promise<object>} A promise resolving to { items: Array, totalCount: number }
+         */
+         async function simulateFetchHistoryData(page, limit, filters) {
+            console.log("Simulating fetch for:", { page, limit, ...filters });
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 250)); // Simulate 250ms delay
+
+            // 1. Filter the *entire* mock dataset based on criteria
+            let filtered = allMockDocuments.filter(doc => {
+                const titleMatch = !filters.searchTerm || doc.title.toLowerCase().includes(filters.searchTerm);
+                const authorMatch = !filters.searchTerm || (doc.author || "").toLowerCase().includes(filters.searchTerm);
+                const categoryMatch = filters.category === 'all' || doc.category === filters.category;
+                const keywordMatch = filters.keyword === 'all' || (doc.keywords || []).map(k => k.toLowerCase()).includes(filters.keyword.toLowerCase());
+                return (titleMatch || authorMatch) && categoryMatch && keywordMatch;
+            });
+
+            // 2. Sort the filtered data
+            const sortFunctions = {
+                'title-asc': (a, b) => a.title.localeCompare(b.title),
+                'title-desc': (a, b) => b.title.localeCompare(a.title),
+                'date-saved-desc': (a, b) => new Date(b.date) - new Date(a.date),
+                'date-saved-asc': (a, b) => new Date(a.date) - new Date(b.date),
+                'category': (a, b) => (a.category || "").localeCompare(b.category || "")
+            };
+            if (sortFunctions[filters.sortBy]) {
+                filtered.sort(sortFunctions[filters.sortBy]);
+            }
+
+            // 3. Get the total count *before* slicing for pagination
+            const totalCount = filtered.length;
+
+            // 4. Calculate the slice for the current page
+            const startIndex = (page - 1) * limit;
+            const endIndex = startIndex + limit;
+            const itemsForPage = filtered.slice(startIndex, endIndex);
+
+            // 5. Return the structure expected from a backend
+            return { items: itemsForPage, totalCount: totalCount };
+        }
+
+        /**
+         * Fetches data based on current state and updates the UI.
+         */
+        async function fetchAndDisplayDocuments() {
+            // Gather current filter/sort state
+            const filters = {
+                searchTerm: searchBar.value.toLowerCase().trim(),
+                category: filterByCategorySelect.value,
+                keyword: filterByKeywordsSelect.value,
+                sortBy: sortBySelect.value,
+                // You might add sortOrder if needed (e.g., 'asc', 'desc')
+            };
+
+            try {
+                // Show loading state (optional, could add a spinner)
+                documentContainer.style.opacity = '0.5'; // Simple loading indicator
+
+                // Simulate fetching data for the current page
+                const response = await simulateFetchHistoryData(currentPage, ITEMS_PER_PAGE, filters);
+                currentTotalItems = response.totalCount; // Store total count for pagination
+
+                // Render the fetched items for the current page
+                renderDocuments(response.items);
+                // Render pagination controls based on the *total* count
+                renderPaginationControls(response.totalCount);
+
+            } catch (error) {
+                console.error("Failed to fetch history data:", error);
+                showToast("Failed to load history.", CSS_CLASSES.ERROR);
+                // Optionally display an error message in the container
+                documentContainer.innerHTML = `<p class="text-center text-red-600 p-4">Error loading history.</p>`;
+                noDocumentsMessage.classList.add(CSS_CLASSES.HIDDEN);
+                paginationControlsContainer.innerHTML = ''; // Clear pagination on error
+            } finally {
+                 // Hide loading state
+                 documentContainer.style.opacity = '1';
+            }
+        }
+
+
+        // --- Event Handlers ---
+        function handleFilterChange() {
+            currentPage = 1; // Reset to page 1 when filters change
+            fetchAndDisplayDocuments(); // Fetch data with new filters
+        }
+
+        function handleCheckboxChange(event) {
+            const checkbox = event.target;
+            const docId = parseInt(checkbox.dataset.docId);
+            const itemElement = checkbox.closest(SELECTORS.DOCUMENT_ITEM);
+
+            if (checkbox.checked) {
+                if (!selectedDocuments.includes(docId)) selectedDocuments.push(docId);
+                itemElement?.classList.add(CSS_CLASSES.SELECTED);
+            } else {
+                selectedDocuments = selectedDocuments.filter(id => id !== docId);
+                itemElement?.classList.remove(CSS_CLASSES.SELECTED);
+            }
+            updateDeleteSelectedButtonState();
+        }
+
+        function attachCheckboxListeners() {
+            documentContainer.querySelectorAll(SELECTORS.DOCUMENT_CHECKBOX).forEach(checkbox => {
+                checkbox.removeEventListener('change', handleCheckboxChange);
+                checkbox.addEventListener('change', handleCheckboxChange);
+            });
+        }
+
+        function handleDeleteItem(docId, itemElement) {
+            if (!itemElement) return;
+
+            // --- Backend Call Placeholder ---
+            const backendSuccess = true; // Simulate success
+            if (!backendSuccess) {
+                 showToast(`Failed to delete item.`, CSS_CLASSES.ERROR);
+                 return;
+            }
+            // --- End Placeholder ---
+
+            // Remove from frontend data source *first*
+            documentItemsData = documentItemsData.filter(d => d.id !== docId);
+            selectedDocuments = selectedDocuments.filter(id => id !== docId);
+
+            // Apply animation class
+            itemElement.classList.add(CSS_CLASSES.DELETING);
+
+            // Remove element after animation
+            itemElement.addEventListener('animationend', () => {
+                itemElement.remove();
+
+                // Check if the list is now empty *after* removing the element
+                 const itemsLeftOnPage = documentContainer.querySelectorAll(SELECTORS.DOCUMENT_ITEM).length;
+                 const totalPages = Math.ceil((currentTotalItems - 1) / ITEMS_PER_PAGE); // Recalculate total pages based on updated count
+
+                // Show toast *after* animation starts or data is updated
+                showToast('Item removed from history.');
+                updateDeleteSelectedButtonState();
+
+                // If the last item on a page > 1 was deleted, go back one page
+                if (itemsLeftOnPage === 0 && currentPage > 1) {
+                    currentPage--;
+                    fetchAndDisplayDocuments(); // Fetch previous page
+                } else {
+                     // Re-render pagination controls with potentially updated total count
+                    renderPaginationControls(currentTotalItems - 1); // Update pagination with new total
+                     // If still items left on page or on page 1, check if "no documents" message needed
+                     if (documentItemsData.length === 0) { // Check the underlying data source
+                        noDocumentsMessage.classList.remove(CSS_CLASSES.HIDDEN);
+                     }
+                }
+
+            }, { once: true });
+        }
+
+
+        function handleBulkDelete() {
+            if (selectedDocuments.length === 0) return;
+            const numToDelete = selectedDocuments.length;
+            if (!confirm(`Are you sure you want to remove ${numToDelete} selected item(s) from your history?`)) {
+                return;
+            }
+
+            const itemsToDelete = [...selectedDocuments];
+            const elementsToRemove = [];
+            const animationPromises = [];
+
+            // --- Backend Call Placeholder ---
+             const backendSuccess = true; // Simulate success
+             if (!backendSuccess) {
+                 showToast(`Failed to delete ${numToDelete} items.`, CSS_CLASSES.ERROR);
+                 return;
+             }
+            // --- End Placeholder ---
+
+            // Remove from frontend data source *first*
+            documentItemsData = documentItemsData.filter(doc => !itemsToDelete.includes(doc.id));
+            selectedDocuments = []; // Clear selection immediately
+
+            // Apply animation to elements that were selected
+            itemsToDelete.forEach(docId => {
+                const itemElement = documentContainer.querySelector(`${SELECTORS.DOCUMENT_ITEM}[data-id="${docId}"]`);
+                if (itemElement) {
+                    elementsToRemove.push(itemElement);
+                    itemElement.classList.add(CSS_CLASSES.DELETING);
+                    animationPromises.push(new Promise(resolve => {
+                        itemElement.addEventListener('animationend', resolve, { once: true });
+                    }));
+                }
+            });
+
+            // Wait for all animations *before* removing elements and re-rendering
+            Promise.all(animationPromises).then(() => {
+                elementsToRemove.forEach(el => el.remove()); // Remove from DOM
+
+                // Show toast *after* animations and data update
+                showToast(`${numToDelete} item(s) removed from history.`);
+                updateDeleteSelectedButtonState(); // Update button (will hide it)
+
+                // Check if the current page became empty or invalid
+                const filteredItems = getFilteredAndSortedData(); // Get remaining items based on current filters
+                const totalFilteredCount = filteredItems.length;
+                const totalPages = Math.ceil(totalFilteredCount / ITEMS_PER_PAGE);
+
+                if (currentPage > totalPages && totalPages > 0) {
+                    currentPage = totalPages; // Go to last valid page
+                }
+
+                // Re-fetch and display the potentially adjusted current page
+                fetchAndDisplayDocuments();
+
+            });
+        }
+
+
+        function updateDeleteSelectedButtonState() {
+            const hasSelection = selectedDocuments.length > 0;
+            deleteSelectedBtn.classList.toggle(CSS_CLASSES.VISIBLE, hasSelection);
+            deleteSelectedBtn.disabled = !hasSelection;
+            if (hasSelection) {
+                deleteSelectedBtn.textContent = `Remove Selected (${selectedDocuments.length})`;
+            }
+        }
+
+        function toggleKeywordPopup(docId, triggerElement) {
+            if (currentKeywordGlassPopup && currentKeywordGlassPopup.trigger === triggerElement) {
+                keywordPopupGlass.classList.remove(CSS_CLASSES.ACTIVE);
+                currentKeywordGlassPopup = null;
+                return;
+            }
+            if (currentKeywordGlassPopup) {
+                currentKeywordGlassPopup.element.classList.remove(CSS_CLASSES.ACTIVE);
+            }
+
+            // Use allMockDocuments to find keywords, as documentItemsData might be filtered/paginated
+            const doc = allMockDocuments.find(d => d.id === docId);
+            if (doc && doc.keywords && doc.keywords.length > 0) {
+                keywordPopupGlass.innerHTML = doc.keywords.map(kw =>
+                    `<span class="keyword-pill clickable-keyword" data-keyword="${kw}">${kw}</span>`
+                ).join('');
+
+                const rect = triggerElement.getBoundingClientRect();
+                keywordPopupGlass.style.top = `${rect.bottom + window.scrollY + 5}px`;
+                let left = rect.left + window.scrollX;
+
+                keywordPopupGlass.style.display = 'block';
+                const popupRect = keywordPopupGlass.getBoundingClientRect();
+                if (left + popupRect.width > window.innerWidth - 20) {
+                    left = window.innerWidth - popupRect.width - 20;
+                }
+                left = Math.max(10, left);
+                keywordPopupGlass.style.left = `${left}px`;
+                keywordPopupGlass.style.display = '';
+
+                keywordPopupGlass.classList.add(CSS_CLASSES.ACTIVE);
+                currentKeywordGlassPopup = { element: keywordPopupGlass, trigger: triggerElement };
+            }
+        }
+
+        function closePopups(event) {
+            if (currentKeywordGlassPopup && !currentKeywordGlassPopup.element.contains(event.target) && !currentKeywordGlassPopup.trigger.contains(event.target)) {
+                currentKeywordGlassPopup.element.classList.remove(CSS_CLASSES.ACTIVE);
+                currentKeywordGlassPopup = null;
+            }
+        }
+
+        function handleContainerClick(event) {
+            const target = event.target;
+            const actionButton = target.closest(SELECTORS.ACTION_BTN);
+            const clickableAuthor = target.closest(SELECTORS.CLICKABLE_AUTHOR);
+            const clickableCategory = target.closest(SELECTORS.CLICKABLE_CATEGORY);
+            const clickableKeywordPill = target.closest(`${SELECTORS.DOCUMENT_ITEM} ${SELECTORS.CLICKABLE_KEYWORD}`); // Check within item context
+            const keywordTrigger = target.closest('.keywords-meta-container'); // Target the container for popup trigger
+
+            if (actionButton?.classList.contains('delete-btn')) {
+                const itemElement = actionButton.closest('[data-id]');
+                if (itemElement) {
+                    const docId = parseInt(itemElement.dataset.id);
+                     // Find the title from the original data for the confirmation message
+                    const doc = allMockDocuments.find(d => d.id === docId);
+                    const title = doc ? doc.title : 'Unknown History Item';
+                    if (confirm(`Are you sure you want to remove "${title}" from your history?`)) {
+                        handleDeleteItem(docId, itemElement);
+                    }
+                }
+            } else if (clickableAuthor) {
+                alert(`Filtering by author (not implemented): ${clickableAuthor.dataset.authorName}`);
+            } else if (clickableCategory) {
+                filterByCategorySelect.value = clickableCategory.dataset.categoryName;
+                handleFilterChange();
+            } else if (clickableKeywordPill) {
+                 // Handle clicks on keyword pills within the list item
+                filterByKeywordsSelect.value = clickableKeywordPill.dataset.keyword;
+                handleFilterChange();
+            } else if (keywordTrigger && !clickableKeywordPill) { // Clicked near keywords icon/area, but not a pill itself
+                 const itemElement = keywordTrigger.closest('[data-id]');
+                 if(itemElement) {
+                    const docId = parseInt(itemElement.dataset.id);
+                    toggleKeywordPopup(docId, keywordTrigger); // Open popup
+                 }
+            }
+        }
+
+        function handleKeywordPopupClick(event) {
+             if (event.target.classList.contains('clickable-keyword')) {
+                filterByKeywordsSelect.value = event.target.dataset.keyword;
+                handleFilterChange();
+                keywordPopupGlass.classList.remove(CSS_CLASSES.ACTIVE);
+                currentKeywordGlassPopup = null;
+            }
+        }
+
+        function toggleFilterExpansion(event) {
+             event.stopPropagation();
+             filtersExpanded = !filtersExpanded;
+             collapsibleFilters.classList.toggle(CSS_CLASSES.EXPANDED, filtersExpanded);
+             toggleFiltersBtn.classList.toggle(CSS_CLASSES.ACTIVE, filtersExpanded);
+             const chevronIcon = toggleFiltersBtn.querySelector(SELECTORS.CHEVRON_ICON);
+             if (chevronIcon) {
+                 chevronIcon.classList.toggle('fa-chevron-down', !filtersExpanded);
+                 chevronIcon.classList.toggle('fa-chevron-up', filtersExpanded);
+             }
+        }
+
+        // --- Initialization ---
+        function initializePage() {
+            sortBySelect.value = 'date-saved-desc'; // Default sort
+
+            // Attach persistent event listeners
+            searchBar.addEventListener('input', handleFilterChange);
+            sortBySelect.addEventListener('change', handleFilterChange);
+            filterByCategorySelect.addEventListener('change', handleFilterChange);
+            filterByKeywordsSelect.addEventListener('change', handleFilterChange);
+            documentContainer.addEventListener('click', handleContainerClick);
+            keywordPopupGlass.addEventListener('click', handleKeywordPopupClick);
+            deleteSelectedBtn.addEventListener('click', handleBulkDelete);
+            toggleFiltersBtn.addEventListener('click', toggleFilterExpansion);
+            document.addEventListener('click', closePopups);
+
+            // Initial data fetch and render
+            fetchAndDisplayDocuments();
+        }
+
+        // --- Run Initialization ---
+        initializePage();
+
+    </script>
+</body>
+</html>
