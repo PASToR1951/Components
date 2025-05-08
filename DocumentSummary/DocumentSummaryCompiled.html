@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archiving System Page - Optimized</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --theme-gold: #FDB813;
+            --theme-gold-darker: #EAA10F;
+            --theme-gold-light-bg: rgba(253, 184, 19, 0.2);
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1);
+            --theme-gold-highlight: rgba(253, 184, 19, 0.4); 
+            --theme-green-dark: #006A4E;
+            --theme-green-darker-text: #00523D;
+            --theme-green-light-bg: rgba(0, 106, 78, 0.3);
+            --theme-green-lighter-bg: rgba(0, 106, 78, 0.1); 
+            --theme-green-border: rgba(0, 106, 78, 0.7);
+            --theme-page-bg: #F9F6EE;
+            --neutral-border-color: #e5e7eb; 
+            --input-border-color: #d1d5db; 
+            --placeholder-text-color: #9ca3af; 
+            --text-on-gold: #000000;
+            --text-on-green: #FFFFFF;
+            --primary-text-color: #1f2937; 
+            --secondary-text-color: #4b5563; 
+            --tertiary-text-color: #6b7280; 
+            --theme-accent-gray: #6b7280;
+            --pastel-gold: #FFF5CC;
+            --pastel-green: #D0EAD0;
+            --footer-glass-bg-color: rgba(255, 255, 255, 0.25);
+            --footer-glass-border-color: rgba(255, 255, 255, 0.4);
+            --footer-glass-blur-radius: 6px;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --card-hover-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            --card-border-radius: 0.75rem; 
+        }
+
+        /* Base HTML & Body */
+        html {
+            height: 100%;
+            box-sizing: border-box;
+            scroll-behavior: smooth; 
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--theme-page-bg);
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D3CBBF' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: var(--primary-text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            line-height: 1.6; 
+        }
+
+        /* Layout & Container */
+        .page-wrapper {
+            flex-grow: 1;
+            padding-top: 2.5rem;
+            padding-bottom: 4rem; 
+        }
+        .container {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            max-width: 1024px; 
+        }
+        @media (min-width: 640px) {
+            .page-wrapper { padding-top: 3rem; }
+            .container { padding-left: 1.5rem; padding-right: 1.5rem; }
+        }
+         @media (min-width: 1024px) {
+             .page-wrapper { padding-top: 4rem; }
+             .container { padding-left: 2rem; padding-right: 2rem; }
+         }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Inter', sans-serif; 
+            color: var(--primary-text-color);
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.75rem; 
+            line-height: 1.3;
+        }
+        .font-libre { font-family: 'Libre Baskerville', serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        p { margin-bottom: 1rem; }
+        a { color: var(--theme-green-dark); text-decoration: none; transition: color 0.2s ease; }
+        a:hover { color: var(--theme-gold-darker); text-decoration: none; } 
+
+        /* Page Header */
+        .page-header {
+            position: relative; overflow: hidden; background-color: var(--theme-green-dark);
+            color: var(--text-on-green); padding: 3rem 0; margin-bottom: 3rem;
+            border-bottom: 5px solid var(--theme-gold); 
+        }
+        @keyframes headerGradientAnimation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .page-header::before { 
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 0;
+            background-image: linear-gradient(135deg, rgba(0, 106, 78, 0.1), rgba(253, 184, 19, 0.15), rgba(0, 106, 78, 0.1), rgba(253, 184, 19, 0.15));
+            background-size: 400% 400%; animation: headerGradientAnimation 25s ease infinite; opacity: 0.6;
+        }
+        .page-header .header-content { position: relative; z-index: 1; text-align: left; }
+        .page-header .header-content h1 { color: var(--text-on-green); font-weight: 700; font-size: 2rem; line-height: 1.2; margin-bottom: 0.5rem; }
+        .page-header .header-content p { color: rgba(255, 255, 255, 0.9); font-size: 1.125rem; margin-bottom: 0.25rem; }
+        .page-header .header-content p:last-of-type { font-size: 1rem; margin-bottom: 0; }
+        @media (min-width: 768px) {
+            .page-header { padding: 4rem 0; }
+            .page-header .header-content h1 { font-size: 2.5rem; }
+            .page-header .header-content p { font-size: 1.25rem; }
+            .page-header .header-content p:last-of-type { font-size: 1.125rem; }
+        }
+        @media (min-width: 1024px) {
+             .page-header { padding: 5rem 0; }
+            .page-header .header-content h1 { font-size: 3rem; }
+        }
+
+        /* Document Item Base Card Style */
+        .document-item-base {
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.3s ease; 
+            background-color: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+            border: 1px solid var(--neutral-border-color);
+            border-radius: var(--card-border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem; 
+            box-shadow: var(--card-shadow);
+        }
+        .document-item-base:hover {
+            transform: translateY(-3px); 
+            box-shadow: var(--card-hover-shadow);
+        }
+        main > :last-child.document-item-base { margin-bottom: 3rem; }
+        @media (min-width: 640px) { .document-item-base { padding: 2rem; } }
+        @media (min-width: 1024px) { .document-item-base { padding: 2.5rem; } }
+
+        /* Card Section Titles */
+        .document-item-base h2 {
+            font-size: 1.375rem; font-weight: 600; margin-bottom: 1rem;
+            padding-bottom: 0.75rem; border-bottom: 1px solid var(--neutral-border-color);
+            color: var(--theme-green-darker-text);
+        }
+        .document-item-base h3.sub-doc-title {
+            font-size: 1.125rem; font-weight: 600; margin-bottom: 0.3rem; 
+            color: var(--theme-green-dark); 
+        }
+        @media (min-width: 768px) { 
+            .document-item-base h2 { font-size: 1.625rem; } 
+            .document-item-base h3.sub-doc-title { font-size: 1.25rem; } 
+        }
+
+        /* Text Content Styles */
+        .document-item-base .foreword-text,
+        .document-item-base .sub-doc-abstract { 
+            color: var(--secondary-text-color); line-height: 1.65; text-align: justify;
+            font-size: 1rem; margin-top: 1rem; margin-bottom: 1rem; 
+        }
+        .document-item-base .sub-doc-abstract { font-size: 0.95rem; margin-top: 0.5rem; }
+        .document-item-base .sub-doc-author { color: var(--tertiary-text-color); font-size: 0.9rem; margin-bottom: 1rem; }
+        .document-item-base .sub-doc-author a.clickable-author { color: inherit; }
+        .document-item-base .sub-doc-author a.clickable-author:hover { color: var(--theme-green-darker-text); text-decoration: none; } 
+        
+        /* Keywords Section */
+        .document-item-base .keywords-section, 
+        .document-item-base .sub-doc-keywords-section { 
+            margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--neutral-border-color);
+        }
+        .document-item-base .keywords-section h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--primary-text-color); }
+        .document-item-base .sub-doc-keywords-section strong { font-size: 0.9rem; font-weight: 600; color: var(--primary-text-color); margin-right: 0.5em; display: block; margin-bottom: 0.5rem; }
+        .document-item-base .keywords-container-flex { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .document-item-base .sub-doc-keywords-section .keywords-container-flex .tag-pill { font-size: 0.75rem; padding: 0.2rem 0.6rem; }
+
+        /* Document Info Grid */
+        .doc-info-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem 0; font-size: 0.95rem; margin-top: 1rem; }
+        .doc-info-grid > div { line-height: 1.5; transition: transform 0.2s ease-in-out; padding: 0.1rem 0; transform-origin: center left; }
+        .doc-info-grid > div:hover { transform: scale(1.03); }
+        .doc-info-grid strong { display: block; margin-bottom: 0.1rem; color: var(--primary-text-color); font-weight: 500; }
+        .doc-info-grid span, .doc-info-grid a { color: var(--secondary-text-color); }
+        .doc-info-grid #info-author-container a.clickable-author { color: var(--secondary-text-color); }
+        .doc-info-grid #info-author-container a.clickable-author:hover { color: var(--theme-green-darker-text); text-decoration: none; } 
+        .doc-info-grid .opacity-90 { opacity: 0.9; }
+        .editor-list { padding-left: 0; list-style: none; margin: 0.25rem 0 0 0; }
+        .editor-list li { margin-bottom: 0.1rem; font-size: 0.9em; }
+
+        /* Sub-document button container */
+        .sub-doc-button-container { display: flex; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--neutral-border-color); }
+
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem; border-radius: 0.375rem; font-weight: 500; text-align: center;
+            transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center;
+            gap: 0.5rem; font-size: 0.9rem; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            cursor: pointer; text-decoration: none; border: 1px solid transparent;
+        }
+        .btn:hover { box-shadow: 0 3px 6px rgba(0,0,0,0.1); transform: translateY(-1px); }
+        .btn-primary { background-color: var(--theme-green-dark); color: var(--text-on-green); border-color: var(--theme-green-dark); }
+        .btn-primary:hover { background-color: var(--theme-green-darker-text); border-color: var(--theme-green-darker-text); }
+        .btn-secondary { background-color: var(--theme-gold); color: var(--text-on-gold); border-color: var(--theme-gold); }
+        .btn-secondary:hover { background-color: var(--theme-gold-darker); border-color: var(--theme-gold-darker); }
+        .btn i, .btn svg { width: 1em; height: 1em; font-size: 1.1em; } 
+        .btn.btn-icon { padding: 0.5rem; min-width: 2.4rem; min-height: 2.4rem; gap: 0; }
+        .btn.btn-icon i, .btn.btn-icon svg { width: 1rem; height: 1rem; font-size: 1rem; }
+
+        /* Clickable Meta (Authors/Keywords) */
+        .clickable-meta { cursor: pointer; text-decoration: none; color: var(--primary-text-color); opacity: 0.9; margin-right: 0.25rem; display: inline; transition: all 0.2s ease; }
+        .clickable-meta:hover { opacity: 1; text-decoration: none; } 
+        a.clickable-author { transition: color 0.2s ease, text-decoration 0.2s ease; }
+        a.clickable-author:hover { color: var(--theme-green-darker-text); text-decoration: none; } 
+        .clickable-keyword:hover { color: var(--theme-gold-darker); text-decoration: none; } 
+
+        /* Tag Pill */
+        .tag-pill {
+            display: inline-block; background-color: var(--theme-gold-lighter-bg); color: var(--theme-gold-darker);
+            padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 500; white-space: nowrap;
+            cursor: pointer; transition: all 0.2s ease; border: 1px solid var(--theme-gold-light-bg);
+            text-decoration: none;
+        }
+        .tag-pill:hover { background-color: var(--theme-gold); color: var(--text-on-gold); border-color: var(--theme-gold-darker); box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
+        
+        /* Table of Contents (TOC) Styles */
+        #toc-container h2 { color: var(--theme-green-darker-text); }
+        #toc-list { list-style: none; padding-left: 0; margin: 0; }
+        #toc-list li { margin-bottom: 0.6rem; border-bottom: 1px solid var(--theme-green-lighter-bg); padding-bottom: 0.6rem; }
+        #toc-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        #toc-list .toc-link-content { display: flex; flex-direction: column; }
+        #toc-list a.toc-title-link { color: var(--theme-green-darker-text); font-weight: 500; display: flex; align-items: center; padding: 0.2rem 0; transition: color 0.2s ease; cursor: pointer; }
+        #toc-list a.toc-title-link:hover { color: var(--theme-gold-darker); }
+        #toc-list a.toc-title-link i { margin-right: 0.6rem; color: var(--theme-green-dark); width: 1.1em; text-align: center; transition: color 0.2s ease; }
+        #toc-list a.toc-title-link:hover i { color: var(--theme-gold-darker); }
+        #toc-list .toc-author { font-size: 0.85rem; color: var(--tertiary-text-color); padding-left: calc(1.1em + 0.6rem); margin-top: 0.1rem; }
+        #toc-list .toc-author a.clickable-author { color: inherit; margin: 0 0.15rem; }
+        #toc-list .toc-author a.clickable-author:hover { color: var(--theme-green-darker-text); text-decoration: none; } 
+
+        /* Divider Style */
+        .section-divider { border: none; height: 1px; background-color: var(--neutral-border-color); margin: 2.5rem 0; opacity: 0.7; }
+
+        /* Article Card Animation */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .article-card { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
+        /* Stagger animation */
+        .article-card:nth-child(1) { animation-delay: 0.05s; }
+        .article-card:nth-child(2) { animation-delay: 0.1s; }
+        .article-card:nth-child(3) { animation-delay: 0.15s; }
+        .article-card:nth-child(4) { animation-delay: 0.2s; }
+        .article-card:nth-child(5) { animation-delay: 0.25s; }
+
+        /* Footer styles */
+        @keyframes subtleGradientAnimation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .footer-wrapper { margin-top: auto; width: 100%; }
+        .site-footer { position: relative; overflow: hidden; background-color: var(--footer-glass-bg-color); -webkit-backdrop-filter: blur(var(--footer-glass-blur-radius)); backdrop-filter: blur(var(--footer-glass-blur-radius)); border-top: 1px solid var(--footer-glass-border-color); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08); color: #374151; }
+        .site-footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; background: linear-gradient(45deg, var(--pastel-gold), var(--pastel-green), var(--pastel-gold)); background-size: 200% 200%; animation: subtleGradientAnimation 18s ease infinite; opacity: 0.7; }
+        .footer-content-padding { position: relative; z-index: 1; padding: 2rem 1.5rem; max-width: 80rem; margin-left: auto; margin-right: auto; }
+        @media (min-width: 640px) { .footer-content-padding { padding-left: 2rem; padding-right: 2rem; } }
+        @media (min-width: 1024px) { .footer-content-padding { padding-left: 2.5rem; padding-right: 2.5rem; } }
+        .footer-layout { display: flex; flex-direction: column; align-items: center; gap: 2rem; text-align: center; }
+        @media (min-width: 1024px) { .footer-layout { flex-direction: row; justify-content: space-between; align-items: flex-start; text-align: left; } }
+        .footer-logo-section { flex-shrink: 0; }
+        .footer-logo-container { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 0.75rem; }
+        @media (min-width: 640px) { .footer-logo-container { align-items: flex-start; text-align: left; } }
+        @media (min-width: 1024px) { .footer-logo-container { align-items: flex-start; } }
+        .footer-logo-container img { height: 4rem; width: auto; margin-bottom: 0.5rem; }
+        @media (min-width: 640px) { .footer-logo-container img { height: 5rem; margin-bottom: 0; } }
+        .footer-nav { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
+        @media (min-width: 1024px) { .footer-nav { align-items: flex-start; } }
+        .footer-link { color: var(--theme-green-dark); transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out; text-decoration: none; font-weight: 500; }
+        .footer-link:hover { color: var(--theme-gold); opacity: 0.85; text-decoration: none; } 
+        .copyright-text { color: #6b7280; font-size: 0.75rem; }
+
+        /* Message box styles */
+        .message-box-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .message-box-overlay.visible { opacity: 1; visibility: visible; }
+        .message-box-content { background-color: white; padding: 2rem; border-radius: var(--card-border-radius); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); max-width: 90%; width: 400px; text-align: center; position: relative; }
+        .message-box-text { font-size: 1.125rem; color: var(--primary-text-color); margin-bottom: 1rem; }
+        .message-box-close-btn { position: absolute; top: 0.75rem; right: 0.75rem; background: transparent; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: #9ca3af; padding: 0.25rem; }
+        .message-box-close-btn:hover { color: #6b7280; }
+
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+
+        <header class="page-header" role="banner">
+            <div class="header-content container">
+                <h1>Document Title</h1>
+                <p>Author/Publisher</p>
+                <p>Year</p>
+            </div>
+        </header>
+
+        <main class="container" role="main">
+            <article id="foreword-card" class="document-item-base">
+                <header>
+                    <h2>Foreword</h2>
+                </header>
+                <section>
+                    <p class="foreword-text"> 
+                        Foreword content will be loaded here.
+                    </p>
+                </section>
+            </article>
+
+            <hr class="section-divider">
+            
+            <div id="toc-container" class="document-item-base" style="display: none;"> 
+                 <h2>Contents</h2>
+                 <ul id="toc-list">
+                     </ul>
+            </div>
+
+             <hr id="toc-articles-divider" class="section-divider" style="display: none;"> 
+             
+             <div id="contained-documents-cards-container">
+                </div>
+
+            <article id="doc-info-card" class="document-item-base">
+                 <header>
+                    <h2>Document Information</h2>
+                </header>
+                <section class="doc-info-grid">
+                    <div>
+                        <strong>Title:</strong>
+                        <span id="info-title"></span>
+                    </div>
+                    <div>
+                        <strong>Author(s):</strong>
+                        <span id="info-author-container"> 
+                            </span>
+                    </div>
+                    <div>
+                        <strong>Editor(s):</strong>
+                        <span class="opacity-90" id="info-editor"></span>
+                    </div>
+                    <div>
+                        <strong>Publication Year:</strong>
+                        <span id="info-year"></span>
+                    </div>
+                    <div>
+                        <strong>Volume:</strong>
+                        <span id="info-volume"></span>
+                    </div>
+                    <div>
+                        <strong>Number of Pages:</strong>
+                        <span id="info-pages"></span>
+                    </div>
+                    <div>
+                        <strong>Category:</strong>
+                        <span class="opacity-90" id="info-category"></span>
+                    </div>
+                    <div>
+                        <strong>Research Agenda:</strong>
+                        <span class="opacity-90" id="info-agenda"></span>
+                    </div>
+                    <div>
+                        <strong>Date Uploaded:</strong>
+                        <span id="info-date-uploaded"></span>
+                    </div>
+                    <div>
+                        <strong>Keywords:</strong>
+                        <span id="info-keywords">
+                            </span>
+                    </div>
+                </section>
+            </article>
+
+        </main>
+    </div>
+
+    <div class="footer-wrapper">
+        <footer id="site-footer-element" class="site-footer" role="contentinfo">
+            <div class="footer-content-padding">
+                <div class="footer-layout">
+                    <div class="footer-logo-section">
+                        <div class="footer-logo-container">
+                            <img
+                                src="https://placehold.co/200x80/006A4E/FFFFFF?text=PeAS+Logo"
+                                alt="PeAS Logo"
+                                onerror="this.onerror=null; this.src='https://placehold.co/200x80/cccccc/ffffff?text=Logo+Error';">
+                        </div>
+                        <p class="copyright-text">&copy; <span id="footerCurrentYear"></span> PeAS. All Rights Reserved.</p>
+                    </div>
+                    <nav class="footer-nav" role="navigation" aria-label="Footer Navigation">
+                        <a href="#" class="footer-link">Home</a>
+                        <a href="#" class="footer-link">Contact</a>
+                        <a href="#" class="footer-link">Terms & Conditions</a>
+                        <a href="#" class="footer-link">Privacy Policy</a>
+                    </nav>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="message-box-overlay" class="message-box-overlay" aria-hidden="true">
+        <div class="message-box-content" role="alertdialog" aria-labelledby="message-box-text">
+            <button id="message-box-close" class="message-box-close-btn" aria-label="Close message">&times;</button>
+            <p id="message-box-text" class="message-box-text"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Cache DOM Elements ---
+            const headerTitle = document.querySelector('header h1');
+            const headerAuthor = document.querySelector('header p:nth-of-type(1)');
+            const headerYear = document.querySelector('header p:nth-of-type(2)');
+
+            const forewordCard = document.getElementById('foreword-card'); 
+            const forewordTextElement = forewordCard ? forewordCard.querySelector('.foreword-text') : null;
+
+            const infoTitle = document.getElementById('info-title');
+            const infoAuthorContainer = document.getElementById('info-author-container'); 
+            const infoEditor = document.getElementById('info-editor');
+            const infoYearElem = document.getElementById('info-year');
+            const infoVolume = document.getElementById('info-volume');
+            const infoPages = document.getElementById('info-pages'); 
+            const infoCategory = document.getElementById('info-category');
+            const infoAgenda = document.getElementById('info-agenda'); 
+            const infoDateUploaded = document.getElementById('info-date-uploaded');
+            const infoKeywordsContainer = document.getElementById('info-keywords');
+            
+            const tocContainer = document.getElementById('toc-container');
+            const tocList = document.getElementById('toc-list'); 
+            const tocArticlesDivider = document.getElementById('toc-articles-divider'); 
+
+            const containedDocumentsCardsContainer = document.getElementById('contained-documents-cards-container'); 
+
+            const messageBoxOverlay = document.getElementById('message-box-overlay');
+            const messageBoxText = document.getElementById('message-box-text');
+            const messageBoxCloseBtn = document.getElementById('message-box-close');
+
+
+            // --- Smooth Scroll Function ---
+            function smoothScrollTo(elementId) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+             // --- Function to create author links ---
+             function createAuthorLinks(authorString, containerElement, linkClass = 'clickable-author') {
+                 containerElement.innerHTML = ''; 
+                 if (!authorString || typeof authorString !== 'string') {
+                     if (containerElement.id === 'info-author-container') {
+                         containerElement.textContent = 'N/A';
+                     }
+                     return;
+                 }
+                 const authorsRaw = authorString.split(/,\s*|\s+and\s+|\s*&\s*/).map(a => a.trim()).filter(a => a); 
+                 authorsRaw.forEach((authorEntry, index) => {
+                     const link = document.createElement('a');
+                     link.href = `#/search/author/${encodeURIComponent(authorEntry)}`; 
+                     link.className = linkClass;
+                     link.textContent = authorEntry; 
+                     link.onclick = (e) => { 
+                         e.preventDefault(); 
+                         e.stopPropagation(); 
+                         searchByAuthor(authorEntry); // Use the full entry to trigger search/message
+                     };
+                     containerElement.appendChild(link);
+                     if (index < authorsRaw.length - 1) {
+                         containerElement.appendChild(document.createTextNode(', '));
+                     }
+                 });
+                 if (authorsRaw.length === 0) {
+                      if (containerElement.id === 'info-author-container') {
+                          containerElement.textContent = 'N/A'; 
+                      }
+                 }
+             }
+
+
+            async function loadDocumentData(docId) {
+                try {
+                    let currentMockData;
+                    // --- Mock Data Definitions (Using ID 4 as example) ---
+                     if (docId === 4) { 
+                        currentMockData = {
+                            title: "The SPUD CONFLUENCE: 2020-2021, Volume 11, No. 1",
+                            author: "St. Paul University Dumaguete", 
+                            publication_year: "2020-2021",
+                            abstract: "Every student differs from each other. In a learning environment, students seek learning depending on their capacity to absorb and embrace new discoveries that provide novel insights. Related to learning styles are the multiple intelligences of learners, where the former refers to how a group of learners approach different tasks, whereas the latter are representations of the different intellectual abilities. In the new educational landscape, outcomes-based education has challenged both teachers and learners to achieve the desired graduate outcomes. Magulod (2017) posits, \"The need to produce competent graduates in their specific discipline who possess the skills and attributes to deal with the ever-changing work environment in the 21st century is a herculean task assigned to HEIs in the Philippines.\" It is important to consider the different learning styles and multiple intelligences of learners to make the teaching and learning processes meaningful. The issue of Confluence 2020-2021, Volume 11, No. 1, presents research designs, an approach for answering research questions, and making decisions about the overall objectives and approaches in research. Crafting a research design is tantamount to making decisions about the overall objectives and approaches of research. A well-planned research design ensures that methods match research objectives, which lead to the use of appropriate data analysis. Finally, the first attempt to delve into the thematic patterns in students articles is included in this issue. This research was useful to students in writing, especially for non-native students. Thematic patterns imply available strategies to writers who connect the thematic patterns in structuring patterns among the theses of undergraduate, graduate, and postgraduate students at St. Paul University Dumaguete.",
+                            keywords: ["Faculty Research", "Academic Journal", "Higher Education", "Research Anthology", "Learning Styles", "Multiple Intelligences", "Research Design"],
+                            editor: {
+                                vp_academic_affairs: "SR HELEN MALUBAY, SPC, DBA, CPA, LPT",
+                                board_of_reviewers: [
+                                    "Trina Claire Ampalayo, MA", "Jacqueline Genevieve Munoz, MA", "Jeneviev Deang, MA",
+                                    "Adah Anadel Balbon, MA", "Roel Jumawan, MAT, MAEM", "Irish Udtohan, MS"
+                                ]
+                            },
+                            volume: "Volume 11, No. 1", pages: "Multiple Articles", category: "Confluence",
+                            research_agenda: "Varied Academic Research", date_uploaded: "2021-06-01T00:00:00.000Z", // Example date
+                            document_url: "#spud-confluence-2020-21-v11-n1",
+                            contained_documents: [
+                                { doc_id: 401, title: "Research Designs used by Undergraduate, Graduate and Post-Graduate Students in their Research Studies", author: "Roel Jumawan, Ed.D., Camilo Pangan, MA, Roldan Hernando", abstract: "This study aimed at determining the types of research designs used by undergraduate, graduate and post-graduate students...", keywords: ["research designs", "research methods", "ethnography", "mixed design"], document_url: "#research-designs-students" },
+                                { doc_id: 402, title: "Thematic Patterns in Student Editorial Articles", author: "Sami Gregg Managbanag, MA, Sr. Helen Malubay, SPC", abstract: "This study was set out to determine the Theme and Rheme realization in the student editorial (SE) articles...", keywords: ["discourse analysis", "editorial", "text", "theme and rheme"], document_url: "#thematic-patterns-editorial" },
+                                { doc_id: 403, title: "Resiliency, Happiness and Mental Health Assessment of Grade 12 and College Students", author: "Adah Anadel Balbon, MA, Chesa Filosopo, Rhea Roxana Grefaldia", abstract: "Filipinos as a people are known to be resilient and happy individuals (Reyes, 2021). However, despite these characteristics...", keywords: ["resiliency", "happiness", "subjective well-being", "mental health", "personal assessment"], document_url: "#resiliency-happiness-mental-health" },
+                                { doc_id: 404, title: "The Multiple Intelligences of Grade School Pupils", author: "Jeneviev Deang, MA, Carl Joel Tilos, Yasmin Elmaco", abstract: "Multiple Intelligence is an integral part of teaching pupils in the primary years. Identifying the types of intelligence...", keywords: ["multiple intelligences", "intelligence test", "creative strategies", "instructional materials", "intelligence needs"], document_url: "#multiple-intelligences-pupils" },
+                                { doc_id: 405, title: "The Learning Styles of Grade School Pupils and Grade 12 Students of St Paul University Dumaguete", author: "Kenneth Paul Duran, MA, Cris Marie Calbog, Joelouis Anne Odquin", abstract: "A learning style pertains to how an individual process information. Identifying the learning style preferences of the students...", keywords: ["learning styles", "teaching-learning process", "unimodal learning", "multimodal learning"], document_url: "#learning-styles-students" }
+                            ]
+                        };
+                    } else { 
+                        currentMockData = { title: "Document Not Found", abstract: "The requested document could not be found." };
+                    }
+                    // --- End Mock Data ---
+
+                    await new Promise(resolve => setTimeout(resolve, 300)); 
+                    const data = currentMockData;
+
+                    // --- Populate Header ---
+                    if (headerTitle) headerTitle.textContent = data.title || 'Title Not Found';
+                    if (headerAuthor) headerAuthor.textContent = data.author || 'Author Not Found'; 
+                    if (headerYear) headerYear.textContent = data.publication_year || 'Year Not Found';
+
+                    // --- Populate Main Foreword Card ---
+                    if (forewordTextElement) forewordTextElement.textContent = data.abstract || 'Foreword not available.'; 
+                    
+                    // --- Populate Document Info Card ---
+                    if (infoTitle) infoTitle.textContent = data.title || '';
+                    if (infoAuthorContainer) {
+                        createAuthorLinks(data.author, infoAuthorContainer, 'clickable-author');
+                    }
+                    
+                    if (infoEditor) {
+                        infoEditor.innerHTML = ''; 
+                        if (data.editor && typeof data.editor === 'object') {
+                            let editorHTML = '';
+                            if (data.editor.vp_academic_affairs) {
+                                editorHTML += `<span>${data.editor.vp_academic_affairs} (Vice-President, Academic Affairs)</span><br>`;
+                            }
+                            if (data.editor.board_of_reviewers && Array.isArray(data.editor.board_of_reviewers) && data.editor.board_of_reviewers.length > 0) {
+                                editorHTML += '<strong>Board of Reviewers:</strong><ul class="editor-list">';
+                                data.editor.board_of_reviewers.forEach(reviewer => {
+                                    editorHTML += `<li>${reviewer}</li>`;
+                                });
+                                editorHTML += '</ul>';
+                            }
+                             infoEditor.innerHTML = editorHTML || 'N/A';
+                        } else if (typeof data.editor === 'string') {
+                             infoEditor.textContent = data.editor; 
+                        } else {
+                             infoEditor.textContent = 'N/A';
+                        }
+                    }
+                    if (infoYearElem) infoYearElem.textContent = data.publication_year || 'N/A';
+                    if (infoCategory) infoCategory.textContent = data.category || 'N/A';
+                    if (infoVolume) {
+                        infoVolume.textContent = (data.category === "Confluence" || data.category === "Synergy") ? (data.volume || 'N/A') : 'N/A';
+                    }
+                    if (infoPages) infoPages.textContent = data.pages || 'N/A';
+                    if (infoAgenda) infoAgenda.textContent = data.research_agenda || 'N/A';
+                    if (infoDateUploaded) {
+                        infoDateUploaded.textContent = data.date_uploaded ? new Date(data.date_uploaded).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
+                    }
+                    
+                    if (infoKeywordsContainer) {
+                        infoKeywordsContainer.innerHTML = ''; 
+                        if(data.keywords && Array.isArray(data.keywords) && data.keywords.length > 0){
+                            data.keywords.forEach((keyword, index) => {
+                                const link = document.createElement('a');
+                                link.href = `#/search/keyword/${encodeURIComponent(keyword)}`;
+                                link.className = 'clickable-meta clickable-keyword';
+                                link.textContent = keyword;
+                                link.onclick = (e) => { e.preventDefault(); searchByKeyword(keyword); };
+                                infoKeywordsContainer.appendChild(link);
+                                if (index < data.keywords.length - 1) {
+                                    infoKeywordsContainer.appendChild(document.createTextNode(', '));
+                                }
+                            });
+                        } else {
+                             infoKeywordsContainer.innerHTML = '<span>N/A</span>';
+                        }
+                    }
+
+                    // --- Populate TOC and Contained Document Cards ---
+                    if (tocContainer && tocList && containedDocumentsCardsContainer) {
+                        tocList.innerHTML = ''; 
+                        containedDocumentsCardsContainer.innerHTML = ''; 
+
+                        if (data.contained_documents && Array.isArray(data.contained_documents) && data.contained_documents.length > 0) {
+                            
+                            tocContainer.style.display = 'block'; 
+                            if (tocArticlesDivider) tocArticlesDivider.style.display = 'block'; 
+
+                            data.contained_documents.forEach(doc => {
+                                const cardId = `article-${doc.doc_id}`; 
+                                const titleId = `sub-doc-title-${doc.doc_id}`;
+
+                                // --- Create TOC Item ---
+                                const tocItem = document.createElement('li');
+                                const tocLinkContent = document.createElement('div'); 
+                                tocLinkContent.className = 'toc-link-content';
+
+                                const tocLink = document.createElement('a'); 
+                                tocLink.href = `#${cardId}`;
+                                tocLink.className = 'toc-title-link'; 
+                                tocLink.innerHTML = `<i class="fas fa-book-open" aria-hidden="true"></i> ${doc.title || 'Untitled Document'}`; 
+                                tocLink.onclick = (e) => {
+                                    e.preventDefault(); 
+                                    smoothScrollTo(cardId); 
+                                };
+                                tocLinkContent.appendChild(tocLink);
+
+                                // Add clickable authors to TOC using corrected helper
+                                if (doc.author) {
+                                    const tocAuthorSpan = document.createElement('span');
+                                    tocAuthorSpan.className = 'toc-author';
+                                    tocAuthorSpan.appendChild(document.createTextNode('by ')); 
+                                    createAuthorLinks(doc.author, tocAuthorSpan, 'clickable-author'); 
+                                    tocLinkContent.appendChild(tocAuthorSpan);
+                                }
+
+                                tocItem.appendChild(tocLinkContent);
+                                tocList.appendChild(tocItem);
+
+                                // --- Create Article Card ---
+                                const card = document.createElement('article');
+                                card.id = cardId; 
+                                card.className = 'document-item-base article-card'; 
+                                card.setAttribute('aria-labelledby', titleId); 
+
+                                let cardContentHTML = ''; 
+                                cardContentHTML += `<h3 id="${titleId}" class="sub-doc-title">${doc.title || 'Untitled Document'}</h3>`;
+                                
+                                // Add clickable authors to article card using corrected helper
+                                const authorPara = document.createElement('p');
+                                authorPara.className = 'sub-doc-author';
+                                if (doc.author) {
+                                    authorPara.appendChild(document.createTextNode('by '));
+                                    createAuthorLinks(doc.author, authorPara, 'clickable-author');
+                                } else {
+                                    authorPara.textContent = 'Author not available';
+                                }
+                                cardContentHTML += authorPara.outerHTML; 
+
+                                if (doc.abstract) { cardContentHTML += `<p class="sub-doc-abstract">${doc.abstract}</p>`; }
+                                if (doc.keywords && Array.isArray(doc.keywords) && doc.keywords.length > 0) {
+                                    cardContentHTML += `<div class="sub-doc-keywords-section"><strong>Keywords:</strong><div class="keywords-container-flex">`;
+                                    doc.keywords.forEach(kw => {
+                                        const pill = document.createElement('a');
+                                        pill.href = `#/search/keyword/${encodeURIComponent(kw)}`;
+                                        pill.className = 'tag-pill clickable-keyword';
+                                        pill.textContent = kw;
+                                        pill.onclick = (e) => { e.preventDefault(); e.stopPropagation(); searchByKeyword(kw); };
+                                        pill.setAttribute('tabindex', '0'); 
+                                        cardContentHTML += pill.outerHTML;
+                                    });
+                                    cardContentHTML += `</div></div>`;
+                                }
+                                
+                                const buttonContainer = document.createElement('div');
+                                buttonContainer.className = 'sub-doc-button-container';
+
+                                const viewBtn = document.createElement('a');
+                                viewBtn.href = doc.document_url || '#';
+                                viewBtn.className = 'btn btn-primary'; 
+                                viewBtn.innerHTML = `<i class="fas fa-eye" aria-hidden="true"></i> View Document`;
+                                viewBtn.onclick = (e) => { e.preventDefault(); showMessage(`Simulating view for: "${doc.title}" (URL: ${doc.document_url})`); };
+                                buttonContainer.appendChild(viewBtn);
+
+                                const readLaterBtn = document.createElement('button');
+                                readLaterBtn.type = 'button';
+                                readLaterBtn.className = 'btn btn-secondary'; 
+                                readLaterBtn.setAttribute('aria-label', 'Read Later');
+                                readLaterBtn.innerHTML = `<i class="fa-regular fa-clock" aria-hidden="true"></i> Read Later`; 
+                                readLaterBtn.onclick = () => {
+                                    showMessage(`Adding "${doc.title}" (ID: ${doc.doc_id}) to Read Later...`);
+                                    setTimeout(() => { showMessage(`"${doc.title}" added to Read Later!`); }, 1000);
+                                };
+                                buttonContainer.appendChild(readLaterBtn);
+
+                                cardContentHTML += buttonContainer.outerHTML; 
+
+                                card.innerHTML = cardContentHTML; 
+                                containedDocumentsCardsContainer.appendChild(card); 
+                            });
+                             
+                        } else {
+                             tocContainer.style.display = 'none'; 
+                             if (tocArticlesDivider) tocArticlesDivider.style.display = 'none'; 
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('Error fetching document data:', error);
+                    if (forewordTextElement) forewordTextElement.textContent = 'Failed to load document data. Please try again later.';
+                    showMessage('Error: Could not load document details.', true);
+                     if (tocContainer) tocContainer.style.display = 'none'; 
+                     if (tocArticlesDivider) tocArticlesDivider.style.display = 'none'; 
+                }
+            }
+
+            // --- Helper Functions ---
+            function showMessage(message, isError = false) {
+                if (messageBoxText && messageBoxOverlay) {
+                    messageBoxText.textContent = message;
+                    messageBoxOverlay.classList.add('visible');
+                    messageBoxOverlay.setAttribute('aria-hidden', 'false');
+                    messageBoxCloseBtn.focus();
+                }
+            }
+
+            function hideMessage() {
+                if (messageBoxOverlay) {
+                    messageBoxOverlay.classList.remove('visible');
+                    messageBoxOverlay.setAttribute('aria-hidden', 'true');
+                }
+            }
+
+            if (messageBoxCloseBtn) messageBoxCloseBtn.addEventListener('click', hideMessage);
+            if (messageBoxOverlay) {
+                messageBoxOverlay.addEventListener('click', (event) => {
+                    if (event.target === messageBoxOverlay) hideMessage();
+                });
+            }
+            
+             // Add Escape key listener for message box overlay ONLY
+             document.addEventListener('keydown', (event) => {
+                 if (event.key === 'Escape') {
+                     if (messageBoxOverlay && messageBoxOverlay.classList.contains('visible')) {
+                         hideMessage();
+                     }
+                 }
+             });
+
+
+            function searchByKeyword(keyword) {
+                console.log(`Simulating search for keyword: ${keyword}`);
+                showMessage(`Simulating search for keyword: "${keyword}"`);
+                // In a real app: window.location.href = `/#/search/keyword/${encodeURIComponent(keyword)}`;
+            }
+
+            function searchByAuthor(authorEntry) { 
+                console.log(`Simulating search/navigation for author: ${authorEntry}`);
+                showMessage(`Simulating navigation to profile/search for: "${authorEntry}"`);
+                 // In a real app: window.location.href = `/#/author/${encodeURIComponent(authorEntry)}`; 
+            }
+
+            // --- Initial Load ---
+            let currentDocumentId = 4; 
+            loadDocumentData(currentDocumentId);
+
+            // --- Footer Year ---
+            const yearElement = document.getElementById('footerCurrentYear');
+            if (yearElement) {
+                yearElement.textContent = new Date().getFullYear();
+            }
+
+        });
+    </script>
+
+</body>
+</html>
