@@ -434,12 +434,11 @@
         #document-container.view-list .list-actions-col {
             flex-shrink: 0; margin-left: 1rem; display: flex; gap: 0.5rem; 
         }
-        /* --- MODIFIED: Adjusted padding for individual delete button in list view --- */
         #document-container.view-list .list-actions-col .btn { padding: 0.5rem; } 
         #document-container.view-list .list-actions-col .individual-delete-btn {
-             padding: 0.5rem; /* Ensures same padding as other buttons */
-             width: auto; /* Allow width to be determined by content + padding */
-             height: auto; /* Allow height to be determined by content + padding */
+             padding: 0.5rem; 
+             width: auto; 
+             height: auto; 
         }
         #document-container.view-list .list-actions-col .btn i { margin-right: 0; font-size: 0.9rem; }
 
@@ -576,7 +575,6 @@
             transform: scale(1);
             transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0s;
             visibility: visible;
-            /* Default padding, width, height for grid/table view can remain specific if needed */
             padding: 0.3rem; 
             width: 1.75rem; 
             height: 1.75rem;
@@ -728,8 +726,7 @@
             <button class="view-btn" data-view="table" title="Table View"><i class="fas fa-table"></i>Table</button> 
         </div>
 
-
-        <section id="document-container" class="document-view-wrapper view-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <section id="document-container" class="document-view-wrapper view-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
             </section>
 
         <section class="no-documents hidden bg-white p-8 md:p-10 rounded-lg shadow-sm border var(--neutral-border-color) text-center" id="no-documents-message">
@@ -764,7 +761,7 @@
         const toggleFiltersBtn = document.getElementById('toggle-filters-btn'); 
         const collapsibleFilters = document.getElementById('collapsible-filters'); 
         const toggleViewsBtn = document.getElementById('toggle-views-btn'); 
-        const currentViewTextLabel = document.getElementById('current-view-text-label'); // New
+        const currentViewTextLabel = document.getElementById('current-view-text-label'); 
         const viewOptionsPopup = document.getElementById('view-options-popup'); 
         const toastNotification = document.getElementById('toast-notification'); 
         const toastMessage = document.getElementById('toast-message'); 
@@ -773,8 +770,8 @@
         let currentView = 'grid'; 
         let currentPage = 1;
         const itemsPerPage = 10; 
-        const MAX_TITLE_LENGTH = 0; 
-        const MAX_AUTHOR_LENGTH = 0; 
+        const MAX_TITLE_LENGTH = 0; // Set to 0 to disable truncation, or a specific number e.g., 50
+        const MAX_AUTHOR_LENGTH = 0; // Set to 0 to disable truncation, or a specific number e.g., 30
         let selectedDocuments = []; 
         let filtersExpanded = false; 
         let viewsPopupActive = false; 
@@ -787,7 +784,7 @@
         const CSS_CLASS_ERROR = 'error';
 
 
-        // Mock data
+        // Mock data (Ensure this matches your actual data structure)
         const mockDocuments = [
             { id: 1, type: 'pdf', category: 'Synergy', keywords: ['Annual Report', 'Finance', 'Corporate', 'Yearly Review', 'Stakeholders', 'Q1 Performance', 'Q2 Outlook', 'Q3 Strategy', 'Q4 Goals', 'Budgeting Cycle', 'Financial Forecast', 'Investor Relations Update', 'Audit Committee Report', 'Compliance Overview', 'Strategic Initiatives', 'Market Analysis', 'Risk Assessment', 'Shareholder Value', 'Sustainability Report', 'Executive Summary'], title: 'Annual Report for the Fiscal Year Ending 2024', author: 'Corporate Communications Department', date: 'May 1, 2025', url: '#details?docId=1' }, 
             { id: 2, type: 'docx', category: 'General Document', keywords: ['Innovation', 'OBE', 'Education', 'Proposal', 'Curriculum'], title: 'Project Proposal Alpha: A New Dawn for Innovation in OBE', author: 'Dr. Eleanor Vance & Team', date: 'April 22, 2025', url: '#details?docId=2' }, 
@@ -1160,15 +1157,15 @@
             attachCheckboxListeners(); 
         }
         
-        // --- MODIFIED: Updated changeView to set button text ---
         function changeView(newView) {
             currentPage = 1; 
             currentView = newView;
             
-            documentContainer.className = 'document-view-wrapper'; 
-            let viewButtonText = "Views"; // Default
+            documentContainer.className = 'document-view-wrapper'; // Reset classes
+            let viewButtonText = "Views"; 
             if (newView === 'grid') {
-                documentContainer.classList.add('view-grid', 'grid', 'grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-4', 'gap-6');
+                // MODIFIED: Updated grid classes for responsiveness
+                documentContainer.classList.add('view-grid', 'grid', 'grid-cols-1', 'sm:grid-cols-2', 'md:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-3', '2xl:grid-cols-3', 'gap-6');
                 viewButtonText = "Grid View";
             } else if (newView === 'list') {
                 documentContainer.classList.add('view-list');
@@ -1178,10 +1175,9 @@
                 viewButtonText = "Table View";
             }
             
-            if(currentViewTextLabel) { // Check if element exists
+            if(currentViewTextLabel) { 
                 currentViewTextLabel.textContent = viewButtonText;
             }
-
 
             viewOptionsPopup.querySelectorAll('.view-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-view') === newView);
@@ -1206,9 +1202,8 @@
             if (viewsPopupActive) {
                 const btnRect = toggleViewsBtn.getBoundingClientRect();
                 viewOptionsPopup.style.top = `${btnRect.bottom + window.scrollY + 5}px`;
-                // Adjust left position to align with the button, considering popup width
                 let leftPosition = btnRect.left + window.scrollX + (btnRect.width / 2) - (viewOptionsPopup.offsetWidth / 2);
-                leftPosition = Math.max(10, Math.min(leftPosition, window.innerWidth - viewOptionsPopup.offsetWidth - 10)); // Ensure it stays within viewport
+                leftPosition = Math.max(10, Math.min(leftPosition, window.innerWidth - viewOptionsPopup.offsetWidth - 10)); 
                 viewOptionsPopup.style.left = `${leftPosition}px`;
             }
              const chevronIcon = toggleViewsBtn.querySelector('.chevron-icon');
@@ -1356,7 +1351,6 @@
                     itemElement.remove();
                     showToast('Document removed from library.');
                     updateDeleteSelectedButtonState();
-                    // Check if the current page is now empty and adjust if necessary
                     const itemsLeftOnPage = Array.from(documentContainer.children).filter(child => child.matches('.document-item-base:not(.deleting)')).length;
                     if (itemsLeftOnPage === 0 && currentPage > 1) {
                         currentPage--;
@@ -1395,7 +1389,6 @@
                 elementsToRemove.forEach(el => el.remove());
                 showToast(`${numToDelete} document(s) removed from library.`);
                 updateDeleteSelectedButtonState(); 
-                // Check if the current page is now empty and adjust if necessary
                 const itemsLeftOnPage = Array.from(documentContainer.children).filter(child => child.matches('.document-item-base:not(.deleting)')).length;
                  if (itemsLeftOnPage === 0 && currentPage > 1) {
                     currentPage--;
@@ -1464,8 +1457,13 @@
                 return;
             }
 
+            // If no specific action button was clicked, treat the card click as "open"
             if (doc.url) {
-                window.location.href = doc.url;
+                // Check if the click was on an interactive element inside the card that should not trigger navigation
+                const nonNavigatingElements = ['.document-checkbox-container', '.delete-btn', '.keywords-trigger', '.clickable-author', '.clickable-category', '.action-btn'];
+                if (!nonNavigatingElements.some(selector => target.closest(selector))) {
+                    window.location.href = doc.url;
+                }
             } 
         });
         
@@ -1530,17 +1528,16 @@
                 btn.classList.toggle('active', btn.getAttribute('data-view') === preferredView);
             });
             
-            // Call changeView to set initial state including button text
             changeView(preferredView); 
             
             requestAnimationFrame(() => {
                 setTimeout(() => { 
                     documentContainer.classList.remove('loading-content');
-                }, 50);
+                }, 50); 
             });
         }
 
-        initializePage(); // Call initialization
+        initializePage(); 
 
     </script>
 </body>
