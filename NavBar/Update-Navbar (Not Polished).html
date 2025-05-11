@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar with Enhanced Search Overlay - Frontend Simulation (Interactive Conveyor)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles --- */
+        html, body {
+            min-height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+        canvas { /* Confetti canvas styling */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999;
+        }
+
+        /* --- Theme Colors (Classic Green & Gold, Bonewhite Navbar) --- */
+        :root {
+            --theme-gold: #FDB813; /* Vibrant Gold from image */
+            --theme-gold-darker: #EAA10F; /* Darker gold for hover */
+            --theme-gold-light-bg: rgba(253, 184, 19, 0.2);
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1); /* Used for search result hover */
+            --theme-gold-highlight: rgba(253, 184, 19, 0.4);
+
+            --theme-green-dark: #006A4E; /* Classic Green from image */
+            --theme-green-darker-text: #00523D; /* Darker version for text */
+            --theme-green-light-bg: rgba(0, 106, 78, 0.3);
+            --theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
+            --theme-green-border: rgba(0, 106, 78, 0.7);
+            --theme-navbar-bg: #F9F6EE; /* Bone White */
+            --neutral-border-color: #e5e7eb; /* Standard gray border, like Tailwind's gray-200 */
+            --input-border-color: #d1d5db; /* Tailwind gray-300 for input-like borders */
+            --placeholder-text-color: #9ca3af; /* Tailwind gray-400 for placeholder text */
+            /* New theme color for Keywords category */
+            --theme-blue-light-bg: rgba(59, 130, 246, 0.15); 
+            --theme-blue-border: rgba(59, 130, 246, 0.4);
+            --theme-blue-text: #2563eb; /* Tailwind blue-600 */
+            --conveyor-fade-bg: rgba(248, 249, 247, 1); /* Background color of the conveyor's parent */
+            --conveyor-fade-bg-transparent: rgba(248, 249, 247, 0);
+        }
+
+        /* --- Navbar Styling (Bonewhite Background) --- */
+        nav.sticky {
+            background-color: var(--theme-navbar-bg) !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1) !important;
+            border-bottom: 1px solid var(--neutral-border-color) !important;
+        }
+
+        /* Default Nav Link Color */
+        .md\\:block .ml-10 a.nav-link-desktop,
+        #mobile-menu a.nav-link-mobile,
+        #mobile-menu button.nav-link-mobile {
+            color: var(--theme-green-dark) !important;
+            transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease, font-weight 0.2s ease;
+            position: relative;
+            overflow: visible !important;
+            padding-bottom: 5px;
+        }
+
+        /* Nav links hover effect */
+        .md\\:block .ml-10 a.nav-link-desktop:hover,
+        #mobile-menu a.nav-link-mobile:hover,
+        #mobile-menu button.nav-link-mobile:hover {
+            background-color: var(--theme-gold-light-bg) !important;
+            color: var(--theme-gold) !important;
+            transform: translateY(-2px);
+            font-weight: 600 !important;
+        }
+
+        /* Nav link hover bar */
+        .md\\:block .ml-10 a.nav-link-desktop::after,
+        #mobile-menu a.nav-link-mobile::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 3px;
+            background-color: var(--theme-gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease-out;
+        }
+        .md\\:block .ml-10 a.nav-link-desktop:hover::after,
+        #mobile-menu a.nav-link-mobile:hover::after {
+            transform: scaleX(1);
+        }
+         #mobile-menu button.nav-link-mobile::after { content: none !important; }
+         #mobile-menu button.nav-link-mobile { padding-bottom: 0; }
+
+
+        /* Logo hover effect */
+        .flex-shrink-0 img.h-20 { transition: transform 0.3s ease, opacity 0.3s ease; }
+        .flex-shrink-0 img.h-20:hover { transform: scale(1.08); opacity: 0.85; }
+
+        /* Desktop Search Button */
+        #search-open-button {
+            background-color: #FDFCF9;
+            border: 1px solid var(--theme-green-light-bg);
+            border-radius: 0.375rem;
+            padding: 0.4rem 0.75rem;
+            max-width: 300px;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: var(--placeholder-text-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        #search-open-button:hover {
+            background-color: var(--theme-navbar-bg);
+            border-color: var(--theme-green-dark);
+        }
+        #search-open-button:focus {
+            outline: none;
+            border-color: var(--theme-gold) !important;
+            box-shadow: 0 0 0 2px var(--theme-gold-lighter-bg) !important;
+        }
+        #search-open-button .search-bar-icon {
+            color: var(--theme-green-dark);
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+            height: 1.25rem;
+            width: 1.25rem;
+            transition: color 0.2s ease;
+        }
+        #search-open-button:hover .search-bar-icon {
+            color: var(--theme-gold);
+        }
+        #search-open-button .search-bar-placeholder-text {
+            color: inherit;
+            font-size: inherit;
+            font-weight: normal;
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Keyboard Shortcut Hint Styling */
+        .kbd-shortcut {
+            display: inline-flex; align-items: center; justify-content: center;
+            font-family: 'Inter', sans-serif; background-color: #e5e7eb;
+            color: #4b5563; border: 1px solid #9ca3af;
+            border-bottom-width: 2px; border-radius: 0.25rem;
+            padding: 0.1rem 0.35rem; font-size: 0.7em;
+            font-weight: 600; line-height: 1; white-space: nowrap;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        #search-open-button-mobile .kbd-shortcut {
+            background-color: var(--theme-green-dark); color: var(--theme-gold);
+            border-color: var(--theme-gold-darker);
+        }
+        #search-open-button-mobile:hover .kbd-shortcut {
+            background-color: var(--theme-green-darker-text) !important; color: white !important;
+            border-color: var(--theme-green-dark) !important;
+        }
+        #searchPlaceholderOverlay .kbd-shortcut {
+            background-color: #f3f4f6; color: #6b7280; border-color: #d1d5db;
+            font-size: 0.85em; font-weight: 500; padding: 0.05rem 0.25rem;
+            margin: 0 0.1rem; border-bottom-width: 1px;
+        }
+        #searchPlaceholderOverlay .kbd-shortcut:hover {
+            background-color: #f3f4f6; color: #6b7280; border-color: #d1d5db;
+        }
+
+        /* Profile Badge Theming */
+        #profile-badge-button.bg-green-600 { background-color: var(--theme-gold) !important; transition: background-color 0.2s ease; }
+        #profile-badge-button.hover\\:bg-green-700:hover { background-color: var(--theme-gold-darker) !important; }
+        #profile-badge-button.focus\\:ring-green-600:focus { --tw-ring-color: var(--theme-gold) !important; }
+        #mobile-menu .bg-green-600 { background-color: var(--theme-gold) !important; }
+
+
+        /* Mobile Menu Toggle Button Theming */
+        .mobile-menu-button { color: var(--theme-green-dark) !important; background-color: transparent !important; transition: color 0.2s ease, background-color 0.2s ease; }
+        .mobile-menu-button:hover { background-color: var(--theme-gold-light-bg) !important; color: var(--theme-gold) !important; }
+        .mobile-menu-button.focus\\:ring-green-500:focus { --tw-ring-color: var(--theme-gold) !important; }
+
+        /* Dropdown Menu Styles */
+        .dropdown-menu { transition: opacity 0.2s ease-out, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: top right; background-color: #ffffff; border: 1px solid var(--neutral-border-color); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .profile-initials { display: flex; align-items: center; justify-content: center; font-weight: 500; color: white; }
+        .dropdown-divider { height: 1px; margin: 0.5rem 0; overflow: hidden; background-color: rgba(253, 184, 19, 0.25); }
+        .dropdown-greeting-container { padding: 0.5rem 1rem; border-bottom: 1px solid rgba(253, 184, 19, 0.25); margin-bottom: 0.25rem; line-height: 1.4; }
+        .greeting-text { color: #6b7280; font-size: 0.875rem; display: block; }
+        .greeting-name { color: var(--theme-green-dark) !important; font-size: 0.875rem; font-weight: 500; display: block; word-break: break-word; overflow-wrap: break-word; white-space: normal; cursor: pointer; }
+        
+        .dropdown-menu a.group, .dropdown-menu button.group { display: flex; align-items: center; width: 100%; text-align: left; } /* Ensure buttons also take full width */
+        .dropdown-menu a.group svg, .dropdown-menu button.group svg {
+            margin-right: 0.75rem; width: 1.25rem; height: 1.25rem;
+            color: #9ca3af; transition: color 0.15s ease-in-out;
+        }
+        .dropdown-menu a.group:hover svg, .dropdown-menu button.group:hover svg { color: var(--theme-green-dark); }
+        .dropdown-menu a.text-gray-700.hover\\:bg-amber-100:hover,
+        .dropdown-menu button.text-gray-700.hover\\:bg-amber-100:hover, 
+        .dropdown-menu a.group.text-gray-700.hover\\:bg-amber-100:hover,
+        .dropdown-menu button.group.text-gray-700.hover\\:bg-amber-100:hover {
+            background-color: var(--theme-gold-light-bg) !important;
+            color: var(--theme-green-dark) !important;
+        }
+        .dropdown-menu a.group.text-gray-700.hover\\:bg-amber-100:hover svg,
+        .dropdown-menu button.group.text-gray-700.hover\\:bg-amber-100:hover svg {
+            color: var(--theme-green-dark) !important;
+        }
+        /* Styles for Log Out button in dropdown */
+        .dropdown-menu button.text-red-600.hover\\:bg-red-200:hover { 
+            background-color: rgba(220, 38, 38, 0.15) !important; 
+            color: #DC2626 !important; 
+        }
+        .dropdown-menu button.group.text-red-600 svg { color: #f87171; } 
+        .dropdown-menu button.group.text-red-600.hover\\:bg-red-200:hover svg {
+            color: #EF4444 !important; 
+        }
+        
+        .count-badge { margin-left: auto; padding: 0.125rem 0.5rem; border-radius: 9999px; background-color: var(--theme-gold-light-bg) !important; font-size: 0.75rem; font-weight: 500; color: var(--theme-green-dark) !important; transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out; }
+        .dropdown-menu a.group:hover .count-badge { background-color: var(--theme-green-dark) !important; color: white !important; }
+
+        /* Mobile menu dropdown items */
+        #mobile-menu a.hover\\:bg-amber-100:hover, #mobile-menu button.hover\\:bg-amber-100:hover { background-color: var(--theme-gold-light-bg) !important; color: var(--theme-green-dark) !important; }
+        #mobile-menu button.text-red-600:hover { background-color: rgba(220, 38, 38, 0.15) !important; color: #DC2626 !important; }
+        #mobile-menu .bg-amber-100.text-green-800 { background-color: var(--theme-gold-light-bg) !important; color: var(--theme-green-dark) !important; }
+
+        /* --- Search Overlay Styles with Animated Blob Background --- */
+        #search-overlay {
+            position: fixed; /* Ensures it covers the viewport */
+            top: 0; left: 0; right: 0; bottom: 0;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            background-color: rgba(0, 40, 29, 0.65);
+            z-index: 40; /* Higher than navbar */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+            display: flex;
+            padding: 1rem; /* Reduced padding for smaller screens */
+            justify-content: center;
+            align-items: flex-start; /* Align to top for scroll */
+            overflow-y: auto; /* Allow vertical scroll for overlay itself */
+        }
+        #search-overlay.visible { opacity: 1; pointer-events: auto; }
+
+        /* Animated Blobs */
+        #search-overlay::before,
+        #search-overlay::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0;
+        }
+
+        #search-overlay::before { /* Gold Blob */
+            width: 45vw; height: 45vw;
+            min-width: 280px; max-width: 450px;
+            min-height: 280px; max-height: 450px;
+            background: var(--theme-gold);
+            top: 5%; left: 5%;
+            animation: moveBlob1 20s infinite alternate ease-in-out;
+        }
+
+        #search-overlay::after { /* Green Blob */
+            width: 55vw; height: 55vw;
+            min-width: 320px; max-width: 550px;
+            min-height: 320px; max-height: 550px;
+            background: var(--theme-green-dark);
+            bottom: 2%; right: 2%;
+            animation: moveBlob2 24s infinite alternate ease-in-out 2.5s;
+        }
+
+        @keyframes moveBlob1 {
+            0%   { transform: translate(-15%, -15%) scale(0.8); opacity: 0.25; }
+            25%  { transform: translate(15%, -5%) scale(1.1); opacity: 0.4; }
+            50%  { transform: translate(5%, 15%) scale(0.9); opacity: 0.3; }
+            75%  { transform: translate(-10%, 5%) scale(1.2); opacity: 0.45; }
+            100% { transform: translate(-15%, -15%) scale(0.8); opacity: 0.25; }
+        }
+
+        @keyframes moveBlob2 {
+            0%   { transform: translate(10%, 10%) scale(0.9); opacity: 0.3; }
+            25%  { transform: translate(-5%, 15%) scale(0.7); opacity: 0.2; }
+            50%  { transform: translate(-15%, -10%) scale(1.15); opacity: 0.4; }
+            75%  { transform: translate(0%, -15%) scale(0.8); opacity: 0.25; }
+            100% { transform: translate(10%, 10%) scale(0.9); opacity: 0.3; }
+        }
+        
+        /* Content within the search overlay */
+        .search-overlay-content {
+            background-color: rgba(248, 249, 247, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%; max-width: 48rem; /* lg:max-w-3xl */
+            margin-top: 2vh; /* Give some space from top */
+            margin-bottom: 2vh; /* Give some space from bottom */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            border: 1px solid var(--neutral-border-color);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease, backdrop-filter 0.3s ease;
+            position: relative;
+            z-index: 1;
+            max-height: 96vh; /* Limit height */
+            display: flex; flex-direction: column;
+        }
+        #search-overlay.visible .search-overlay-content { transform: translateY(0); }
+        
+        .search-input-wrapper-overlay {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--neutral-border-color);
+            flex-shrink: 0;
+            position: relative; /* For positioning the clear button & spinner */
+        }
+        .search-icon-overlay { width: 1.5rem; height: 1.5rem; color: var(--theme-green-dark); margin-right: 0.75rem; flex-shrink: 0; }
+        #searchInputOverlay {
+            width: 100%;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            color: var(--theme-green-darker-text);
+            background-color: transparent;
+            border: none;
+            outline: none;
+            padding-right: 7.5rem; /* Increased padding for "Clear" text button AND spinner */
+        }
+        #searchInputOverlay::placeholder { color: #6c757d; opacity: 0.8; }
+        
+        #clearSearchInputButton {
+            position: absolute;
+            right: 0.75rem; top: 50%; transform: translateY(-50%);
+            background-color: transparent; color: var(--theme-green-dark);
+            font-size: 0.875rem; font-weight: 500; padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem; border: 1px solid transparent;
+            display: none; cursor: pointer;
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            z-index: 20; white-space: nowrap;
+        }
+        #clearSearchInputButton:hover {
+            color: var(--theme-gold-darker); background-color: var(--theme-gold-lighter-bg); border-color: var(--theme-gold);
+        }
+        #clearSearchInputButton.visible { display: inline-flex; align-items: center; }
+        
+        #loadingSpinnerOverlay {
+            position: absolute; right: 4.5rem; top: 50%; transform: translateY(-50%);
+            display: none; z-index: 10;
+        }
+        #loadingSpinnerOverlay.visible { display: inline-block; }
+        #loadingSpinnerOverlay svg { animation: spin 1s linear infinite; height: 1.25rem; width: 1.25rem; color: var(--theme-green-dark); }
+
+        .search-overlay-close-btn {
+            position: absolute; top: 0.75rem; right: 0.75rem; /* Adjusted for consistency */
+            padding: 0.5rem; border-radius: 9999px;
+            background-color: rgba(255, 255, 255, 0.1); color: #e5e7eb;
+            transition: background-color 0.2s, color 0.2s; z-index: 50; cursor: pointer;
+        }
+        .search-overlay-close-btn:hover { background-color: rgba(255, 255, 255, 0.25); color: #ffffff; }
+        .search-overlay-close-btn svg { width: 1.25rem; height: 1.25rem; } /* Slightly smaller */
+
+        /* Top Keywords Conveyor Belt Styles */
+        .top-keywords-section {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--neutral-border-color);
+            background-color: rgba(248, 249, 247, 0.5);
+            flex-shrink: 0;
+            position: relative; 
+        }
+        .top-keywords-label {
+            font-size: 0.875rem; color: var(--theme-green-dark);
+            margin-bottom: 0.5rem; font-weight: 500; display: block;
+        }
+        .keywords-conveyor-container {
+            width: 100%;
+            overflow-x: auto; 
+            position: relative; 
+            height: auto; 
+            padding-top: 4px; /* Space for scaled items */
+            padding-bottom: 12px; /* Space for scrollbar + scaled items */
+            -webkit-overflow-scrolling: touch; 
+        }
+        /* Improved Fade effects for scrollable conveyor */
+        .keywords-conveyor-container::before,
+        .keywords-conveyor-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0; /* Cover full height including padding for scrollbar */
+            width: 60px; /* Increased width for smoother fade */
+            z-index: 2; 
+            pointer-events: none; 
+        }
+        .keywords-conveyor-container::before {
+            left: 0;
+            background: linear-gradient(to right, var(--conveyor-fade-bg) 20%, var(--conveyor-fade-bg-transparent) 100%);
+        }
+        .keywords-conveyor-container::after {
+            right: 0;
+            background: linear-gradient(to left, var(--conveyor-fade-bg) 20%, var(--conveyor-fade-bg-transparent) 100%);
+        }
+
+        .keywords-conveyor-belt {
+            display: flex; 
+            width: max-content; 
+            padding-left: 5px; 
+            padding-right: 5px; 
+        }
+       
+        .keyword-conveyor-item {
+            font-size: 0.875rem; color: var(--theme-green-dark);
+            background-color: var(--theme-green-lighter-bg);
+            padding: 0.35rem 0.85rem; 
+            margin-right: 0.6rem; 
+            border-radius: 16px; 
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--theme-green-border);
+            white-space: nowrap; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            /* margin-top/bottom removed as container padding handles it */
+        }
+        .keyword-conveyor-item:hover {
+            background-color: var(--theme-gold-light-bg);
+            color: var(--theme-green-darker-text);
+            border-color: var(--theme-gold);
+            transform: scale(1.12); 
+            filter: none !important; 
+            z-index: 10; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .keyword-conveyor-item.blurred-neighbor {
+            filter: blur(1.5px);
+            transform: scale(0.95); 
+            opacity: 0.7;
+        }
+        /* Hide scrollbar for a cleaner look, but still scrollable */
+        .keywords-conveyor-container::-webkit-scrollbar {
+            height: 5px;
+        }
+        .keywords-conveyor-container::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        .keywords-conveyor-container::-webkit-scrollbar-thumb {
+            background: var(--theme-green-light-bg);
+            border-radius: 10px;
+        }
+        .keywords-conveyor-container::-webkit-scrollbar-thumb:hover {
+            background: var(--theme-green-dark);
+        }
+        /* For Firefox */
+        .keywords-conveyor-container {
+            scrollbar-width: thin; 
+            scrollbar-color: var(--theme-green-light-bg) transparent; 
+        }
+
+
+        .category-buttons-container-overlay {
+            padding: 0.75rem 1rem 0.5rem; border-bottom: 1px solid var(--neutral-border-color);
+            display: flex; flex-wrap: wrap; gap: 0.5rem;
+            background-color: rgba(248, 249, 247, 0.5); flex-shrink: 0;
+        }
+        .category-filter-button {
+            font-size: 0.875rem; color: var(--theme-green-dark); background-color: var(--theme-green-lighter-bg);
+            padding: 0.375rem 0.875rem; border-radius: 9999px; cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--theme-green-border); font-weight: 500;
+        }
+        .category-filter-button:hover {
+            background-color: var(--theme-gold-light-bg); color: var(--theme-green-darker-text); border-color: var(--theme-gold);
+        }
+        .category-filter-button.active {
+            background-color: var(--theme-green-dark) !important; color: white !important;
+            border-color: var(--theme-green-dark) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filters-container-overlay { padding: 0.75rem 1rem 1rem; background-color: rgba(248, 249, 247, 0.5); border-bottom: 1px solid var(--neutral-border-color); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; flex-shrink: 0; }
+        .filter-item-overlay { display: flex; flex-direction: column; }
+        .filter-item-overlay label { font-size: 0.75rem; font-weight: 500; color: var(--theme-green-dark); margin-bottom: 0.25rem; }
+        .filter-item-overlay select { width: 100%; padding: 0.5rem 0.75rem; font-size: 0.875rem; border: 1px solid var(--theme-green-border); border-radius: 0.375rem; background-color: rgba(255,255,255,0.8); transition: border-color 0.2s ease, box-shadow 0.2s ease; appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23006A4E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
+        .filter-item-overlay select:focus { outline: none; border-color: var(--theme-gold); box-shadow: 0 0 0 2px var(--theme-gold-lighter-bg); }
+
+        /* Search Results Area - Categorized */
+        #search-results-overlay { padding: 0.5rem; overflow-y: auto; flex-grow: 1; }
+        .search-results-category-section { margin-bottom: 1.5rem; }
+        .search-results-category-header {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center; 
+            font-size: 1.125rem; 
+            font-weight: 600; 
+            padding: 0.75rem; 
+            border-bottom-width: 3px; 
+            border-bottom-style: solid;
+            margin-bottom: 1rem; 
+            border-radius: 0.375rem; 
+        }
+        .search-results-category-header .header-icon {
+            width: 1.75rem; 
+            height: 1.75rem; 
+            margin-bottom: 0.375rem; 
+        }
+        /* Distinct colors for category headers */
+        .search-results-category-header.documents-header {
+            border-bottom-color: var(--theme-gold); 
+            background-color: var(--theme-gold-lighter-bg);
+            color: var(--theme-gold-darker); 
+        }
+        .search-results-category-header.documents-header .header-icon {
+            color: var(--theme-gold-darker); 
+        }
+        .search-results-category-header.authors-header {
+            border-bottom-color: var(--theme-green-dark); 
+            background-color: var(--theme-green-lighter-bg);
+            color: var(--theme-green-darker-text); 
+        }
+         .search-results-category-header.authors-header .header-icon {
+            color: var(--theme-green-dark); 
+        }
+        .search-results-category-header.keywords-header {
+            border-bottom-color: var(--theme-blue-border); 
+            background-color: var(--theme-blue-light-bg);
+            color: var(--theme-blue-text); 
+        }
+        .search-results-category-header.keywords-header .header-icon {
+            color: var(--theme-blue-text); 
+        }
+
+
+        .search-result-item {
+            display: block; padding: 0.75rem 1rem; border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            text-decoration: none; margin-bottom: 0.5rem; border: 1px solid transparent;
+        }
+        .search-result-item:hover {
+            background-color: var(--theme-gold-lighter-bg); border-color: var(--theme-gold);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        .search-result-title {
+            font-weight: 600; font-size: 1rem; color: var(--theme-green-dark);
+            margin-bottom: 0.25rem; transition: color 0.2s ease-in-out;
+        }
+        .search-result-item:hover .search-result-title { color: var(--theme-green-darker-text); }
+        
+        .search-result-meta-primary {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75rem; color: #4b5563; margin-bottom: 0.375rem;
+        }
+        .search-result-item:hover .search-result-meta-primary { color: var(--theme-green-dark); }
+        .search-result-author { font-weight: 500; }
+        .search-result-year { color: #6b7280; }
+        .search-result-item:hover .search-result-year { color: var(--theme-green-dark); }
+
+        .search-result-category-keywords {
+            margin-bottom: 0.5rem; display: flex; align-items: center;
+            flex-wrap: wrap; gap: 0.5rem;
+        }
+        .search-result-category-tag {
+            font-size: 0.7rem; font-weight: 500; padding: 0.125rem 0.5rem;
+            border-radius: 9999px; background-color: var(--theme-green-lighter-bg);
+            color: var(--theme-green-darker-text); text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .search-result-item:hover .search-result-category-tag { background-color: var(--theme-green-dark); color: white; }
+
+        .search-result-keywords-container { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+        .keyword-pill {
+            font-size: 0.7rem; background-color: #e5e7eb; color: #4b5563;
+            padding: 0.125rem 0.625rem; border-radius: 9999px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .search-result-item:hover .keyword-pill { background-color: var(--theme-gold); color: var(--theme-green-darker-text); }
+
+        .search-result-desc {
+            font-size: 0.875rem; color: #6b7280; line-height: 1.5;
+            transition: color 0.2s ease-in-out;
+        }
+        .search-result-item:hover .search-result-desc { color: #374151; }
+        
+        /* Author specific result item */
+        .author-result-item .search-result-title { font-size: 1.1rem; }
+        .author-result-item .search-result-meta-primary { font-size: 0.8rem; color: var(--theme-green-dark); }
+        .author-result-item .article-count { font-style: italic; }
+
+        /* Keyword specific result item */
+        .keyword-result-item .search-result-title { font-size: 1rem; font-weight: 500; }
+        .keyword-result-item .related-articles-count { font-size: 0.8rem; color: #4b5563; }
+
+
+        .search-no-results { text-align: center; padding: 2rem 1rem; color: #6b7280; font-size: 1rem;}
+        .highlight { background-color: var(--theme-gold-light-bg) !important; color: var(--theme-green-darker-text) !important; font-weight: 600; padding: 0 2px; border-radius: 3px; }
+        
+        #search-results-overlay::-webkit-scrollbar { width: 8px; }
+        #search-results-overlay::-webkit-scrollbar-track { background: rgba(0, 106, 78, 0.05); border-radius: 10px; }
+        #search-results-overlay::-webkit-scrollbar-thumb { background: var(--theme-green-light-bg); border-radius: 10px; }
+        #search-results-overlay::-webkit-scrollbar-thumb:hover { background: var(--theme-green-dark); }
+
+        .show-all-results-button-container {
+            padding: 1rem;
+            text-align: center;
+            border-top: 1px solid var(--neutral-border-color);
+            flex-shrink: 0; /* Prevent this from shrinking if content above is too much */
+        }
+        .show-all-results-btn {
+            background-color: var(--theme-gold);
+            color: var(--theme-green-darker-text);
+            padding: 0.625rem 1.5rem; /* py-2.5 px-6 */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 600; /* semibold */
+            border-radius: 0.375rem; /* rounded-md */
+            border: 1px solid var(--theme-gold-darker);
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+        }
+        .show-all-results-btn:hover {
+            background-color: var(--theme-gold-darker);
+            transform: translateY(-1px);
+        }
+        .show-all-results-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--theme-gold-light-bg);
+        }
+
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        @media (min-width: 768px) { /* md breakpoint */
+            #searchInputOverlay { font-size: 1.125rem; line-height: 1.75rem; }
+            .search-overlay-close-btn svg { width: 1.5rem; height: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img class="h-20 w-auto" src="spud-logo.png" alt="MySite Logo" onerror="this.onerror=null; this.src='https://placehold.co/100x80/F9F6EE/006A4E?text=Logo';">
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#" class="nav-link-desktop text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                            <a href="#" class="nav-link-desktop text-gray-700 px-3 py-2 rounded-md text-sm font-medium">About</a>
+                            <a href="#" class="nav-link-desktop text-gray-700 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:flex md:items-center md:ml-6">
+                    <div class="ml-4 flex items-center space-x-4">
+                        <button id="search-open-button" type="button" class="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-600 flex items-center">
+                            <svg class="search-bar-icon h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="search-bar-placeholder-text">Search (Ctrl+K)</span>
+                        </button>
+                        
+                        <div id="user-auth-container" class="relative inline-block text-left">
+                            </div>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden"> <button type="button" class="mobile-menu-button bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">About</a>
+                <a href="#" class="nav-link-mobile text-gray-700 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                 <button id="search-open-button-mobile" type="button" class="nav-link-mobile w-full mt-2 text-left text-gray-700 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between">
+                    Search
+                    <span class="kbd-shortcut">Ctrl+K</span>
+                </button>
+            </div>
+            <div id="mobile-user-auth-container" class="pt-4 pb-3 border-t border-gray-200">
+                 </div>
+        </div>
+    </nav>
+
+    <div id="search-overlay" class="hidden">
+        <button id="search-close-button" type="button" class="search-overlay-close-btn">
+            <span class="sr-only">Close search</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="search-overlay-content">
+            <div class="search-input-wrapper-overlay">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="search-icon-overlay">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+                <input type="text" id="searchInputOverlay" placeholder="Search articles, documents..." autocomplete="off" class=""/>
+                <button id="clearSearchInputButton" type="button" aria-label="Clear search input">
+                    Clear
+                </button>
+                 <div id="loadingSpinnerOverlay" aria-label="Loading search results">
+                    <svg viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="top-keywords-section">
+                <span class="top-keywords-label">Top Keywords</span>
+                <div class="keywords-conveyor-container">
+                    <ul class="keywords-conveyor-belt" id="keywordsConveyorBelt">
+                        </ul>
+                </div>
+            </div>
+            <div id="categoryButtonsContainerOverlay" class="category-buttons-container-overlay">
+                </div>
+            <div class="filters-container-overlay">
+                <div class="filter-item-overlay">
+                    <label for="authorFilterOverlay">Author</label>
+                    <select id="authorFilterOverlay">
+                        <option value="">All</option>
+                         </select>
+                </div>
+                <div class="filter-item-overlay">
+                    <label for="keywordsFilterOverlay">Keyword(s)</label>
+                    <select id="keywordsFilterOverlay">
+                        <option value="">All</option>
+                         </select>
+                </div>
+                <div class="filter-item-overlay">
+                    <label for="yearFilterOverlay">Year</label>
+                    <select id="yearFilterOverlay">
+                        <option value="">All</option>
+                         </select>
+                </div>
+            </div>
+            <div id="search-results-overlay">
+                 <p id="searchPlaceholderOverlay" class="search-no-results">Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.</p>
+            </div>
+            <div id="showAllResultsContainer" class="show-all-results-button-container hidden">
+                <button id="showAllResultsBtn" type="button" class="show-all-results-btn">Show All Results</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="py-6 sm:px-0">
+            <div class="border-4 border-dashed border-gray-200 rounded-lg min-h-[24rem] flex items-center justify-center">
+                <h1 class="text-2xl font-semibold text-gray-900 p-4 text-center">Page Content Area</h1>
+            </div>
+        </div>
+         <div class="py-6 sm:px-0 mt-8">
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Another Section</h2>
+                <p class="text-gray-600">Some more content goes here to make the page longer and demonstrate how the sticky navbar works.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    /*
+    ---------------------------------------------------------------------------
+    FRONTEND SIMULATION SCRIPT (NO ON-PAGE LOGIN)
+    ---------------------------------------------------------------------------
+    This script simulates a backend by using embedded mock data.
+    User profile display assumes authentication is handled externally,
+    but a mock user is shown, and a simulated logout is available.
+    ---------------------------------------------------------------------------
+    */
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Constants & Global Variables ---
+        const RAINBOW_GRADIENT = 'linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #8b5cf6)';
+        const DEBOUNCE_DELAY = 300; // ms for search input debounce
+        const SIMULATED_API_DELAY = 300; // ms to simulate network latency
+        // const CONVEYOR_ANIMATION_DURATION = 30; // No longer needed for manual scroll
+
+        let isDropdownOpen = false;
+        let originalBodyOverflow = '';
+        // currentUser will represent a mock logged-in user for UI demonstration.
+        let currentUser = {
+            userId: 1, email: "user@example.com", name: "Alex Montgomery",
+            initials: "AM", libraryCount: 12, token: "mock-token-for-ui-display"
+        };
+
+
+        // --- Embedded Mock Data (Simulates Database) ---
+        const mockArticles = [
+            { id: "doc1", title: "The Future of AI in Deno Applications", description: "Exploring advanced AI integrations within the Deno runtime environment, focusing on machine learning models.", url: "#/ai-deno", category: "Thesis", author: "Dr. Ada Lovelace", year: "2024", keywords: ["AI", "Deno", "Machine Learning", "JavaScript"] },
+            { id: "doc2", title: "PostgreSQL Performance Tuning for Large Datasets", description: "A comprehensive guide to optimizing PostgreSQL queries and database structure for scalability and speed.", url: "#/postgres-perf", category: "Dissertation", author: "Prof. Charles Babbage", year: "2023", keywords: ["PostgreSQL", "Database", "Performance", "SQL"] },
+            { id: "doc3", title: "Modern Web Development with Oak and TypeScript", description: "Building robust and type-safe web APIs using the Oak framework in Deno.", url: "#/oak-ts", category: "Synergy", author: "Dr. Grace Hopper", year: "2024", keywords: ["Web Development", "Oak", "TypeScript", "Deno", "API"] },
+            { id: "doc4", title: "Understanding Asynchronous JavaScript in Deno", description: "A deep dive into async/await, Promises, and event loop mechanics in Deno.", url: "#/deno-async", category: "Thesis", author: "Dr. Ada Lovelace", year: "2023", keywords: ["JavaScript", "Deno", "Async", "Concurrency"] },
+            { id: "doc5", title: "Securing Deno Applications: Best Practices", description: "Essential security considerations for developing and deploying Deno applications, including permissions and dependency management.", url: "#/deno-security", category: "Confluence", author: "Mr. Alan Turing", year: "2024", keywords: ["Deno", "Security", "Permissions", "Cybersecurity"] },
+            { id: "doc6", title: "Data Analysis with Python and PostgreSQL", description: "Leveraging Python libraries like Pandas with PostgreSQL for effective data analysis and visualization.", url: "#/python-postgres-data", category: "Dissertation", author: "Prof. Charles Babbage", year: "2022", keywords: ["Python", "PostgreSQL", "Data Analysis", "Pandas"] },
+            { id: "doc7", title: "The Art of Prompt Engineering for LLMs", description: "Techniques and strategies for crafting effective prompts to guide Large Language Models.", url: "#/prompt-engineering", category: "Thesis", author: "Dr. Ada Lovelace", year: "2024", keywords: ["AI", "LLM", "Prompt Engineering", "NLP"] },
+            { id: "doc8", title: "Advanced SQL: Window Functions and CTEs", description: "Mastering complex SQL queries using window functions and common table expressions for analytics.", url: "#/advanced-sql", category: "Synergy", author: "Prof. Charles Babbage", year: "2023", keywords: ["SQL", "Database", "Analytics", "PostgreSQL"] },
+            { id: "doc9", title: "Building Microservices with Deno and gRPC", description: "A practical guide to designing and implementing microservice architectures using Deno and gRPC.", url: "#/deno-grpc", category: "Dissertation", author: "Dr. Grace Hopper", year: "2024", keywords: ["Deno", "Microservices", "gRPC", "API"] },
+            { id: "doc10", title: "Ethical Considerations in AI Development", description: "An overview of the ethical challenges and frameworks relevant to the development and deployment of AI systems.", url: "#/ai-ethics", category: "Confluence", author: "Mr. Alan Turing", year: "2023", keywords: ["AI", "Ethics", "Machine Learning", "Society"] }
+        ];
+
+        const mockAuthorsDB = [ 
+            { id: "author1", name: "Dr. Ada Lovelace", profileUrl: "#/authors/ada-lovelace", keywords: ["AI", "Deno", "JavaScript", "LLM"] },
+            { id: "author2", name: "Prof. Charles Babbage", profileUrl: "#/authors/charles-babbage", keywords: ["PostgreSQL", "Database", "Python", "SQL"] },
+            { id: "author3", name: "Dr. Grace Hopper", profileUrl: "#/authors/grace-hopper", keywords: ["Web Development", "Oak", "TypeScript", "Microservices"] },
+            { id: "author4", name: "Mr. Alan Turing", profileUrl: "#/authors/alan-turing", keywords: ["Security", "Deno", "Cybersecurity", "Ethics"] },
+        ];
+        const mockAuthors = mockAuthorsDB.map(author => ({
+            ...author,
+            articleCount: mockArticles.filter(article => article.author === author.name).length
+        }));
+
+        const mockKeywordsListDB = [ 
+            { id: "kw1", keyword: "Deno", url: "#/keywords/deno" },
+            { id: "kw2", keyword: "PostgreSQL", url: "#/keywords/postgresql" },
+            { id: "kw3", keyword: "AI", url: "#/keywords/ai" },
+            { id: "kw4", keyword: "JavaScript", url: "#/keywords/javascript" },
+            { id: "kw5", keyword: "Security", url: "#/keywords/security" },
+            { id: "kw6", keyword: "Python", url: "#/keywords/python" },
+            { id: "kw7", keyword: "Web Development", url: "#/keywords/web-development" },
+            { id: "kw8", keyword: "TypeScript", url: "#/keywords/typescript" },
+            { id: "kw9", keyword: "Database", url: "#/keywords/database" },
+            { id: "kw10", keyword: "Performance", url: "#/keywords/performance" },
+            { id: "kw11", keyword: "API", url: "#/keywords/api" },
+            { id: "kw12", keyword: "Machine Learning", url: "#/keywords/ml" },
+            { id: "kw13", keyword: "Prompt Engineering", url: "#/keywords/prompt-engineering" },
+            { id: "kw14", keyword: "Ethics", url: "#/keywords/ethics" },
+            { id: "kw15", keyword: "SQL", url: "#/keywords/sql" },
+        ];
+        const mockKeywordsList = mockKeywordsListDB.map(kw => ({
+            ...kw,
+            relatedArticleCount: mockArticles.filter(article => article.keywords.includes(kw.keyword)).length
+        }));
+
+        const mockTop10Keywords = ["Deno", "AI", "PostgreSQL", "JavaScript", "Security", "Python", "Web Development", "TypeScript", "Database", "Performance", "LLM", "Oak Framework"];
+
+
+        // --- DOM Element Selection ---
+        const bodyElement = document.body;
+        const userAuthContainer = document.getElementById('user-auth-container');
+        const mobileUserAuthContainer = document.getElementById('mobile-user-auth-container');
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOpenIcon = mobileMenuButton?.querySelector('svg:not(.hidden)');
+        const mobileMenuCloseIcon = mobileMenuButton?.querySelector('svg.hidden');
+        const searchOpenButton = document.getElementById('search-open-button');
+        const searchOpenButtonMobile = document.getElementById('search-open-button-mobile');
+        const searchOverlay = document.getElementById('search-overlay');
+        const searchCloseButton = document.getElementById('search-close-button');
+        const searchInputOverlay = document.getElementById('searchInputOverlay');
+        const clearSearchInputButton = document.getElementById('clearSearchInputButton');
+        const searchResultsOverlay = document.getElementById('search-results-overlay');
+        const loadingSpinnerOverlay = document.getElementById('loadingSpinnerOverlay');
+        
+        const topKeywordsSection = document.querySelector('.top-keywords-section'); 
+        const keywordsConveyorContainer = document.querySelector('.keywords-conveyor-container');
+        const keywordsConveyorBelt = document.getElementById('keywordsConveyorBelt'); 
+
+        const categoryButtonsContainerOverlay = document.getElementById('categoryButtonsContainerOverlay');
+        const showAllResultsContainer = document.getElementById('showAllResultsContainer');
+        const showAllResultsBtn = document.getElementById('showAllResultsBtn');
+        const authorFilterOverlay = document.getElementById('authorFilterOverlay');
+        const keywordsFilterOverlay = document.getElementById('keywordsFilterOverlay');
+        const yearFilterOverlay = document.getElementById('yearFilterOverlay');
+        
+
+        // --- Simulated API Functions (No actual fetch calls) ---
+        function simulateFetchFiltersData() {
+            console.log("Simulating API call: fetchFiltersData");
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const categories = [...new Set(mockArticles.map(a => a.category))].sort();
+                    const authors = [...new Set(mockArticles.map(a => a.author))].sort();
+                    const years = [...new Set(mockArticles.map(a => a.year))].sort((a, b) => parseInt(b) - parseInt(a));
+                    const keywordsFromArticles = [...new Set(mockArticles.flatMap(a => a.keywords))].sort();
+                    resolve({
+                        categories,
+                        authors,
+                        keywords: keywordsFromArticles,
+                        years
+                    });
+                }, SIMULATED_API_DELAY);
+            });
+        }
+
+        function simulateFetchTopKeywords() {
+            console.log("Simulating API call: fetchTopKeywords");
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve({ top_keywords: mockTop10Keywords.slice(0, 10) }); 
+                }, SIMULATED_API_DELAY);
+            });
+        }
+
+        function simulatePerformSearch(searchQuery, filters) {
+            console.log("Simulating API call: performSearch with query:", searchQuery, "and filters:", filters);
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const lowerQuery = searchQuery.toLowerCase().trim();
+                    const filteredDocuments = mockArticles.filter(article => {
+                        const titleMatch = lowerQuery ? article.title.toLowerCase().includes(lowerQuery) : true;
+                        const descMatch = lowerQuery ? article.description.toLowerCase().includes(lowerQuery) : true;
+                        const keywordMatch = lowerQuery && article.keywords ? article.keywords.some(kw => kw.toLowerCase().includes(lowerQuery)) : true;
+                        const categoryFilterMatch = filters.category ? article.category === filters.category : true;
+                        const authorFilterMatch = filters.author ? article.author === filters.author : true;
+                        const yearFilterMatch = filters.year ? article.year === filters.year : true;
+                        const keywordDropdownMatch = filters.keywords && article.keywords ? article.keywords.some(kw => kw.toLowerCase() === filters.keywords.toLowerCase()) : true;
+                        return (lowerQuery ? (titleMatch || descMatch || keywordMatch) : true) && categoryFilterMatch && authorFilterMatch && yearFilterMatch && keywordDropdownMatch;
+                    });
+                    const filteredAuthors = mockAuthors.filter(author => {
+                        return lowerQuery ? author.name.toLowerCase().includes(lowerQuery) : false;
+                    }).map(author => ({ ...author, title: author.name }));
+                    const filteredKeywords = mockKeywordsList.filter(kw => {
+                         return lowerQuery ? kw.keyword.toLowerCase().includes(lowerQuery) : false;
+                    }).map(kw => ({ ...kw, title: kw.keyword }));
+
+                    resolve({
+                        query: searchQuery,
+                        results: {
+                            documents: { label: "Documents", hits: filteredDocuments, count: filteredDocuments.length },
+                            authors: { label: "Authors", hits: filteredAuthors, count: filteredAuthors.length },
+                            keywords: { label: "Matching Keywords", hits: filteredKeywords, count: filteredKeywords.length }
+                        }
+                    });
+                }, SIMULATED_API_DELAY + 200);
+            });
+        }
+        
+        function simulateCheckAuthStatus() {
+            console.log("Simulating Auth Status Check");
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    if (currentUser) { 
+                        resolve({ isAuthenticated: true, user: currentUser });
+                    } else { 
+                        resolve({ isAuthenticated: false, user: null });
+                    }
+                }, SIMULATED_API_DELAY - 200); 
+            });
+        }
+
+        // --- UI Update Functions ---
+        function createProfileBadge(user) {
+            const profileBadgeContainer = document.createElement('div');
+            profileBadgeContainer.id = 'profile-badge-container-dynamic';
+            profileBadgeContainer.className = 'relative inline-block text-left';
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.id = 'profile-badge-button';
+            button.className = 'flex items-center justify-center w-10 h-10 bg-green-600 rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-600 profile-initials text-lg select-none';
+            button.setAttribute('aria-expanded', 'false');
+            button.setAttribute('aria-haspopup', 'true');
+            button.innerHTML = `<span class="text-white font-medium">${user.initials || '??'}</span>`;
+            button.addEventListener('click', (event) => { event.stopPropagation(); toggleDropdown(); });
+
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.id = 'dropdown-menu';
+            dropdownMenu.className = 'dropdown-menu origin-top-right absolute right-0 mt-2 w-60 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none opacity-0 transform scale-95 pointer-events-none z-50 select-none';
+            dropdownMenu.setAttribute('role', 'menu');
+            dropdownMenu.setAttribute('aria-orientation', 'vertical');
+            dropdownMenu.setAttribute('aria-labelledby', 'profile-badge-button');
+            dropdownMenu.tabIndex = -1;
+
+            const greetingTime = getGreetingTime();
+            dropdownMenu.innerHTML = `
+                <div class="dropdown-greeting-container" role="none">
+                    <span id="greeting-part" class="greeting-text">${greetingTime.greeting}! ${greetingTime.emoji}</span>
+                    <span id="user-name-part" class="greeting-name">${user.name || 'User'}</span>
+                </div>
+                <div class="py-1" role="none">
+                    <a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                        Profile
+                    </a>
+                    <a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        History
+                    </a>
+                    <a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                        Library
+                        ${user.libraryCount > 0 ? `<span class="count-badge">${user.libraryCount}</span>` : ''}
+                    </a>
+                    <div class="dropdown-divider mx-1" role="separator"></div>
+                    <button type="button" id="logout-button-desktop" class="group text-red-600 flex items-center px-4 py-2 text-sm hover:bg-red-200 hover:text-red-800 rounded-md mx-1 w-full text-left" role="menuitem" tabindex="-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>
+                        Log Out
+                    </button>
+                </div>
+            `;
+            profileBadgeContainer.appendChild(button);
+            profileBadgeContainer.appendChild(dropdownMenu);
+            return profileBadgeContainer;
+        }
+
+        function createMobileProfileSection(user) {
+            const section = document.createElement('div');
+            section.innerHTML = `
+                <div class="flex items-center px-5">
+                    <div class="flex-shrink-0">
+                         <div class="flex items-center justify-center w-10 h-10 bg-green-600 rounded-full profile-initials text-lg select-none">
+                            <span class="text-white font-medium">${user.initials || '??'}</span>
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium leading-none text-gray-800">${user.name || 'User'}</div>
+                        <div class="text-sm font-medium leading-none text-gray-500">${user.email || ''}</div>
+                    </div>
+                </div>
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 hover:text-green-800">Profile</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 hover:text-green-800">History</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 hover:text-green-800">Library ${user.libraryCount > 0 ? `<span class="ml-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-green-800">${user.libraryCount}</span>` : ''}</a>
+                    <button type="button" id="logout-button-mobile" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-200 hover:text-red-800">Log Out</button>
+                </div>
+            `;
+            return section;
+        }
+        
+        function getGreetingTime() {
+            const currentTime = new Date();
+            const currentHour = currentTime.getHours();
+            let greeting, emoji;
+            if (currentHour < 12) { greeting = "Good morning"; emoji = "☀️"; }
+            else if (currentHour < 18) { greeting = "Good afternoon"; emoji = "👋"; }
+            else { greeting = "Good evening"; emoji = "🌙"; }
+            return { greeting, emoji };
+        }
+
+        function handleUserNameClick(event) {
+            const userNamePartElement = document.getElementById('user-name-part');
+            if (!userNamePartElement) return;
+            userNamePartElement.style.backgroundImage = RAINBOW_GRADIENT;
+            userNamePartElement.style.webkitBackgroundClip = 'text';
+            userNamePartElement.style.backgroundClip = 'text';
+            userNamePartElement.style.color = 'transparent';
+            userNamePartElement.style.webkitTextFillColor = 'transparent';
+            setTimeout(() => {
+                userNamePartElement.style.backgroundImage = '';
+                userNamePartElement.style.webkitBackgroundClip = '';
+                userNamePartElement.style.backgroundClip = '';
+                userNamePartElement.style.color = '';
+                userNamePartElement.style.webkitTextFillColor = '';
+            }, 1000);
+            if (typeof confetti === 'function') {
+                const y = (event.clientY / window.innerHeight);
+                const baseConfettiOptions = { particleCount: 60, spread: 70, origin: { y }, colors: ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#6366f1', '#8b5cf6'] };
+                confetti({ ...baseConfettiOptions, angle: 60, origin: { ...baseConfettiOptions.origin, x: 0 } });
+                confetti({ ...baseConfettiOptions, angle: 120, origin: { ...baseConfettiOptions.origin, x: 1 } });
+            } else {
+                console.warn("Confetti library (confetti.js) not found or loaded.");
+            }
+        }
+
+        function toggleDropdown(forceClose = false) {
+            const dropdownMenuElement = document.getElementById('dropdown-menu');
+            const profileButtonElement = document.getElementById('profile-badge-button');
+            if (!dropdownMenuElement || !profileButtonElement) return;
+            isDropdownOpen = forceClose ? false : !isDropdownOpen;
+            dropdownMenuElement.classList.toggle('opacity-0', !isDropdownOpen);
+            dropdownMenuElement.classList.toggle('scale-95', !isDropdownOpen);
+            dropdownMenuElement.classList.toggle('pointer-events-none', !isDropdownOpen);
+            dropdownMenuElement.classList.toggle('opacity-100', isDropdownOpen);
+            dropdownMenuElement.classList.toggle('scale-100', isDropdownOpen);
+            dropdownMenuElement.classList.toggle('pointer-events-auto', isDropdownOpen);
+            profileButtonElement.setAttribute('aria-expanded', isDropdownOpen.toString());
+        }
+
+        function toggleMobileMenu(forceClose = false) {
+             if (!mobileMenu || !mobileMenuButton || !mobileMenuOpenIcon || !mobileMenuCloseIcon) {
+                 console.error("Essential mobile menu elements are missing from the DOM."); return;
+             }
+            const isCurrentlyExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+            const openMenu = forceClose ? false : !isCurrentlyExpanded;
+            mobileMenuButton.setAttribute('aria-expanded', openMenu.toString());
+            mobileMenu.classList.toggle('hidden', !openMenu);
+            mobileMenuOpenIcon.classList.toggle('hidden', openMenu);
+            mobileMenuCloseIcon.classList.toggle('hidden', !openMenu);
+        }
+        
+        function openSearch() {
+             if (!searchOverlay || !searchInputOverlay || !bodyElement) return;
+            originalBodyOverflow = bodyElement.style.overflow;
+            bodyElement.style.overflow = 'hidden'; 
+            searchOverlay.scrollTop = 0; 
+            searchOverlay.classList.remove('hidden');
+            searchOverlay.classList.add('visible');
+            setTimeout(() => {
+                searchInputOverlay.focus();
+                if (clearSearchInputButton) {
+                    clearSearchInputButton.classList.toggle('visible', searchInputOverlay.value.length > 0);
+                }
+            }, 50);
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                toggleMobileMenu(true);
+            }
+            const currentPlaceholderText = `Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.`;
+            const activeCategoryButton = categoryButtonsContainerOverlay.querySelector('.category-filter-button.active');
+            const currentCategory = activeCategoryButton ? activeCategoryButton.dataset.category : "";
+
+            if (searchInputOverlay.value === '' &&
+                (currentCategory || authorFilterOverlay.value || keywordsFilterOverlay.value || yearFilterOverlay.value)) {
+                performSearchOverlay(); 
+            } else if (searchInputOverlay.value === '' && searchResultsOverlay) {
+                searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
+                showAllResultsContainer.classList.add('hidden');
+                const newPlaceholder = document.getElementById('searchPlaceholderOverlay');
+                if(newPlaceholder) newPlaceholder.classList.remove('hidden');
+            } else if (searchResultsOverlay.innerHTML.trim() === '') { 
+                 searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
+                 showAllResultsContainer.classList.add('hidden');
+            }
+        }
+
+        function closeSearch() {
+             if (!searchOverlay || !searchInputOverlay || !bodyElement) return;
+            bodyElement.style.overflow = originalBodyOverflow; 
+            searchOverlay.classList.remove('visible');
+            searchOverlay.classList.add('hidden');
+            searchInputOverlay.value = '';
+            if (clearSearchInputButton) {
+                clearSearchInputButton.classList.remove('visible');
+            }
+            searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.</p>`;
+            showAllResultsContainer.classList.add('hidden');
+        }
+
+        function highlightText(text, query) {
+            if (!query || typeof text !== 'string') return text || '';
+            const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`(${escapedQuery})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        let debounceTimerOverlay;
+        function debounceOverlay(func, delay) {
+            return function(...args) {
+                clearTimeout(debounceTimerOverlay);
+                debounceTimerOverlay = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        function populateSelectWithOptions(selectElement, optionsArray, placeholder = "All") {
+            if (!selectElement) return;
+            const currentVal = selectElement.value;
+            while (selectElement.options.length > 1) { 
+                selectElement.remove(1);
+            }
+            if (Array.isArray(optionsArray)) {
+                optionsArray.forEach(item => {
+                    const option = document.createElement('option');
+                    if (typeof item === 'object' && item.value && item.text) {
+                        option.value = item.value;
+                        option.textContent = item.text;
+                    } else { 
+                        option.value = item;
+                        option.textContent = item;
+                    }
+                    selectElement.appendChild(option);
+                });
+            }
+            if (currentVal && Array.from(selectElement.options).some(opt => opt.value === currentVal)) {
+                selectElement.value = currentVal;
+            } else {
+                selectElement.value = ""; 
+            }
+        }
+
+        function populateCategoryButtons(categories) {
+            if (!categoryButtonsContainerOverlay) return;
+            categoryButtonsContainerOverlay.innerHTML = ''; 
+
+            const allButton = document.createElement('button');
+            allButton.type = 'button';
+            allButton.className = 'category-filter-button active'; 
+            allButton.textContent = 'All Categories';
+            allButton.dataset.category = ''; 
+            allButton.addEventListener('click', handleCategoryButtonClick);
+            categoryButtonsContainerOverlay.appendChild(allButton);
+
+            if (Array.isArray(categories)) {
+                categories.forEach(category => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'category-filter-button';
+                    button.textContent = category;
+                    button.dataset.category = category;
+                    button.addEventListener('click', handleCategoryButtonClick);
+                    categoryButtonsContainerOverlay.appendChild(button);
+                });
+            }
+        }
+
+        function handleCategoryButtonClick(event) {
+            if (!categoryButtonsContainerOverlay) return;
+            const buttons = categoryButtonsContainerOverlay.querySelectorAll('.category-filter-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            performSearchOverlay(); 
+        }
+        
+        async function initializeFiltersAndTopKeywords() {
+            try {
+                const filtersData = await simulateFetchFiltersData();
+                if (filtersData.categories) populateCategoryButtons(filtersData.categories);
+                if (filtersData.authors) populateSelectWithOptions(authorFilterOverlay, filtersData.authors);
+                if (filtersData.keywords) populateSelectWithOptions(keywordsFilterOverlay, filtersData.keywords);
+                if (filtersData.years) populateSelectWithOptions(yearFilterOverlay, filtersData.years);
+
+                const topKeywordsData = await simulateFetchTopKeywords();
+                
+                if (topKeywordsData.top_keywords && keywordsConveyorBelt) {
+                    keywordsConveyorBelt.innerHTML = ''; 
+                    // No duplication needed for manual scroll
+                    const keywordsToDisplay = topKeywordsData.top_keywords; 
+
+                    keywordsToDisplay.forEach(term => {
+                        const li = document.createElement('li');
+                        li.className = 'keyword-conveyor-item';
+                        li.dataset.query = term;
+                        li.textContent = term;
+                        
+                        li.addEventListener('click', () => {
+                            if (searchInputOverlay) {
+                                searchInputOverlay.value = term;
+                                if (clearSearchInputButton) clearSearchInputButton.classList.add('visible');
+                                performSearchOverlay();
+                                searchInputOverlay.focus();
+                            }
+                        });
+
+                        // Hover effects for enlarge and blur neighbors
+                        li.addEventListener('mouseenter', (e) => {
+                            const currentItem = e.target;
+                            const prevSibling = currentItem.previousElementSibling;
+                            const nextSibling = currentItem.nextElementSibling;
+                            if(prevSibling) prevSibling.classList.add('blurred-neighbor');
+                            if(nextSibling) nextSibling.classList.add('blurred-neighbor');
+                        });
+                        li.addEventListener('mouseleave', (e) => {
+                            const currentItem = e.target;
+                            const prevSibling = currentItem.previousElementSibling;
+                            const nextSibling = currentItem.nextElementSibling;
+                            if(prevSibling) prevSibling.classList.remove('blurred-neighbor');
+                            if(nextSibling) nextSibling.classList.remove('blurred-neighbor');
+                        });
+                        keywordsConveyorBelt.appendChild(li);
+                    });
+                }
+
+
+            } catch (error) { 
+                console.error("Error initializing filters or top keywords (simulation):", error);
+                 if (topKeywordsSection) { 
+                     const label = topKeywordsSection.querySelector('.top-keywords-label');
+                     if (label) label.textContent = 'Top Keywords';
+                     const errorSpan = document.createElement('span');
+                     errorSpan.className = 'text-sm text-gray-500 ml-2';
+                     errorSpan.textContent = 'Could not load.';
+                     if(label) label.insertAdjacentElement('afterend', errorSpan);
+                     else topKeywordsSection.appendChild(errorSpan); 
+                }
+                 if (categoryButtonsContainerOverlay) {
+                    categoryButtonsContainerOverlay.innerHTML = '<span class="text-sm text-gray-500">Could not load categories.</span>';
+                }
+            }
+        }
+
+        async function performSearchOverlay() {
+            if (!searchResultsOverlay || !searchInputOverlay || !loadingSpinnerOverlay ) {
+                 console.error("Search UI elements missing for performSearchOverlay!");
+                 return;
+            }
+            const query = searchInputOverlay.value.trim();
+            let selectedCategory = "";
+            if (categoryButtonsContainerOverlay) {
+                const activeButton = categoryButtonsContainerOverlay.querySelector('.category-filter-button.active');
+                if (activeButton) selectedCategory = activeButton.dataset.category;
+            }
+            const selectedAuthor = authorFilterOverlay.value;
+            const selectedKeywordsFilter = keywordsFilterOverlay.value; 
+            const selectedYear = yearFilterOverlay.value;
+            
+            const hasQuery = !!query;
+            const hasFilters = !!(selectedCategory || selectedAuthor || selectedKeywordsFilter || selectedYear);
+            const currentPlaceholderText = `Start typing, apply filters, or press <span class="kbd-shortcut">Ctrl+K</span> or <span class="kbd-shortcut">/</span> to search.`;
+            let placeholderEl = document.getElementById('searchPlaceholderOverlay');
+
+            if (!hasQuery && !hasFilters) { 
+                searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
+                showAllResultsContainer.classList.add('hidden');
+                loadingSpinnerOverlay.classList.remove('visible');
+                if (clearSearchInputButton) clearSearchInputButton.classList.remove('visible');
+                return;
+            }
+
+            if(placeholderEl) placeholderEl.classList.add('hidden');
+            loadingSpinnerOverlay.classList.add('visible');
+            searchResultsOverlay.innerHTML = ''; 
+            showAllResultsContainer.classList.add('hidden');
+
+            try {
+                const filters = {
+                    category: selectedCategory,
+                    author: selectedAuthor,
+                    keywords: selectedKeywordsFilter, 
+                    year: selectedYear
+                };
+                const apiResponse = await simulatePerformSearch(query, filters);
+                displaySearchResultsOverlay(apiResponse, query); 
+            } catch (error) { 
+                console.error("Error performing search (simulation):", error);
+                searchResultsOverlay.innerHTML = `<p class="search-no-results">Error fetching search results.</p>`;
+                showAllResultsContainer.classList.add('hidden');
+            } finally {
+                loadingSpinnerOverlay.classList.remove('visible');
+            }
+        }
+
+        function displaySearchResultsOverlay(apiResponse, queryToHighlight) {
+            if (!searchResultsOverlay || !apiResponse || !apiResponse.results) {
+                searchResultsOverlay.innerHTML = `<p class="search-no-results">No results found or invalid response.</p>`;
+                showAllResultsContainer.classList.add('hidden');
+                return;
+            }
+            searchResultsOverlay.innerHTML = ''; 
+            const fragment = document.createDocumentFragment();
+            let totalResultsAcrossCategories = 0;
+            
+            const categoryDisplayConfig = {
+                documents: { 
+                    defaultLabel: 'Documents', 
+                    icon: `<svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>`,
+                    headerClass: 'documents-header'
+                },
+                authors: { 
+                    defaultLabel: 'Authors', 
+                    icon: `<svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>`,
+                    headerClass: 'authors-header'
+                },
+                keywords: { 
+                    defaultLabel: 'Matching Keywords', 
+                    icon: `<svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>`,
+                    headerClass: 'keywords-header'
+                 }
+            };
+
+            Object.keys(categoryDisplayConfig).forEach(key => {
+                const catInfo = categoryDisplayConfig[key];
+                const categoryData = apiResponse.results[key];
+
+                if (categoryData && categoryData.hits && categoryData.hits.length > 0) {
+                    totalResultsAcrossCategories += categoryData.count;
+        
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'search-results-category-section';
+        
+                    const header = document.createElement('h3');
+                    header.className = `search-results-category-header ${catInfo.headerClass}`;
+                    header.innerHTML = `
+                        ${catInfo.icon}
+                        <span>${categoryData.label || catInfo.defaultLabel} (${categoryData.count})</span>
+                    `;
+                    sectionDiv.appendChild(header);
+        
+                    categoryData.hits.forEach(item => { 
+                        const resultElement = document.createElement('a');
+                        resultElement.href = item.url || '#';
+                        resultElement.classList.add('search-result-item');
+                        if (key === 'authors') resultElement.classList.add('author-result-item');
+                        if (key === 'keywords') resultElement.classList.add('keyword-result-item');
+                        
+                        resultElement.target = (item.url && item.url !== '#') ? "_blank" : "_self";
+                        resultElement.rel = (item.url && item.url !== '#') ? "noopener noreferrer" : "";
+        
+                        const titleHighlighted = highlightText(item.title, queryToHighlight);
+        
+                        if (key === 'documents') {
+                            const descHighlighted = highlightText(item.description, queryToHighlight);
+                            let keywordsHTML = '';
+                            if (item.keywords && Array.isArray(item.keywords)) {
+                                keywordsHTML = item.keywords.map(kw => `<span class="keyword-pill">${kw}</span>`).join('');
+                            } else if (typeof item.keywords === 'string') { 
+                                keywordsHTML = item.keywords.split(',').map(kw => kw.trim()).filter(kw => kw).map(kw => `<span class="keyword-pill">${kw}</span>`).join('');
+                            }
+                            resultElement.innerHTML = `
+                                <div class="search-result-title">${titleHighlighted || 'No Title'}</div>
+                                <div class="search-result-meta-primary">
+                                    ${item.author ? `<span class="search-result-author">By: ${item.author}</span>` : ''}
+                                    ${item.year ? `<span class="search-result-year">${item.year}</span>` : ''}
+                                </div>
+                                <div class="search-result-category-keywords">
+                                    ${item.category ? `<span class="search-result-category-tag">${item.category}</span>` : ''}
+                                    ${keywordsHTML ? `<div class="search-result-keywords-container">${keywordsHTML}</div>` : ''}
+                                </div>
+                                <div class="search-result-desc">${descHighlighted || 'No description.'}</div>
+                            `;
+                        } else if (key === 'authors') {
+                             resultElement.innerHTML = `
+                                <div class="search-result-title">${titleHighlighted || 'Unknown Author'}</div>
+                                <div class="search-result-meta-primary">
+                                    ${item.articleCount > 0 ? `<span class="article-count">${item.articleCount} document(s)</span>` : 'No documents found'}
+                                </div>`;
+                        } else if (key === 'keywords') {
+                            resultElement.innerHTML = `
+                                <div class="search-result-title">${titleHighlighted || 'Unknown Keyword'}</div>
+                                <div class="related-articles-count">
+                                    ${item.relatedArticleCount > 0 ? `Related to ${item.relatedArticleCount} document(s)`: 'No related documents'}
+                                </div>`;
+                        }
+                        sectionDiv.appendChild(resultElement);
+                    });
+                    fragment.appendChild(sectionDiv);
+                }
+            });
+            
+            if (totalResultsAcrossCategories === 0) {
+                let message = "No results found";
+                if (queryToHighlight) message += ` for "${highlightText(queryToHighlight, queryToHighlight)}"`;
+                const activeCategoryButton = categoryButtonsContainerOverlay?.querySelector('.category-filter-button.active');
+                const currentCategoryFilter = activeCategoryButton ? activeCategoryButton.dataset.category : "";
+                if (currentCategoryFilter || authorFilterOverlay.value || keywordsFilterOverlay.value || yearFilterOverlay.value) {
+                    message += " with the current filters";
+                }
+                searchResultsOverlay.innerHTML = `<p class="search-no-results">${message}.</p>`;
+                showAllResultsContainer.classList.add('hidden');
+            } else {
+                searchResultsOverlay.appendChild(fragment);
+                showAllResultsContainer.classList.remove('hidden'); 
+            }
+        }
+        
+        async function checkAuthStatusAndSetupUI() {
+            try {
+                const authData = await simulateCheckAuthStatus(); 
+                if (authData.isAuthenticated && authData.user) {
+                    currentUser = authData.user; 
+                    displayUserProfile(currentUser); 
+                } else {
+                    updateUIAfterLogout(); 
+                }
+            } catch (error) {
+                console.error("Error in checkAuthStatusAndSetupUI (simulation):", error);
+                updateUIAfterLogout(); 
+            }
+        }
+        
+        function displayUserProfile(user) {
+            if (!userAuthContainer || !mobileUserAuthContainer) return;
+
+            userAuthContainer.innerHTML = ''; 
+            const desktopBadge = createProfileBadge(user);
+            userAuthContainer.appendChild(desktopBadge);
+            const logoutButtonDesktop = desktopBadge.querySelector('#logout-button-desktop');
+            if (logoutButtonDesktop) logoutButtonDesktop.addEventListener('click', handleLogout); 
+            const userNamePartDesktop = desktopBadge.querySelector('#user-name-part');
+            if (userNamePartDesktop) userNamePartDesktop.addEventListener('click', handleUserNameClick);
+
+            mobileUserAuthContainer.innerHTML = '';
+            const mobileProfile = createMobileProfileSection(user);
+            mobileUserAuthContainer.appendChild(mobileProfile);
+            const logoutButtonMobile = mobileProfile.querySelector('#logout-button-mobile');
+            if (logoutButtonMobile) logoutButtonMobile.addEventListener('click', handleLogout); 
+        }
+
+        function updateUIAfterLogout() {
+            if (!userAuthContainer || !mobileUserAuthContainer) return;
+            userAuthContainer.innerHTML = ''; 
+            mobileUserAuthContainer.innerHTML = ''; 
+            console.log("UI updated for logged out state (or no user initially).");
+        }
+
+        async function handleLogout() {
+            console.log("Simulating logout action.");
+            await new Promise(resolve => setTimeout(resolve, SIMULATED_API_DELAY -100)); 
+            currentUser = null; 
+            updateUIAfterLogout(); 
+            if (isDropdownOpen) toggleDropdown(true); 
+             alert("You have been logged out (simulation)."); 
+        }
+
+
+        // --- Event Listeners Setup ---
+        const debouncedPerformSearch = debounceOverlay(performSearchOverlay, DEBOUNCE_DELAY);
+        
+        if (searchInputOverlay) {
+            searchInputOverlay.addEventListener('input', () => {
+                debouncedPerformSearch();
+                if (clearSearchInputButton) {
+                    clearSearchInputButton.classList.toggle('visible', searchInputOverlay.value.length > 0);
+                }
+            });
+        }
+
+        if (clearSearchInputButton) {
+            clearSearchInputButton.addEventListener('click', () => {
+                searchInputOverlay.value = '';
+                clearSearchInputButton.classList.remove('visible');
+                performSearchOverlay();
+                searchInputOverlay.focus();
+            });
+        }
+        
+        [authorFilterOverlay, keywordsFilterOverlay, yearFilterOverlay].forEach(filterElement => {
+            if (filterElement) filterElement.addEventListener('change', performSearchOverlay);
+        });
+
+        // Event listener for the keywords conveyor belt container to start animation
+        if (keywordsConveyorContainer && keywordsConveyorBelt) {
+            // No automatic animation for manual scroll
+        }
+
+
+        if (showAllResultsBtn) {
+            showAllResultsBtn.addEventListener('click', () => {
+                alert("Show All Results button clicked! (This is a placeholder for full results view/pagination)");
+            });
+        }
+
+        if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => toggleMobileMenu());
+        if (searchOpenButton) searchOpenButton.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
+        if (searchOpenButtonMobile) searchOpenButtonMobile.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
+        if (searchCloseButton) searchCloseButton.addEventListener('click', closeSearch);
+        
+        if (searchOverlay) {
+            searchOverlay.addEventListener('click', (event) => {
+                if (event.target === searchOverlay) { 
+                     closeSearch();
+                }
+            });
+        }
+
+        document.addEventListener('click', (event) => {
+            const profileBadgeContainerDynamic = document.getElementById('profile-badge-container-dynamic');
+            if (isDropdownOpen && profileBadgeContainerDynamic && !profileBadgeContainerDynamic.contains(event.target)) {
+                 toggleDropdown(true);
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (isDropdownOpen) { toggleDropdown(true); event.preventDefault(); return; }
+                if (searchOverlay.classList.contains('visible')) { closeSearch(); event.preventDefault(); return; }
+            }
+            const isInputFocused = document.activeElement?.tagName === 'INPUT' ||
+                                 document.activeElement?.tagName === 'TEXTAREA' ||
+                                 document.activeElement?.isContentEditable;
+            if (event.key === '/' && !isInputFocused && !searchOverlay.classList.contains('visible')) {
+                event.preventDefault(); openSearch();
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+                event.preventDefault();
+                if (searchOverlay.classList.contains('visible')) {
+                    if (document.activeElement !== searchInputOverlay) searchInputOverlay.focus();
+                } else { openSearch(); }
+            }
+        });
+
+        // --- Initialization ---
+        checkAuthStatusAndSetupUI(); 
+        initializeFiltersAndTopKeywords(); 
+
+        console.log("UI scripts initialized with frontend simulation (Log Out Re-added).");
+    });
+    </script>
+</body>
+</html>
