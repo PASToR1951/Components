@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NavBar - Fixed Categories</title>
+    <title>NavBar - MockData</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -582,8 +582,7 @@
                             </svg>
                             <span class="search-bar-placeholder-text">Search (Ctrl+K)</span>
                         </button>
-                        <div id="user-auth-container" class="relative inline-block text-left">
-                            </div>
+                        <div id="user-auth-container" class="relative inline-block text-left"></div>
                     </div>
                 </div>
                 <div class="-mr-2 flex md:hidden">
@@ -604,8 +603,7 @@
                     Search <span class="kbd-shortcut">Ctrl+K</span>
                 </button>
             </div>
-            <div id="mobile-user-auth-container" class="pt-4 pb-3 border-t border-gray-200">
-                </div>
+            <div id="mobile-user-auth-container" class="pt-4 pb-3 border-t border-gray-200"></div>
         </div>
     </nav>
 
@@ -641,8 +639,7 @@
                     </button>
                 </div>
             </div>
-            <div id="categoryButtonsContainerOverlay" class="category-buttons-container-overlay">
-                </div>
+            <div id="categoryButtonsContainerOverlay" class="category-buttons-container-overlay"></div>
             <div class="filters-container-overlay">
                 <div class="filter-item-overlay">
                     <label for="authorFilterOverlay">Author</label>
@@ -687,6 +684,7 @@
     // --- Constants & Global Variables ---
     const RAINBOW_GRADIENT = 'linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #8b5cf6)';
     const DEBOUNCE_DELAY = 300;
+    const SIMULATED_API_DELAY = 300;
     const CLICK_THRESHOLD_PX = 10; // For conveyor belt item click vs drag
 
     // CSS Classes
@@ -700,13 +698,12 @@
     // Data Attributes
     const DATA_CATEGORY_ATTR = 'data-category';
 
-    // --- Fixed Predefined Categories ---
-    // Define your fixed categories here. The names should match what your CSS expects for styling (e.g., 'category-tile-thesis').
-    const PREDEFINED_CATEGORIES = ["Thesis", "Dissertation", "Confluence", "Synergy"]; // ADD YOUR CATEGORIES HERE
-
     let isDropdownOpen = false;
     let originalBodyOverflow = '';
-    let currentUser = null; // Will be populated by checkAuthStatus from backend
+    let currentUser = {
+        userId: 1, email: "user@example.com", name: "Alex Montgomery",
+        initials: "AM", libraryCount: 12, token: "mock-token-for-ui-display"
+    };
 
     // Conveyor scroll & drag variables
     let currentTranslateX = 0;
@@ -721,15 +718,23 @@
     let pointerDownOnKeywordItem = null;
     let dragMovedDistance = 0;
 
-    // Placeholder image paths for categories - These can remain or be fetched from backend if dynamic
+    // Placeholder image paths for categories
     const categoryImagePaths = {
-        "Thesis": "thesis.svg", // Ensure these SVGs are in your public assets
+        "Thesis": "thesis.svg",
         "Dissertation": "dissertation.svg",
         "Confluence": "confluence.svg",
         "Synergy": "synergy.svg",
-        "All": "all.svg",
+        "All": "all.svg", 
         "Default": "https://placehold.co/48x48/cccccc/333333?text=?&font=Inter"
     };
+
+    // --- Embedded Mock Data ---
+    const mockArticles = [ { id: "doc1", title: "The Future of AI in Deno Applications", description: "Exploring advanced AI integrations within the Deno runtime environment, focusing on machine learning models.", url: "#/ai-deno", category: "Thesis", author: "Dr. Ada Lovelace", year: "2024", keywords: ["AI", "Deno", "Machine Learning", "JavaScript"] },{ id: "doc2", title: "PostgreSQL Performance Tuning for Large Datasets", description: "A comprehensive guide to optimizing PostgreSQL queries and database structure for scalability and speed.", url: "#/postgres-perf", category: "Dissertation", author: "Prof. Charles Babbage", year: "2023", keywords: ["PostgreSQL", "Database", "Performance", "SQL"] },{ id: "doc3", title: "Modern Web Development with Oak and TypeScript", description: "Building robust and type-safe web APIs using the Oak framework in Deno.", url: "#/oak-ts", category: "Synergy", author: "Dr. Grace Hopper", year: "2024", keywords: ["Web Development", "Oak", "TypeScript", "Deno", "API"] },{ id: "doc4", title: "Understanding Asynchronous JavaScript in Deno", description: "A deep dive into async/await, Promises, and event loop mechanics in Deno.", url: "#/deno-async", category: "Thesis", author: "Dr. Ada Lovelace", year: "2023", keywords: ["JavaScript", "Deno", "Async", "Concurrency"] },{ id: "doc5", title: "Securing Deno Applications: Best Practices", description: "Essential security considerations for developing and deploying Deno applications, including permissions and dependency management.", url: "#/deno-security", category: "Confluence", author: "Mr. Alan Turing", year: "2024", keywords: ["Deno", "Security", "Permissions", "Cybersecurity"] },{ id: "doc6", title: "Data Analysis with Python and PostgreSQL", description: "Leveraging Python libraries like Pandas with PostgreSQL for effective data analysis and visualization.", url: "#/python-postgres-data", category: "Dissertation", author: "Prof. Charles Babbage", year: "2022", keywords: ["Python", "PostgreSQL", "Data Analysis", "Pandas"] },{ id: "doc7", title: "The Art of Prompt Engineering for LLMs", description: "Techniques and strategies for crafting effective prompts to guide Large Language Models.", url: "#/prompt-engineering", category: "Thesis", author: "Dr. Ada Lovelace", year: "2024", keywords: ["AI", "LLM", "Prompt Engineering", "NLP"] },{ id: "doc8", title: "Advanced SQL: Window Functions and CTEs", description: "Mastering complex SQL queries using window functions and common table expressions for analytics.", url: "#/advanced-sql", category: "Synergy", author: "Prof. Charles Babbage", year: "2023", keywords: ["SQL", "Database", "Analytics", "PostgreSQL"] },{ id: "doc9", title: "Building Microservices with Deno and gRPC", description: "A practical guide to designing and implementing microservice architectures using Deno and gRPC.", url: "#/deno-grpc", category: "Dissertation", author: "Dr. Grace Hopper", year: "2024", keywords: ["Deno", "Microservices", "gRPC", "API"] },{ id: "doc10", title: "Ethical Considerations in AI Development", description: "An overview of the ethical challenges and frameworks relevant to the development and deployment of AI systems.", url: "#/ai-ethics", category: "Confluence", author: "Mr. Alan Turing", year: "2023", keywords: ["AI", "Ethics", "Machine Learning", "Society"] }];
+    const mockAuthorsDB = [ { id: "author1", name: "Dr. Ada Lovelace", profileUrl: "#/authors/ada-lovelace", keywords: ["AI", "Deno", "JavaScript", "LLM"] },{ id: "author2", name: "Prof. Charles Babbage", profileUrl: "#/authors/charles-babbage", keywords: ["PostgreSQL", "Database", "Python", "SQL"] },{ id: "author3", name: "Dr. Grace Hopper", profileUrl: "#/authors/grace-hopper", keywords: ["Web Development", "Oak", "TypeScript", "Microservices"] },{ id: "author4", name: "Mr. Alan Turing", profileUrl: "#/authors/alan-turing", keywords: ["Security", "Deno", "Cybersecurity", "Ethics"] },];
+    const mockAuthors = mockAuthorsDB.map(author => ({ ...author, articleCount: mockArticles.filter(article => article.author === author.name).length }));
+    const mockKeywordsListDB = [ { id: "kw1", keyword: "Deno", url: "#/keywords/deno" }, { id: "kw2", keyword: "PostgreSQL", url: "#/keywords/postgresql" },{ id: "kw3", keyword: "AI", url: "#/keywords/ai" }, { id: "kw4", keyword: "JavaScript", url: "#/keywords/javascript" },{ id: "kw5", keyword: "Security", url: "#/keywords/security" }, { id: "kw6", keyword: "Python", url: "#/keywords/python" },{ id: "kw7", keyword: "Web Development", url: "#/keywords/web-development" }, { id: "kw8", keyword: "TypeScript", url: "#/keywords/typescript" },{ id: "kw9", keyword: "Database", url: "#/keywords/database" }, { id: "kw10", keyword: "Performance", url: "#/keywords/performance" },{ id: "kw11", keyword: "API", url: "#/keywords/api" }, { id: "kw12", keyword: "Machine Learning", url: "#/keywords/ml" },{ id: "kw13", keyword: "Prompt Engineering", url: "#/keywords/prompt-engineering" }, { id: "kw14", keyword: "Ethics", url: "#/keywords/ethics" },{ id: "kw15", keyword: "SQL", url: "#/keywords/sql" },];
+    const mockKeywordsList = mockKeywordsListDB.map(kw => ({ ...kw, relatedArticleCount: mockArticles.filter(article => article.keywords.includes(kw.keyword)).length }));
+    const mockTop10Keywords = ["Deno", "AI", "PostgreSQL", "JavaScript", "Security", "Python", "Web Development", "TypeScript", "Database", "Performance", "LLM", "Oak Framework"];
 
     // --- DOM Element Selection (Cached) ---
     const bodyElement = document.body;
@@ -759,130 +764,35 @@
     const keywordsFilterOverlay = document.getElementById('keywordsFilterOverlay');
     const yearFilterOverlay = document.getElementById('yearFilterOverlay');
 
-    // --- API Helper Function ---
-    async function fetchData(url, options = {}) {
-        try {
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                const errorBody = await response.text();
-                console.error(`HTTP error! Status: ${response.status}`, errorBody);
-                throw new Error(`HTTP error! Status: ${response.status}. Body: ${errorBody}`);
-            }
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                return await response.json();
-            }
-            return await response.text();
-        } catch (error) {
-            console.error('Fetch operation failed:', error);
-            throw error;
-        }
+    // --- Simulated API Functions ---
+    function simulateFetchFiltersData() { return new Promise(resolve => { setTimeout(() => { const categories = [...new Set(mockArticles.map(a => a.category))].sort(); const authors = [...new Set(mockArticles.map(a => a.author))].sort(); const years = [...new Set(mockArticles.map(a => a.year))].sort((a,b)=>parseInt(b)-parseInt(a)); const keywordsFromArticles = [...new Set(mockArticles.flatMap(a => a.keywords))].sort(); resolve({ categories, authors, keywords: keywordsFromArticles, years }); }, SIMULATED_API_DELAY); }); }
+    function simulateFetchTopKeywords() { return new Promise(resolve => { setTimeout(() => { resolve({ top_keywords: mockTop10Keywords.slice(0,10) }); }, SIMULATED_API_DELAY); }); }
+    function simulatePerformSearch(searchQuery, filters) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                const lowerQuery = searchQuery.toLowerCase().trim();
+                const filteredDocuments = mockArticles.filter(article => {
+                    const titleMatch = lowerQuery ? article.title.toLowerCase().includes(lowerQuery) : true;
+                    const descMatch = lowerQuery ? article.description.toLowerCase().includes(lowerQuery) : true;
+                    const keywordInArticleMatch = lowerQuery && article.keywords ? article.keywords.some(kw => kw.toLowerCase().includes(lowerQuery)) : true;
+                    let categoryFilterMatch = true;
+                    if (filters.category && filters.category.length > 0) {
+                        categoryFilterMatch = filters.category.includes(article.category);
+                    }
+                    const authorFilterMatch = filters.author ? article.author === filters.author : true;
+                    const yearFilterMatch = filters.year ? article.year === filters.year : true;
+                    const keywordDropdownMatch = filters.keywords && article.keywords ? article.keywords.some(kw => kw.toLowerCase() === filters.keywords.toLowerCase()) : true;
+                    return (lowerQuery ? (titleMatch || descMatch || keywordInArticleMatch) : true) && categoryFilterMatch && authorFilterMatch && yearFilterMatch && keywordDropdownMatch;
+                });
+                const filteredAuthors = mockAuthors.filter(author => lowerQuery ? author.name.toLowerCase().includes(lowerQuery) : false).map(author => ({...author, title: author.name}));
+                const filteredKeywords = mockKeywordsList.filter(kw => lowerQuery ? kw.keyword.toLowerCase().includes(lowerQuery) : false).map(kw => ({...kw, title: kw.keyword}));
+                resolve({ query: searchQuery, results: { documents: {label: "Documents", hits: filteredDocuments, count: filteredDocuments.length}, authors: {label: "Authors", hits: filteredAuthors, count: filteredAuthors.length}, keywords: {label: "Matching Keywords", hits: filteredKeywords, count: filteredKeywords.length} }});
+            }, SIMULATED_API_DELAY + 200);
+        });
     }
+    function simulateCheckAuthStatus() { return new Promise(resolve => { setTimeout(() => { if (currentUser) { resolve({isAuthenticated: true, user: currentUser}); } else { resolve({isAuthenticated: false, user: null}); } }, SIMULATED_API_DELAY - 200); }); }
 
-    // --- Backend API Functions ---
-
-    /**
-     * Fetches filter data (authors, years, keywords for dropdown, categoryCounts, totalDocuments) from the backend.
-     * Category *names* are now predefined on the frontend.
-     * Expected JSON structure from backend:
-     * {
-     * authors: string[],
-     * keywords: string[], // For the filter dropdown
-     * years: string[],
-     * categoryCounts: { "CategoryName1": count1, "CategoryName2": count2, ... },
-     * totalDocuments: number
-     * }
-     */
-    async function fetchFiltersData() {
-        const apiUrl = '/api/v1/filters-data'; // <-- REPLACE WITH YOUR ACTUAL DENO ENDPOINT
-        try {
-            const data = await fetchData(apiUrl);
-            return {
-                authors: data?.authors || [],
-                keywords: data?.keywords || [],
-                years: data?.years || [],
-                categoryCounts: data?.categoryCounts || {},
-                totalDocuments: data?.totalDocuments || 0
-            };
-        } catch (error) {
-            console.error("Error fetching filters data from backend:", error);
-            return { authors: [], keywords: [], years: [], categoryCounts: {}, totalDocuments: 0 }; // Default on error
-        }
-    }
-
-    async function fetchTopKeywords() {
-        const apiUrl = '/api/v1/top-keywords'; // <-- REPLACE WITH YOUR ACTUAL DENO ENDPOINT
-        try {
-            const data = await fetchData(apiUrl);
-            return data || { top_keywords: [] };
-        } catch (error) {
-            console.error("Error fetching top keywords from backend:", error);
-            return { top_keywords: [] };
-        }
-    }
-
-    async function performSearch(searchQuery, filters) {
-        let apiUrl = '/api/v1/search'; // <-- REPLACE WITH YOUR ACTUAL DENO ENDPOINT
-        const params = new URLSearchParams();
-        if (searchQuery) params.append('query', searchQuery);
-        if (filters.category && filters.category.length > 0) {
-            filters.category.forEach(cat => params.append('category', cat));
-        }
-        if (filters.author) params.append('author', filters.author);
-        if (filters.keywords) params.append('keyword_filter', filters.keywords);
-        if (filters.year) params.append('year', filters.year);
-
-        if (params.toString()) {
-            apiUrl += `?${params.toString()}`;
-        }
-        try {
-            const data = await fetchData(apiUrl);
-            return data;
-        } catch (error) {
-            console.error("Error performing search via backend:", error);
-            return {
-                query: searchQuery,
-                results: {
-                    documents: { label: "Documents", hits: [], count: 0 },
-                    authors: { label: "Authors", hits: [], count: 0 },
-                    keywords: { label: "Matching Keywords", hits: [], count: 0 }
-                }
-            };
-        }
-    }
-
-    async function checkAuthStatus() {
-        const apiUrl = '/api/v1/auth/status'; // <-- REPLACE WITH YOUR ACTUAL DENO ENDPOINT
-        try {
-            const data = await fetchData(apiUrl);
-            if (data.isAuthenticated && data.user) {
-                currentUser = data.user;
-            } else {
-                currentUser = null;
-            }
-            return data;
-        } catch (error) {
-            console.error("Error checking auth status with backend:", error);
-            currentUser = null;
-            return { isAuthenticated: false, user: null };
-        }
-    }
-
-    async function handleLogout() {
-        console.log("Attempting to log out via backend.");
-        const apiUrl = '/api/v1/auth/logout'; // <-- REPLACE WITH YOUR ACTUAL DENO ENDPOINT
-        try {
-            await fetchData(apiUrl, { method: 'POST' });
-            currentUser = null;
-            updateUIAfterLogout();
-            if (isDropdownOpen) toggleDropdown(true);
-            console.log("Logout successful.");
-        } catch (error) {
-            console.error("Logout failed via backend:", error);
-        }
-    }
-
-    // --- UI Update Functions (Mostly unchanged, except for data sources) ---
+    // --- UI Update Functions (Profile, Greeting, Menus) ---
     function createProfileBadge(user) { const profileBadgeContainer = document.createElement('div'); profileBadgeContainer.id = 'profile-badge-container-dynamic'; profileBadgeContainer.className = 'relative inline-block text-left'; const button = document.createElement('button'); button.type = 'button'; button.id = 'profile-badge-button'; button.className = 'flex items-center justify-center w-10 h-10 bg-green-600 rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-green-600 profile-initials text-lg select-none'; button.setAttribute('aria-expanded', 'false'); button.setAttribute('aria-haspopup', 'true'); button.innerHTML = `<span class="text-white font-medium">${user.initials || '??'}</span>`; button.addEventListener('click', (event) => { event.stopPropagation(); toggleDropdown(); }); const dropdownMenu = document.createElement('div'); dropdownMenu.id = 'dropdown-menu'; dropdownMenu.className = 'dropdown-menu origin-top-right absolute right-0 mt-2 w-60 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none opacity-0 transform scale-95 pointer-events-none z-50 select-none'; dropdownMenu.setAttribute('role', 'menu'); dropdownMenu.setAttribute('aria-orientation', 'vertical'); dropdownMenu.setAttribute('aria-labelledby', 'profile-badge-button'); dropdownMenu.tabIndex = -1; const greetingTime = getGreetingTime(); dropdownMenu.innerHTML = `<div class="dropdown-greeting-container" role="none"><span id="greeting-part" class="greeting-text">${greetingTime.greeting}! ${greetingTime.emoji}</span><span id="user-name-part" class="greeting-name">${user.name || 'User'}</span></div><div class="py-1" role="none"><a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>Profile</a><a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>History</a><a href="#" class="group text-gray-700 flex items-center px-4 py-2 text-sm hover:bg-amber-100 hover:text-green-800 rounded-md mx-1" role="menuitem" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>Library ${user.libraryCount > 0 ? `<span class="count-badge">${user.libraryCount}</span>`:''}</a><div class="dropdown-divider mx-1" role="separator"></div><button type="button" id="logout-button-desktop" class="group text-red-600 flex items-center px-4 py-2 text-sm hover:bg-red-200 hover:text-red-800 rounded-md mx-1 w-full text-left" role="menuitem" tabindex="-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" class="w-5 h-5 mr-3"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>Log Out</button></div>`; profileBadgeContainer.appendChild(button);profileBadgeContainer.appendChild(dropdownMenu); return profileBadgeContainer; }
     function createMobileProfileSection(user) { const section = document.createElement('div'); section.innerHTML = `<div class="flex items-center px-5"><div class="flex-shrink-0"><div class="flex items-center justify-center w-10 h-10 bg-green-600 rounded-full profile-initials text-lg select-none"><span class="text-white font-medium">${user.initials || '??'}</span></div></div><div class="ml-3"><div class="text-base font-medium leading-none text-gray-800">${user.name || 'User'}</div><div class="text-sm font-medium leading-none text-gray-500">${user.email || ''}</div></div></div><div class="mt-3 px-2 space-y-1"><a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 hover:text-green-800">Profile</a><a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 hover:text-green-800">History</a><a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 hover:text-green-800">Library ${user.libraryCount > 0 ? `<span class="ml-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-green-800">${user.libraryCount}</span>`:''}</a><button type="button" id="logout-button-mobile" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-200 hover:text-red-800">Log Out</button></div>`; return section; }
     function getGreetingTime() { const currentTime = new Date(); const currentHour = currentTime.getHours(); let greeting, emoji; if (currentHour < 12) { greeting = "Good morning"; emoji = "☀️"; } else if (currentHour < 18) { greeting = "Good afternoon"; emoji = "👋"; } else { greeting = "Good evening"; emoji = "🌙"; } return { greeting, emoji }; }
@@ -968,10 +878,10 @@
             selectElement.value = "";
         }
     }
-
     function populateCategoryButtons(categories, counts, totalCount) {
         if (!categoryButtonsContainerOverlay) return;
         categoryButtonsContainerOverlay.innerHTML = '';
+
         const allButton = document.createElement('button');
         allButton.type = 'button';
         allButton.className = `${CATEGORY_FILTER_BUTTON_CLASS} category-tile-all ${ACTIVE_CLASS}`;
@@ -992,7 +902,7 @@
                 const categoryClassName = category.toLowerCase().replace(/\s+/g, '-');
                 button.className = `${CATEGORY_FILTER_BUTTON_CLASS} category-tile-${categoryClassName}`;
                 button.setAttribute(DATA_CATEGORY_ATTR, category);
-                const count = counts[category] || 0; // Use count from fetched data
+                const count = counts[category] || 0;
                 const iconPath = categoryImagePaths[category] || categoryImagePaths["Default"];
                 button.innerHTML = `
                     <span class="category-button-content">
@@ -1004,10 +914,10 @@
             });
         }
     }
-
     function handleCategoryButtonClick(event) {
         const clickedButton = event.target.closest(`.${CATEGORY_FILTER_BUTTON_CLASS}`);
         if (!categoryButtonsContainerOverlay || !clickedButton) return;
+
         const isAllButton = clickedButton.getAttribute(DATA_CATEGORY_ATTR) === '';
         const allCategoryButton = categoryButtonsContainerOverlay.querySelector(`.${CATEGORY_FILTER_BUTTON_CLASS}[${DATA_CATEGORY_ATTR}=""]`);
         const specificCategoryButtons = Array.from(categoryButtonsContainerOverlay.querySelectorAll(`.${CATEGORY_FILTER_BUTTON_CLASS}:not([${DATA_CATEGORY_ATTR}=""])`));
@@ -1020,6 +930,7 @@
         } else {
             clickedButton.classList.toggle(ACTIVE_CLASS);
             const anySpecificActive = specificCategoryButtons.some(btn => btn.classList.contains(ACTIVE_CLASS));
+
             if (allCategoryButton) {
                 if (anySpecificActive) {
                     allCategoryButton.classList.remove(ACTIVE_CLASS);
@@ -1030,80 +941,45 @@
         }
         performSearchOverlay();
     }
-
     async function initializeFiltersAndTopKeywords() {
         try {
-            // Fetch data for filters (excluding category names, but including their counts) and top keywords
-            const filtersDataPromise = fetchFiltersData(); // This now fetches authors, keywords (dropdown), years, categoryCounts, totalDocuments
-            const topKeywordsDataPromise = fetchTopKeywords();
-
-            const [filtersAndCountsData, topKeywordsData] = await Promise.all([filtersDataPromise, topKeywordsDataPromise]);
-
-            // Populate category buttons using PREDEFINED_CATEGORIES and fetched counts
-            if (PREDEFINED_CATEGORIES.length > 0 && filtersAndCountsData.categoryCounts && typeof filtersAndCountsData.totalDocuments !== 'undefined') {
-                populateCategoryButtons(PREDEFINED_CATEGORIES, filtersAndCountsData.categoryCounts, filtersAndCountsData.totalDocuments);
-            } else {
-                 // Fallback or error for category buttons if counts are missing
-                populateCategoryButtons(PREDEFINED_CATEGORIES, {}, 0);
-                console.warn("Category counts or total documents not available from backend. Displaying categories with 0 counts.");
+            const filtersData = await simulateFetchFiltersData();
+            const calculatedCategoryCounts = {};
+            mockArticles.forEach(article => {
+                if (article.category) {
+                    calculatedCategoryCounts[article.category] = (calculatedCategoryCounts[article.category] || 0) + 1;
+                }
+            });
+            const totalDocuments = mockArticles.length;
+            if (filtersData.categories) {
+                populateCategoryButtons(filtersData.categories, calculatedCategoryCounts, totalDocuments);
             }
+            if (filtersData.authors) populateSelectWithOptions(authorFilterOverlay, filtersData.authors);
+            if (filtersData.keywords) populateSelectWithOptions(keywordsFilterOverlay, filtersData.keywords);
+            if (filtersData.years) populateSelectWithOptions(yearFilterOverlay, filtersData.years);
 
-            // Populate filter dropdowns (authors, keywords, years)
-            if (filtersAndCountsData.authors) populateSelectWithOptions(authorFilterOverlay, filtersAndCountsData.authors);
-            if (filtersAndCountsData.keywords) populateSelectWithOptions(keywordsFilterOverlay, filtersAndCountsData.keywords);
-            if (filtersAndCountsData.years) populateSelectWithOptions(yearFilterOverlay, filtersAndCountsData.years);
-
-            // Populate top keywords conveyor
+            const topKeywordsData = await simulateFetchTopKeywords();
             if (topKeywordsData.top_keywords && keywordsConveyorBelt) {
                 keywordsConveyorBelt.innerHTML = '';
                 const keywordsToDisplay = topKeywordsData.top_keywords;
                 firstSetItemCount = keywordsToDisplay.length;
-                const createKeywordItem = (term) => {
-                    const li = document.createElement('li');
-                    li.className = 'keyword-conveyor-item';
-                    li.dataset.query = term;
-                    li.textContent = term;
-                    return li;
-                };
+                const createKeywordItem = (term) => { const li = document.createElement('li'); li.className = 'keyword-conveyor-item'; li.dataset.query = term; li.textContent = term; return li; };
                 keywordsToDisplay.forEach(term => { keywordsConveyorBelt.appendChild(createKeywordItem(term)); });
-                if (keywordsToDisplay.length > 0) { keywordsToDisplay.forEach(term => { keywordsConveyorBelt.appendChild(createKeywordItem(term)); });}
-                if (keywordsConveyorBelt.firstElementChild) {
-                    const firstItem = keywordsConveyorBelt.firstElementChild;
-                    const style = window.getComputedStyle(firstItem);
-                    const marginRight = parseFloat(style.marginRight) || 0;
-                    itemWidthWithMargin = firstItem.offsetWidth + marginRight;
-                    firstSetWidth = firstSetItemCount * itemWidthWithMargin;
-                } else {
-                    itemWidthWithMargin = 0; firstSetWidth = 0;
-                }
-                currentTranslateX = 0;
-                keywordsConveyorBelt.style.transform = `translateX(${currentTranslateX}px)`;
-                keywordsConveyorBelt.style.transition = `transform ${scrollTransitionDuration / 1000}s ease-in-out`;
+                if (keywordsToDisplay.length > 0) { keywordsToDisplay.forEach(term => { keywordsConveyorBelt.appendChild(createKeywordItem(term)); });} // Duplicate for infinite scroll illusion
+                if (keywordsConveyorBelt.firstElementChild) { const firstItem = keywordsConveyorBelt.firstElementChild; const style = window.getComputedStyle(firstItem); const marginRight = parseFloat(style.marginRight) || 0; itemWidthWithMargin = firstItem.offsetWidth + marginRight; firstSetWidth = firstSetItemCount * itemWidthWithMargin; } else { itemWidthWithMargin = 0; firstSetWidth = 0; }
+                currentTranslateX = 0; keywordsConveyorBelt.style.transform = `translateX(${currentTranslateX}px)`; keywordsConveyorBelt.style.transition = `transform ${scrollTransitionDuration / 1000}s ease-in-out`;
             }
         } catch (error) {
-            console.error("Error initializing filters or top keywords from backend:", error);
-            if (topKeywordsSection) {
-                const label = topKeywordsSection.querySelector('.top-keywords-label');
-                if (label) {
-                    label.textContent = 'Top Keywords';
-                    const errorSpan = document.createElement('span');
-                    errorSpan.className = 'text-sm text-gray-500 ml-2';
-                    errorSpan.textContent = '(Error loading)';
-                    label.insertAdjacentElement('afterend', errorSpan);
-                } else {
-                    topKeywordsSection.innerHTML = '<span class="text-sm text-gray-500">Could not load top keywords.</span>';
-                }
-            }
-            // For category buttons, they will use PREDEFINED_CATEGORIES with 0 counts if backend fails for counts
-            populateCategoryButtons(PREDEFINED_CATEGORIES, {}, 0);
+            console.error("Error initializing filters or top keywords (simulation):", error);
+            if (topKeywordsSection) { const label = topKeywordsSection.querySelector('.top-keywords-label'); if (label) { label.textContent = 'Top Keywords'; const errorSpan = document.createElement('span'); errorSpan.className = 'text-sm text-gray-500 ml-2'; errorSpan.textContent = 'Could not load.'; label.insertAdjacentElement('afterend', errorSpan); } else { topKeywordsSection.innerHTML = '<span class="text-sm text-gray-500">Could not load top keywords.</span>';} }
+            if (categoryButtonsContainerOverlay) { categoryButtonsContainerOverlay.innerHTML = '<span class="text-sm text-gray-500">Could not load categories.</span>'; }
         }
     }
-
     function getActiveCategories() {
         const activeCategories = [];
         if (categoryButtonsContainerOverlay) {
             const allCatButton = categoryButtonsContainerOverlay.querySelector(`.${CATEGORY_FILTER_BUTTON_CLASS}[${DATA_CATEGORY_ATTR}=""]`);
-            if (!allCatButton || !allCatButton.classList.contains(ACTIVE_CLASS)) {
+            if (!allCatButton || !allCatButton.classList.contains(ACTIVE_CLASS)) { // Only add specific categories if "All" is NOT active
                 categoryButtonsContainerOverlay.querySelectorAll(`.${CATEGORY_FILTER_BUTTON_CLASS}.${ACTIVE_CLASS}:not([${DATA_CATEGORY_ATTR}=""])`)
                     .forEach(button => {
                         const categoryValue = button.getAttribute(DATA_CATEGORY_ATTR);
@@ -1115,7 +991,6 @@
         }
         return activeCategories;
     }
-
     async function performSearchOverlay() {
         if (!searchResultsOverlay || !searchInputOverlay || !loadingSpinnerOverlay ) {
             console.error("Search UI elements missing for performSearchOverlay!");
@@ -1127,14 +1002,14 @@
         const selectedKeywordsFilter = keywordsFilterOverlay.value;
         const selectedYear = yearFilterOverlay.value;
         const hasQuery = !!query;
-        const hasSpecificCategoryFilter = selectedCategories.length > 0;
+        const hasSpecificCategoryFilter = selectedCategories.length > 0; // True if any specific category is selected
         const isAllCategoryActive = categoryButtonsContainerOverlay?.querySelector(`.${CATEGORY_FILTER_BUTTON_CLASS}[${DATA_CATEGORY_ATTR}=""].${ACTIVE_CLASS}`) !== null;
-        const hasDropdownFilters = !!selectedAuthor || !!selectedKeywordsFilter || !!selectedYear;
-        const hasActiveFilters = (hasSpecificCategoryFilter && !isAllCategoryActive) || hasDropdownFilters;
+        const hasFilters = hasSpecificCategoryFilter || !!selectedAuthor || !!selectedKeywordsFilter || !!selectedYear || (!isAllCategoryActive && selectedCategories.length === 0); // Consider it filtered if "All" is not active and no specific are active (edge case, means nothing selected)
+
         const currentPlaceholderText = `Start typing, apply filters, or press <span class="${KBD_SHORTCUT_CLASS}">Ctrl+K</span> or <span class="${KBD_SHORTCUT_CLASS}">/</span> to search.`;
         let placeholderEl = document.getElementById('searchPlaceholderOverlay');
 
-        if (!hasQuery && isAllCategoryActive && !hasDropdownFilters) {
+        if (!hasQuery && !hasFilters && isAllCategoryActive) { // Show placeholder only if no query, no specific filters, AND "All" is active
             searchResultsOverlay.innerHTML = `<p id="searchPlaceholderOverlay" class="search-no-results">${currentPlaceholderText}</p>`;
             showAllResultsContainer.classList.add(HIDDEN_CLASS);
             loadingSpinnerOverlay.classList.remove(VISIBLE_CLASS);
@@ -1146,32 +1021,25 @@
         loadingSpinnerOverlay.classList.add(VISIBLE_CLASS);
         searchResultsOverlay.innerHTML = '';
         showAllResultsContainer.classList.add(HIDDEN_CLASS);
-
         try {
-            const filtersToApply = {
-                category: selectedCategories,
-                author: selectedAuthor,
-                keywords: selectedKeywordsFilter,
-                year: selectedYear
-            };
-            const apiResponse = await performSearch(query, filtersToApply);
+            const filtersToApply = { category: selectedCategories, author: selectedAuthor, keywords: selectedKeywordsFilter, year: selectedYear };
+            const apiResponse = await simulatePerformSearch(query, filtersToApply);
             displaySearchResultsOverlay(apiResponse, query);
         } catch (error) {
-            console.error("Error performing search via backend (in performSearchOverlay):", error);
-            searchResultsOverlay.innerHTML = `<p class="search-no-results">Error fetching search results. Please try again.</p>`;
+            console.error("Error performing search (simulation):", error);
+            searchResultsOverlay.innerHTML = `<p class="search-no-results">Error fetching search results.</p>`;
             showAllResultsContainer.classList.add(HIDDEN_CLASS);
         } finally {
             loadingSpinnerOverlay.classList.remove(VISIBLE_CLASS);
         }
     }
-
     function createDocumentResultHTML(item, queryToHighlight) {
         const titleHighlighted = highlightText(item.title, queryToHighlight);
         const descHighlighted = highlightText(item.description, queryToHighlight);
         let keywordsHTML = '';
         if (item.keywords && Array.isArray(item.keywords)) {
             keywordsHTML = item.keywords.map(kw => `<span class="keyword-pill">${kw}</span>`).join('');
-        } else if (typeof item.keywords === 'string') {
+        } else if (typeof item.keywords === 'string') { // Handle comma-separated string just in case
             keywordsHTML = item.keywords.split(',').map(kw => kw.trim()).filter(kw => kw).map(kw => `<span class="keyword-pill">${kw}</span>`).join('');
         }
         return `
@@ -1202,10 +1070,9 @@
                 ${item.relatedArticleCount > 0 ? `Related to ${item.relatedArticleCount} document(s)` : 'No related documents'}
             </div>`;
     }
-
     function displaySearchResultsOverlay(apiResponse, queryToHighlight) {
         if (!searchResultsOverlay || !apiResponse || !apiResponse.results) {
-            searchResultsOverlay.innerHTML = `<p class="search-no-results">No results found or invalid response from server.</p>`;
+            searchResultsOverlay.innerHTML = `<p class="search-no-results">No results found or invalid response.</p>`;
             showAllResultsContainer.classList.add(HIDDEN_CLASS);
             return;
         }
@@ -1217,7 +1084,6 @@
             authors: { defaultLabel: 'Authors', icon: `<svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>`, headerClass: 'authors-header', itemRenderer: createAuthorResultHTML, itemClass: 'author-result-item' },
             keywords: { defaultLabel: 'Matching Keywords', icon: `<svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>`, headerClass: 'keywords-header', itemRenderer: createKeywordResultHTML, itemClass: 'keyword-result-item' }
         };
-
         Object.keys(categoryDisplayConfig).forEach(key => {
             const catInfo = categoryDisplayConfig[key];
             const categoryData = apiResponse.results[key];
@@ -1242,7 +1108,6 @@
                 fragment.appendChild(sectionDiv);
             }
         });
-
         if (totalResultsAcrossCategories === 0) {
             let message = "No results found";
             if (queryToHighlight) message += ` for "${highlightText(queryToHighlight, queryToHighlight)}"`;
@@ -1254,49 +1119,14 @@
             showAllResultsContainer.classList.add(HIDDEN_CLASS);
         } else {
             searchResultsOverlay.appendChild(fragment);
-            if (showAllResultsContainer) showAllResultsContainer.classList.remove(HIDDEN_CLASS);
+            showAllResultsContainer.classList.remove(HIDDEN_CLASS);
         }
     }
-
-    async function checkAuthStatusAndSetupUI() {
-        try {
-            const authData = await checkAuthStatus();
-            if (authData.isAuthenticated && authData.user) {
-                displayUserProfile(authData.user);
-            } else {
-                updateUIAfterLogout();
-            }
-        } catch (error) {
-            console.error("Error in checkAuthStatusAndSetupUI (from backend):", error);
-            updateUIAfterLogout();
-        }
-    }
-
-    function displayUserProfile(user) {
-        if (!userAuthContainer || !mobileUserAuthContainer) return;
-        userAuthContainer.innerHTML = '';
-        const desktopBadge = createProfileBadge(user);
-        userAuthContainer.appendChild(desktopBadge);
-        const logoutButtonDesktop = desktopBadge.querySelector('#logout-button-desktop');
-        if (logoutButtonDesktop) logoutButtonDesktop.addEventListener('click', handleLogout);
-        const userNamePartDesktop = desktopBadge.querySelector('#user-name-part');
-        if (userNamePartDesktop) userNamePartDesktop.addEventListener('click', handleUserNameClick);
-
-        mobileUserAuthContainer.innerHTML = '';
-        const mobileProfile = createMobileProfileSection(user);
-        mobileUserAuthContainer.appendChild(mobileProfile);
-        const logoutButtonMobile = mobileProfile.querySelector('#logout-button-mobile');
-        if (logoutButtonMobile) logoutButtonMobile.addEventListener('click', handleLogout);
-    }
-
-    function updateUIAfterLogout() {
-        if (!userAuthContainer || !mobileUserAuthContainer) return;
-        userAuthContainer.innerHTML = `<a href="/login" class="text-green-700 hover:text-green-900 px-3 py-2 rounded-md text-sm font-medium">Log In</a>`;
-        mobileUserAuthContainer.innerHTML = `<div class="px-2"><a href="/login" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 hover:text-green-800">Log In</a></div>`;
-        console.log("UI updated for logged out state (showing login links).");
-    }
-
-    function handleConveyorArrowScroll(event) { if (!keywordsConveyorBelt || event.propertyName !== 'transform' || !isScrollingViaArrows) { if (event.propertyName === 'transform') isScrollingViaArrows = false; return; } let jumped = false; if (currentTranslateX <= -firstSetWidth && firstSetWidth > 0) { currentTranslateX += firstSetWidth; jumped = true; } else if (currentTranslateX > 0 && firstSetWidth > 0) { currentTranslateX -= firstSetWidth; jumped = true; } if (jumped) { keywordsConveyorBelt.style.transition = 'none'; keywordsConveyorBelt.style.transform = `translateX(${currentTranslateX}px)`; void keywordsConveyorBelt.offsetHeight; keywordsConveyorBelt.style.transition = `transform ${scrollTransitionDuration / 1000}s ease-in-out`; } isScrollingViaArrows = false; }
+    async function checkAuthStatusAndSetupUI() { try { const authData = await simulateCheckAuthStatus(); if (authData.isAuthenticated && authData.user) { currentUser = authData.user; displayUserProfile(currentUser); } else { updateUIAfterLogout(); } } catch (error) { console.error("Error in checkAuthStatusAndSetupUI (simulation):", error); updateUIAfterLogout(); } }
+    function displayUserProfile(user) { if (!userAuthContainer || !mobileUserAuthContainer) return; userAuthContainer.innerHTML = ''; const desktopBadge = createProfileBadge(user); userAuthContainer.appendChild(desktopBadge); const logoutButtonDesktop = desktopBadge.querySelector('#logout-button-desktop'); if (logoutButtonDesktop) logoutButtonDesktop.addEventListener('click', handleLogout); const userNamePartDesktop = desktopBadge.querySelector('#user-name-part'); if (userNamePartDesktop) userNamePartDesktop.addEventListener('click', handleUserNameClick); mobileUserAuthContainer.innerHTML = ''; const mobileProfile = createMobileProfileSection(user); mobileUserAuthContainer.appendChild(mobileProfile); const logoutButtonMobile = mobileProfile.querySelector('#logout-button-mobile'); if (logoutButtonMobile) logoutButtonMobile.addEventListener('click', handleLogout); }
+    function updateUIAfterLogout() { if (!userAuthContainer || !mobileUserAuthContainer) return; userAuthContainer.innerHTML = ''; mobileUserAuthContainer.innerHTML = ''; console.log("UI updated for logged out state."); }
+    async function handleLogout() { console.log("Simulating logout."); await new Promise(resolve => setTimeout(resolve, SIMULATED_API_DELAY -100)); currentUser = null; updateUIAfterLogout(); if (isDropdownOpen) toggleDropdown(true); alert("You have been logged out (simulation)."); }
+    function handleConveyorArrowScroll(event) { if (!keywordsConveyorBelt || event.propertyName !== 'transform' || !isScrollingViaArrows) { if (event.propertyName === 'transform') isScrollingViaArrows = false; return; } let jumped = false; if (currentTranslateX <= -firstSetWidth) { currentTranslateX += firstSetWidth; jumped = true; } else if (currentTranslateX > 0) { currentTranslateX -= firstSetWidth; jumped = true; } if (jumped) { keywordsConveyorBelt.style.transition = 'none'; keywordsConveyorBelt.style.transform = `translateX(${currentTranslateX}px)`; void keywordsConveyorBelt.offsetHeight; keywordsConveyorBelt.style.transition = `transform ${scrollTransitionDuration / 1000}s ease-in-out`; } isScrollingViaArrows = false; }
     function triggerConveyorArrowScroll(direction) { if (isScrollingViaArrows || isDraggingConveyor || !keywordsConveyorBelt || itemWidthWithMargin === 0 || firstSetWidth === 0) return; isScrollingViaArrows = true; const scrollItemsCount = 3; let scrollAmount = itemWidthWithMargin * scrollItemsCount; if (direction === 'right') currentTranslateX -= scrollAmount; else currentTranslateX += scrollAmount; keywordsConveyorBelt.style.transform = `translateX(${currentTranslateX}px)`; }
     function startDrag(e) { if (isScrollingViaArrows) return; isDraggingConveyor = true; dragStartX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX; scrollStartXAtDragStart = currentTranslateX; pointerDownOnKeywordItem = e.target.closest('.keyword-conveyor-item'); dragMovedDistance = 0; keywordsConveyorBelt.classList.add('is-dragging'); keywordsConveyorBelt.style.transition = 'none'; document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', endDrag); document.addEventListener('mouseleave', endDrag); document.addEventListener('touchmove', dragMove, { passive: false }); document.addEventListener('touchend', endDrag); }
     function dragMove(e) { if (!isDraggingConveyor) return; if (e.type === 'touchmove') e.preventDefault(); const currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX; const dx = currentX - dragStartX; dragMovedDistance = Math.abs(dx); currentTranslateX = scrollStartXAtDragStart + dx; if (firstSetWidth > 0) { if (currentTranslateX <= -firstSetWidth) { currentTranslateX += firstSetWidth; scrollStartXAtDragStart += firstSetWidth; } else if (currentTranslateX > 0) { currentTranslateX -= firstSetWidth; scrollStartXAtDragStart -= firstSetWidth; } } keywordsConveyorBelt.style.transform = `translateX(${currentTranslateX}px)`; }
@@ -1306,49 +1136,23 @@
     // --- Event Listeners Setup ---
     document.addEventListener('DOMContentLoaded', () => {
         const debouncedPerformSearch = debounceOverlay(performSearchOverlay, DEBOUNCE_DELAY);
-        if (searchInputOverlay) {
-            searchInputOverlay.addEventListener('input', () => {
-                debouncedPerformSearch();
-                if (clearSearchInputButton) {
-                    clearSearchInputButton.classList.toggle(VISIBLE_CLASS, searchInputOverlay.value.length > 0);
-                }
-            });
-        }
-        if (clearSearchInputButton) {
-            clearSearchInputButton.addEventListener('click', () => {
-                searchInputOverlay.value = '';
-                clearSearchInputButton.classList.remove(VISIBLE_CLASS);
-                performSearchOverlay();
-                searchInputOverlay.focus();
-            });
-        }
-        [authorFilterOverlay, keywordsFilterOverlay, yearFilterOverlay].forEach(filterElement => {
-            if (filterElement) filterElement.addEventListener('change', performSearchOverlay);
-        });
-        if (showAllResultsBtn) {
-            showAllResultsBtn.addEventListener('click', () => {
-                alert("Show All Results button clicked! Implement navigation to a full results page.");
-            });
-        }
+        if (searchInputOverlay) { searchInputOverlay.addEventListener('input', () => { debouncedPerformSearch(); if (clearSearchInputButton) { clearSearchInputButton.classList.toggle(VISIBLE_CLASS, searchInputOverlay.value.length > 0); } }); }
+        if (clearSearchInputButton) { clearSearchInputButton.addEventListener('click', () => { searchInputOverlay.value = ''; clearSearchInputButton.classList.remove(VISIBLE_CLASS); performSearchOverlay(); searchInputOverlay.focus(); }); }
+        [authorFilterOverlay, keywordsFilterOverlay, yearFilterOverlay].forEach(filterElement => { if (filterElement) filterElement.addEventListener('change', performSearchOverlay); });
+        if (showAllResultsBtn) { showAllResultsBtn.addEventListener('click', () => { alert("Show All Results button clicked! (Placeholder)"); }); }
         if (mobileMenuButton) mobileMenuButton.addEventListener('click', () => toggleMobileMenu());
         if (searchOpenButton) searchOpenButton.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
         if (searchOpenButtonMobile) searchOpenButtonMobile.addEventListener('click', (event) => { event.stopPropagation(); openSearch(); });
         if (searchCloseButton) searchCloseButton.addEventListener('click', closeSearch);
-        if (searchOverlay) {
-            searchOverlay.addEventListener('click', (event) => {
-                if (event.target === searchOverlay) {
-                    closeSearch();
-                }
-            });
-        }
+        if (searchOverlay) { searchOverlay.addEventListener('click', (event) => { if (event.target === searchOverlay) { closeSearch(); } }); }
+
         if (categoryButtonsContainerOverlay) {
             categoryButtonsContainerOverlay.addEventListener('click', (event) => {
                 const button = event.target.closest(`.${CATEGORY_FILTER_BUTTON_CLASS}`);
-                if (button) {
-                    handleCategoryButtonClick(event);
-                }
+                if (button) { handleCategoryButtonClick(event); }
             });
         }
+
         if (keywordsConveyorBelt) {
             keywordsConveyorBelt.addEventListener('mousedown', startDrag);
             keywordsConveyorBelt.addEventListener('touchstart', startDrag, { passive: false });
@@ -1356,45 +1160,20 @@
                 keywordsConveyorContainer.addEventListener('mouseenter', () => { if(keywordsConveyorBelt && !isDraggingConveyor) keywordsConveyorBelt.classList.add('is-hover-active'); });
                 keywordsConveyorContainer.addEventListener('mouseleave', () => { if(keywordsConveyorBelt && !isDraggingConveyor) { keywordsConveyorBelt.classList.remove('is-hover-active'); clearKeywordItemEffects(); } });
             }
-            keywordsConveyorBelt.addEventListener('mouseover', (event) => { if (keywordsConveyorBelt.classList.contains('suppress-item-effects') || isDraggingConveyor) { clearKeywordItemEffects(); return; } if (keywordsConveyorBelt.classList.contains('is-hover-active')) { const hoveredItem = event.target.closest('.keyword-conveyor-item'); if (hoveredItem) { const allItems = Array.from(keywordsConveyorBelt.children).filter(child => child.classList.contains('keyword-conveyor-item')); const hoveredIndex = allItems.indexOf(hoveredItem); const uniqueKeywordsCount = firstSetItemCount > 0 ? firstSetItemCount : (topKeywordsData?.top_keywords?.length || 0) ; allItems.forEach((item, index) => { item.classList.remove('is-focused', 'is-neighbor-blur-1', 'is-neighbor-blur-2', 'is-distant-blur'); const effectiveCurrentIndex = index % uniqueKeywordsCount; const effectiveHoveredIndex = hoveredIndex % uniqueKeywordsCount; let distance = Math.abs(effectiveCurrentIndex - effectiveHoveredIndex); if (distance > uniqueKeywordsCount / 2) distance = uniqueKeywordsCount - distance; if (effectiveCurrentIndex === effectiveHoveredIndex) item.classList.add('is-focused'); else if (distance === 1) item.classList.add('is-neighbor-blur-1'); else if (distance === 2) item.classList.add('is-neighbor-blur-2'); else item.classList.add('is-distant-blur'); }); } } });
+            keywordsConveyorBelt.addEventListener('mouseover', (event) => { if (keywordsConveyorBelt.classList.contains('suppress-item-effects') || isDraggingConveyor) { clearKeywordItemEffects(); return; } if (keywordsConveyorBelt.classList.contains('is-hover-active')) { const hoveredItem = event.target.closest('.keyword-conveyor-item'); if (hoveredItem) { const allItems = Array.from(keywordsConveyorBelt.children).filter(child => child.classList.contains('keyword-conveyor-item')); const hoveredIndex = allItems.indexOf(hoveredItem); const uniqueKeywordsCount = firstSetItemCount > 0 ? firstSetItemCount : mockTop10Keywords.length; allItems.forEach((item, index) => { item.classList.remove('is-focused', 'is-neighbor-blur-1', 'is-neighbor-blur-2', 'is-distant-blur'); const effectiveCurrentIndex = index % uniqueKeywordsCount; const effectiveHoveredIndex = hoveredIndex % uniqueKeywordsCount; let distance = Math.abs(effectiveCurrentIndex - effectiveHoveredIndex); if (distance > uniqueKeywordsCount / 2) distance = uniqueKeywordsCount - distance; if (effectiveCurrentIndex === effectiveHoveredIndex) item.classList.add('is-focused'); else if (distance === 1) item.classList.add('is-neighbor-blur-1'); else if (distance === 2) item.classList.add('is-neighbor-blur-2'); else item.classList.add('is-distant-blur'); }); } } });
             keywordsConveyorBelt.addEventListener('transitionend', handleConveyorArrowScroll);
         }
         [conveyorScrollLeftBtn, conveyorScrollRightBtn].forEach(btn => { if (btn) { btn.addEventListener('mouseenter', () => { if (keywordsConveyorBelt) { keywordsConveyorBelt.classList.add('suppress-item-effects'); clearKeywordItemEffects(); } }); btn.addEventListener('mouseleave', () => { if (keywordsConveyorBelt) { keywordsConveyorBelt.classList.remove('suppress-item-effects'); } }); } });
         if (conveyorScrollLeftBtn) conveyorScrollLeftBtn.addEventListener('click', () => triggerConveyorArrowScroll('left'));
         if (conveyorScrollRightBtn) conveyorScrollRightBtn.addEventListener('click', () => triggerConveyorArrowScroll('right'));
-        document.addEventListener('click', (event) => {
-            const profileBadgeContainerDynamic = document.getElementById('profile-badge-container-dynamic');
-            if (isDropdownOpen && profileBadgeContainerDynamic && !profileBadgeContainerDynamic.contains(event.target)) {
-                toggleDropdown(true);
-            }
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                if (isDropdownOpen) {
-                    toggleDropdown(true); event.preventDefault(); return;
-                }
-                if (searchOverlay.classList.contains(VISIBLE_CLASS)) {
-                    closeSearch(); event.preventDefault(); return;
-                }
-            }
-            const isInputFocused = document.activeElement?.tagName === 'INPUT' ||
-                                 document.activeElement?.tagName === 'TEXTAREA' ||
-                                 document.activeElement?.isContentEditable;
-            if (event.key === '/' && !isInputFocused && !searchOverlay.classList.contains(VISIBLE_CLASS)) {
-                event.preventDefault(); openSearch();
-            }
-            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-                event.preventDefault();
-                if (searchOverlay.classList.contains(VISIBLE_CLASS)) {
-                    if (document.activeElement !== searchInputOverlay) searchInputOverlay.focus();
-                } else { openSearch(); }
-            }
-        });
+
+        document.addEventListener('click', (event) => { const profileBadgeContainerDynamic = document.getElementById('profile-badge-container-dynamic'); if (isDropdownOpen && profileBadgeContainerDynamic && !profileBadgeContainerDynamic.contains(event.target)) { toggleDropdown(true); } });
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { if (isDropdownOpen) { toggleDropdown(true); event.preventDefault(); return; } if (searchOverlay.classList.contains(VISIBLE_CLASS)) { closeSearch(); event.preventDefault(); return; } } const isInputFocused = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.isContentEditable; if (event.key === '/' && !isInputFocused && !searchOverlay.classList.contains(VISIBLE_CLASS)) { event.preventDefault(); openSearch(); } if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); if (searchOverlay.classList.contains(VISIBLE_CLASS)) { if (document.activeElement !== searchInputOverlay) searchInputOverlay.focus(); } else { openSearch(); } } });
 
         // --- Initialization ---
         checkAuthStatusAndSetupUI();
         initializeFiltersAndTopKeywords();
-        console.log("UI initialized for backend connection (with fixed categories).");
+        console.log("UI initialized: Category Tile Enhancements (Improved Colors V2).");
     });
 })(); // IIFE End
 </script>
