@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Filter Animations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --theme-gold: #FDB813;
+            --theme-gold-darker: #EAA10F;
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.08);
+            --theme-green-dark: #006A4E;
+            --theme-green-darker-text: #00523D;
+            --theme-page-bg: #F9F6EE;
+            --neutral-border-color: #e0e0e0;
+            --input-border-color: #cccccc;
+            --primary-text-color: #1f2937;
+            --secondary-text-color: #4b5563;
+            --container-bg: #FFFFFF;
+            --link-color: var(--theme-green-dark);
+            --link-hover-color: var(--theme-gold-darker);
+            --button-bg-color: var(--theme-green-dark);
+            --button-text-color: #FFFFFF;
+            --button-hover-bg-color: var(--theme-green-darker-text);
+            --filter-label-color: var(--secondary-text-color);
+            --filter-bg-color: #fdfcfa; 
+            --card-hover-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            --card-shadow: 0 3px 8px rgba(0,0,0,0.07);
+            --active-filter-border: var(--theme-gold-darker);
+            --active-filter-bg: var(--theme-gold-lighter-bg);
+            
+            --document-card-bg: #FFFFFF; 
+            --document-card-bg-hover: #f7f7f7; 
+            --metadata-pill-bg: #f0f0f0; 
+            --metadata-pill-text-color: var(--secondary-text-color); 
+
+
+            --category-tile-off-white-text: #f0f0f0;
+            --category-tile-dark-text: #1f2937;
+            --category-active-box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+            --category-active-transform: translateY(1px) scale(0.98);
+
+            --category-tile-red-bg: #FEE2E2; --category-tile-red-text: #991B1B; --category-tile-red-count-bg: rgba(220, 38, 38, 0.15); --category-tile-red-count-text: #991B1B; --category-tile-red-border: #FECACA;
+            --category-tile-red-active-bg: #DC2626; --category-tile-red-active-text: var(--category-tile-off-white-text); --category-tile-red-active-border: #B91C1C; --category-tile-red-active-count-bg: rgba(255, 255, 255, 0.25); --category-tile-red-active-count-text: var(--category-tile-off-white-text);
+            --category-tile-green-bg-specific: #D1FAE5; --category-tile-green-text-specific: #065F46; --category-tile-green-count-bg-specific: rgba(0, 106, 78, 0.15); --category-tile-green-count-text-specific: #065F46; --category-tile-green-border-specific: #A7F3D0;
+            --category-tile-green-active-bg-specific: var(--theme-green-dark); --category-tile-green-active-text-specific: var(--category-tile-off-white-text); --category-tile-green-active-border-specific: #064E3B; --category-tile-green-active-count-bg-specific: rgba(255, 255, 255, 0.25); --category-tile-green-active-count-text-specific: var(--category-tile-off-white-text);
+            --category-tile-yellow-bg: #FEF9C3; --category-tile-yellow-text: #713F12; --category-tile-yellow-count-bg: rgba(234, 179, 8, 0.15); --category-tile-yellow-count-text: #713F12; --category-tile-yellow-border: #FEF08A;
+            --category-tile-yellow-active-bg: #EAB308; --category-tile-yellow-active-text: var(--category-tile-dark-text); --category-tile-yellow-active-border: #CA8A04; --category-tile-yellow-active-count-bg: rgba(0,0,0,0.15); --category-tile-yellow-active-count-text: var(--category-tile-dark-text);
+            --category-tile-blue-bg: #DBEAFE; --category-tile-blue-text: #1E40AF; --category-tile-blue-count-bg: rgba(59, 130, 246, 0.15); --category-tile-blue-count-text: #1E40AF; --category-tile-blue-border: #BFDBFE;
+            --category-tile-blue-active-bg: #2563EB; --category-tile-blue-active-text: var(--category-tile-off-white-text); --category-tile-blue-active-border: #1D4ED8; --category-tile-blue-active-count-bg: rgba(255, 255, 255, 0.25); --category-tile-blue-active-count-text: var(--category-tile-off-white-text);
+        
+            --sidebar-width: 280px;
+            --sidebar-peek-amount: 60px; 
+            --sidebar-transition-duration: 0.4s; 
+            --peek-arrow-size: 40px;
+            --elastic-bezier: cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+        }
+
+        body {
+            font-family: 'Inter', sans-serif; margin: 0;
+            background-color: var(--theme-page-bg); color: var(--primary-text-color);
+            line-height: 1.5; transition: background-color 0.3s ease;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #sidebar-peek-trigger {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 20px; 
+            height: 100vh;
+            z-index: 1001;
+            display: none; 
+        }
+        
+        .filter-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--filter-bg-color);
+            border-right: 1px solid var(--neutral-border-color);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden; 
+            transition: transform var(--sidebar-transition-duration) var(--elastic-bezier), 
+                        width var(--sidebar-transition-duration) var(--elastic-bezier),  
+                        padding var(--sidebar-transition-duration) ease-in-out; 
+            flex-shrink: 0;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(0);
+        }
+        .filter-sidebar.collapsed {
+            transform: translateX(calc(-1 * var(--sidebar-width)));
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .filter-sidebar.peeking {
+            transform: translateX(calc(-1 * var(--sidebar-width) + var(--sidebar-peek-amount)));
+            width: var(--sidebar-width); 
+            padding-left: 20px; 
+            padding-right: 20px;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            overflow: hidden; 
+        }
+        .filter-sidebar:not(.collapsed):not(.peeking) {
+            overflow-y: auto; 
+        }
+        .filter-sidebar.peeking .filters-container-sidebar,
+        .filter-sidebar.peeking .clear-filters-btn,
+        .filter-sidebar.peeking #sidebar-minimize-btn { 
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.1s ease, visibility 0.1s ease;
+        }
+        .filter-sidebar:not(.peeking) .filters-container-sidebar,
+        .filter-sidebar:not(.peeking) .clear-filters-btn,
+        .filter-sidebar:not(.peeking) #sidebar-minimize-btn { 
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
+        }
+
+
+        .sidebar-peek-arrow {
+            position: absolute;
+            top: 50%;
+            right: calc((var(--sidebar-peek-amount) - var(--peek-arrow-size)) / 2); 
+            transform: translateY(-50%);
+            width: var(--peek-arrow-size); 
+            height: var(--peek-arrow-size);
+            background-color: var(--theme-green-dark);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, background-color 0.2s ease, transform 0.2s ease;
+            z-index: 2; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .filter-sidebar.peeking .sidebar-peek-arrow {
+            opacity: 1;
+            visibility: visible;
+        }
+         .sidebar-peek-arrow:hover {
+            background-color: var(--theme-gold-darker);
+            transform: translateY(-50%) scale(1.1);
+        }
+        .sidebar-peek-arrow svg {
+            width: 20px; height: 20px;
+        }
+
+
+        .main-content-area {
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: margin-left var(--sidebar-transition-duration) var(--elastic-bezier); 
+            max-width: 100%;
+            overflow-x: hidden;
+            margin-left: var(--sidebar-width);
+            position: relative;
+        }
+        .main-content-area::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0);
+            pointer-events: none;
+            transition: background-color 0.3s ease;
+            z-index: 999; 
+        }
+        body.main-content-dimmed-for-peek .main-content-area::after {
+            background-color: rgba(0,0,0,0.4);
+            pointer-events: auto; 
+        }
+
+        .filter-sidebar.collapsed ~ .main-content-area {
+            margin-left: 0;
+        }
+        .filter-sidebar.peeking ~ .main-content-area {
+            margin-left: var(--sidebar-peek-amount);
+        }
+        
+        .search-results-container-wrapper {
+             max-width: 900px; margin: 0 auto;
+        }
+
+        .results-for-header {
+            font-size: 1.5em; 
+            font-weight: 600;
+            color: var(--primary-text-color);
+            margin-bottom: 25px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--neutral-border-color);
+        }
+        .results-for-header strong {
+            color: var(--theme-green-dark);
+            font-weight: 700;
+        }
+
+
+        .filters-header-sidebar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--neutral-border-color);
+            flex-shrink: 0;
+        }
+        .filters-title-sidebar { font-size: 1.2em; font-weight: 600; color: var(--primary-text-color); }
+        
+        #sidebar-minimize-btn {
+            background: var(--container-bg); 
+            border: 1px solid var(--input-border-color);
+            padding: 0; 
+            cursor: pointer;
+            color: var(--link-color);
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            width: 32px; 
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            position: relative; 
+        }
+        #sidebar-minimize-btn:hover { 
+            color: var(--theme-gold-darker); 
+            border-color: var(--theme-gold-darker);
+            background-color: var(--theme-gold-lighter-bg);
+        }
+        #sidebar-minimize-btn svg { width: 20px; height: 20px; }
+
+
+        .clear-filters-btn {
+            background-color: transparent; color: var(--link-color); border: 1px solid var(--link-color);
+            padding: 6px 12px; border-radius: 5px; font-size: 0.85em; font-weight: 500;
+            cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease;
+            width: 100%; margin-top: auto; flex-shrink: 0;
+        }
+        .clear-filters-btn:hover { background-color: var(--link-color); color: var(--button-text-color); }
+
+        .filters-container-sidebar {
+            display: flex; flex-direction: column; gap: 18px;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .filters-container-sidebar::-webkit-scrollbar { width: 6px; }
+        .filters-container-sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 3px;}
+        .filters-container-sidebar::-webkit-scrollbar-thumb { background: var(--input-border-color); border-radius: 3px;}
+        .filters-container-sidebar::-webkit-scrollbar-thumb:hover { background: var(--secondary-text-color); }
+
+        .filter-group { display: flex; flex-direction: column; gap: 8px; }
+        .filter-group-label-container {
+            display: flex;
+            align-items: center;
+            gap: 6px; 
+        }
+        .info-icon {
+            cursor: pointer;
+            color: var(--secondary-text-color);
+            position: relative; 
+            z-index: 1; 
+        }
+        .info-icon svg { width: 14px; height: 14px; }
+        .info-icon:hover { color: var(--theme-gold-darker); }
+
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            width: 220px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 999; 
+            bottom: 125%; 
+            left: 50%;
+            margin-left: -110px; 
+            transition: opacity 0.3s, visibility 0.3s;
+            font-size: 0.8em;
+            line-height: 1.4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .tooltip::after { 
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .info-icon:hover .tooltip, .info-icon:focus .tooltip,
+        #sidebar-minimize-btn:hover .tooltip { 
+            visibility: visible;
+            opacity: 1;
+        }
+
+
+        .filter-group-category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: -3px;
+        }
+        #toggle-all-categories-btn {
+            background-color: transparent;
+            border: 1px solid var(--input-border-color);
+            color: var(--link-color);
+            padding: 4px 8px;
+            font-size: 0.75em;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        #toggle-all-categories-btn:hover {
+            border-color: var(--theme-gold-darker);
+            color: var(--theme-gold-darker);
+            background-color: var(--theme-gold-lighter-bg);
+        }
+
+        .filter-group label, .filter-group .filter-label {
+            font-size: 0.9em; color: var(--filter-label-color); font-weight: 500;
+        }
+        .filter-group input[type="text"], .filter-group input[type="date"], .filter-group select {
+            width: 100%; padding: 9px 12px; border: 1px solid var(--input-border-color);
+            border-radius: 5px; background-color: var(--container-bg); color: var(--primary-text-color);
+            font-size: 0.9em; transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            box-sizing: border-box;
+        }
+        .filter-group input[type="text"]::placeholder { color: var(--secondary-text-color); opacity: 0.7; }
+        .filter-group input[type="date"] { appearance: none; }
+        .filter-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%234b5563'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.6rem center; background-size: 1.1em;
+        }
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none; border-color: var(--theme-green-dark);
+            box-shadow: 0 0 0 2px rgba(0, 106, 78, 0.15);
+        }
+        .filter-group select.filter-active:not(:focus) {
+            border-color: var(--active-filter-border); background-color: var(--active-filter-bg);
+        }
+        .filter-group input[type="text"].filter-active:not(:focus),
+        .filter-group input[type="date"].filter-active:not(:focus) {
+            border-color: var(--active-filter-border); background-color: var(--active-filter-bg);
+        }
+        
+        .result-type-filter-group { 
+            display: flex; 
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .result-type-filter-group label.result-type-tile { 
+            margin-bottom: 0; 
+            margin-right: 0; 
+            display:flex; 
+            flex-direction: column; 
+            align-items:center; 
+            justify-content: center;
+            font-size: 0.8em; 
+            padding: 8px 10px; 
+            border:1px solid var(--input-border-color); 
+            border-radius:8px; 
+            cursor:pointer; 
+            transition: background-color .2s, border-color .2s, box-shadow .2s;
+            background-color: var(--container-bg);
+            text-align: center;
+            min-width: 80px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .result-type-filter-group input[type="radio"] { 
+            appearance: none; 
+            position: absolute; 
+            opacity: 0;
+            width:0; height:0; margin:0; 
+        }
+        .result-type-filter-group label.result-type-tile span:first-of-type { 
+            font-weight: 500;
+            color: var(--primary-text-color);
+            display: block; 
+        }
+        .result-type-filter-group label.result-type-tile .filter-count {
+            font-size: 0.85em; 
+            color: var(--secondary-text-color);
+            margin-left: 0; 
+            margin-top: 2px; 
+            background-color: rgba(0,0,0,0.05);
+            padding: 1px 5px;
+            border-radius: 8px;
+        }
+
+        .result-type-filter-group label.result-type-tile:hover { 
+            border-color: var(--theme-gold-darker); 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .result-type-filter-group label.result-type-tile.filter-active { 
+            background-color: var(--active-filter-bg); 
+            border-color: var(--active-filter-border); 
+            box-shadow: var(--category-active-box-shadow);
+        }
+
+
+        #category-tile-filter-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+        .category-filter-tile {
+            font-weight: 500; padding: 0.5rem 0.4rem 0.4rem; border-radius: 0.75rem;
+            cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, background-image 0.2s ease;
+            border: 1px solid transparent; display: flex; flex-direction: column;
+            align-items: center; justify-content: space-between;
+            min-width: calc(50% - 4px); max-width: calc(50% - 4px);
+            min-height: 70px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            background-image: none; user-select: none;
+        }
+        .category-filter-tile:hover { transform: translateY(-2px); box-shadow: 0 3px 7px rgba(0,0,0,0.1); }
+        .category-filter-tile.active { transform: var(--category-active-transform); box-shadow: var(--category-active-box-shadow) !important; }
+        .category-tile-content { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.1rem; }
+        .category-tile-icon { font-size: 1.2em; font-weight: bold; margin-bottom: 0.15rem; width: 22px; height: 22px; display:flex; align-items:center; justify-content:center;}
+        .category-tile-icon svg { width: 100%; height: 100%; }
+        .category-tile-name { font-size: 0.7rem; line-height: 1.1; display: block; }
+        .category-tile-count { font-size: 0.6rem; padding: 0.05rem 0.3rem; border-radius: 0.4rem; margin-top: 0.15rem; font-weight: 500; line-height: 1; transition: background-color 0.2s ease, color 0.2s ease; }
+        
+        .category-tile-thesis { background-color: var(--category-tile-red-bg); color: var(--category-tile-red-text); border: 1px solid var(--category-tile-red-border); }
+        .category-tile-thesis:hover { background-color: #FCA5A5; border-color: #F87171; }
+        .category-tile-thesis.active { background-color: var(--category-tile-red-active-bg) !important; color: var(--category-tile-red-active-text) !important; border: 2px solid var(--category-tile-red-active-border) !important; }
+        .category-tile-thesis .category-tile-count { background-color: var(--category-tile-red-count-bg); color: var(--category-tile-red-count-text); }
+        .category-tile-thesis.active .category-tile-count { background-color: var(--category-tile-red-active-count-bg) !important; color: var(--category-tile-red-active-count-text) !important; }
+        .category-tile-dissertation { background-color: var(--category-tile-green-bg-specific); color: var(--category-tile-green-text-specific); border: 1px solid var(--category-tile-green-border-specific); }
+        .category-tile-dissertation:hover { background-color: #6EE7B7; border-color: #34D399; }
+        .category-tile-dissertation.active { background-color: var(--category-tile-green-active-bg-specific) !important; color: var(--category-tile-green-active-text-specific) !important; border: 2px solid var(--category-tile-green-active-border-specific) !important; }
+        .category-tile-dissertation .category-tile-count { background-color: var(--category-tile-green-count-bg-specific); color: var(--category-tile-green-count-text-specific); }
+        .category-tile-dissertation.active .category-tile-count { background-color: var(--category-tile-green-active-count-bg-specific) !important; color: var(--category-tile-green-active-count-text-specific) !important; }
+        .category-tile-confluence { background-color: var(--category-tile-yellow-bg); color: var(--category-tile-yellow-text); border: 1px solid var(--category-tile-yellow-border); }
+        .category-tile-confluence:hover { background-color: #FDE047; border-color: #FACC15; }
+        .category-tile-confluence.active { background-color: var(--category-tile-yellow-active-bg) !important; color: var(--category-tile-yellow-active-text) !important; border: 2px solid var(--category-tile-yellow-active-border) !important; }
+        .category-tile-confluence .category-tile-count { background-color: var(--category-tile-yellow-count-bg); color: var(--category-tile-yellow-count-text); }
+        .category-tile-confluence.active .category-tile-count { background-color: var(--category-tile-yellow-active-count-bg) !important; color: var(--category-tile-yellow-active-count-text) !important; }
+        .category-tile-synergy { background-color: var(--category-tile-blue-bg); color: var(--category-tile-blue-text); border: 1px solid var(--category-tile-blue-border); }
+        .category-tile-synergy:hover { background-color: #93C5FD; border-color: #60A5FA; }
+        .category-tile-synergy.active { background-color: var(--category-tile-blue-active-bg) !important; color: var(--category-tile-blue-active-text) !important; border: 2px solid var(--category-tile-blue-active-border) !important; }
+        .category-tile-synergy .category-tile-count { background-color: var(--category-tile-blue-count-bg); color: var(--category-tile-blue-count-text); }
+        .category-tile-synergy.active .category-tile-count { background-color: var(--category-tile-blue-active-count-bg) !important; color: var(--category-tile-blue-active-count-text) !important; }
+        
+        @keyframes swirlGradient { 
+            0% { background-position: 0% 50%; } 
+            25% { background-position: 50% 100%; }
+            50% { background-position: 100% 50%; } 
+            75% { background-position: 50% 0%;}
+            100% { background-position: 0% 50%; } 
+        }
+        @keyframes colorShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .date-custom-inputs { display: flex; gap: 10px; align-items: flex-end; width: 100%; }
+        .date-custom-inputs .filter-group { flex: 1; }
+        .date-custom-inputs label { font-size: 0.8em; }
+
+        .search-result-item { 
+            margin-bottom: 15px; 
+            padding: 18px;
+            border: 1px solid var(--neutral-border-color); 
+            border-radius: 8px; 
+            background-color: var(--document-card-bg); 
+            box-shadow: var(--card-shadow); 
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out; 
+        }
+        .search-result-item:hover { 
+            transform: translateY(-2px); 
+            box-shadow: var(--card-hover-shadow);
+            background-color: var(--document-card-bg-hover);
+        }
+        .search-result-item:last-child { margin-bottom: 0; }
+        .result-title a { 
+            font-size: 1.25em; 
+            color: var(--link-color); 
+            text-decoration: none; 
+            font-weight: 600; 
+            transition: color 0.2s ease; 
+        }
+        .result-title a:hover { 
+            text-decoration: underline; 
+            text-decoration-color: var(--link-hover-color); 
+            color: var(--link-hover-color); 
+        }
+        .result-metadata { 
+            font-size: 0.85em; 
+            color: var(--metadata-pill-text-color); 
+            margin-top: 6px;
+            margin-bottom: 10px; 
+            display: inline-flex; 
+            flex-wrap: wrap; 
+            gap: 8px 12px; 
+            padding: 6px 12px; 
+            background-color: var(--metadata-pill-bg); 
+            border-radius: 20px; 
+        }
+        .result-metadata span { 
+            display: inline-flex; 
+            align-items: center; 
+        }
+        .result-metadata .meta-icon { 
+            margin-right: 5px; 
+            color: var(--metadata-pill-text-color); 
+            width: 0.9em; 
+            height: 0.9em;
+            opacity: 0.8;
+        }
+        .result-snippet { 
+            font-size: 0.95em; 
+            color: var(--secondary-text-color); 
+            line-height: 1.6; 
+            margin-top: 10px; 
+        }
+        
+        .results-category-heading {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--primary-text-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--theme-green-dark);
+        }
+        .results-category-heading:first-of-type {
+            margin-top: 0;
+        }
+
+        .author-card-grid-container { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; 
+            margin-top: 10px;
+        }
+        .author-profile-card {
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center; 
+            gap: 10px; 
+            padding: 15px;
+            border: 1px solid var(--neutral-border-color);
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: var(--card-shadow);
+            transition: var(--card-hover-shadow) 0.2s ease, transform 0.2s ease;
+            width: 150px; 
+            height: 180px; 
+            justify-content: center; 
+        }
+        .author-profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-hover-shadow);
+        }
+        .author-avatar-placeholder {
+            width: 60px; 
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--theme-green-dark);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.5em; 
+            flex-shrink: 0;
+            margin-bottom: 5px;
+        }
+        .author-info .author-name {
+            font-size: 1em; 
+            font-weight: 600;
+            color: var(--primary-text-color);
+            margin-bottom: 2px;
+        }
+        .author-info .author-doc-count {
+            font-size: 0.8em; 
+            color: var(--secondary-text-color);
+            margin-bottom: 4px;
+        }
+        .author-info .author-view-link {
+            font-size: 0.75em; 
+            color: var(--link-color);
+            text-decoration: none;
+        }
+        .author-info .author-view-link:hover {
+            text-decoration: underline;
+            color: var(--link-hover-color);
+        }
+
+        .keyword-result-pill-container { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; 
+            margin-top: 5px; 
+        }
+        .keyword-result-pill {
+            display: inline-flex; 
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 20px; 
+            background-color: var(--theme-gold-lighter-bg);
+            border: 1px solid var(--theme-gold);
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        .keyword-result-pill:hover {
+            background-color: var(--theme-gold-light-bg); 
+            border-color: var(--theme-gold-darker);
+            transform: translateY(-1px);
+        }
+        .keyword-result-pill .keyword-pill-name {
+            font-weight: 500;
+            font-size: 0.9em;
+            color: var(--theme-green-darker-text);
+        }
+        .keyword-result-pill .keyword-pill-count {
+            font-size: 0.75em;
+            background-color: var(--theme-gold);
+            color: var(--primary-text-color);
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+
+        .pagination-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .pagination {
+             display: inline-flex;
+             align-items: center;
+        }
+        .pagination a, .pagination span.page-number { 
+            display: inline-block; padding: 8px 12px; margin: 0 3px; 
+            border: 1px solid var(--input-border-color); color: var(--link-color); 
+            text-decoration: none; border-radius: 6px; font-size: 0.9em; font-weight: 500; 
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+            min-width: 36px;
+            text-align: center;
+        }
+        .pagination a:hover { 
+            background-color: var(--theme-gold-lighter-bg); border-color: var(--theme-gold-darker); 
+            color: var(--theme-gold-darker); transform: translateY(-1px); 
+        }
+        .pagination span.current { 
+            background-color: var(--button-bg-color); color: var(--button-text-color); 
+            border-color: var(--button-bg-color); font-weight: 600; 
+        }
+        .pagination a.disabled { 
+            color: #bbb; pointer-events: none; 
+            border-color: var(--neutral-border-color); background-color: #f5f5f5; 
+        }
+        .pagination span.ellipsis {
+            padding: 8px 6px;
+            color: var(--secondary-text-color);
+        }
+
+
+        .end-of-results-message {
+            text-align: center;
+            color: var(--secondary-text-color);
+            font-style: italic;
+            margin-top: 20px;
+            padding: 10px;
+            display: none; 
+        }
+
+
+        .no-results { text-align: center; padding: 25px 20px; color: var(--secondary-text-color); font-style: italic; font-size: 1em; background-color: var(--filter-bg-color); border-radius: 8px; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                position: fixed; z-index: 1000; height: 100%;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            }
+            .filter-sidebar.collapsed { transform: translateX(-100%); }
+            .main-content-area { margin-left: 0 !important; }
+            body.sidebar-open .main-content-area::before {
+                content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background-color: rgba(0,0,0,0.3); z-index: 999;
+            }
+            .filters-header-sidebar { flex-direction: row; align-items: center; }
+            .category-filter-tile { min-width: calc(33.33% - 7px); max-width: calc(33.33% - 7px); }
+            .author-card-grid-container { justify-content: center; } 
+            .author-profile-card { width: calc(50% - 10px); height: auto; min-height: 160px; } 
+            .keyword-result-pill-container { justify-content: center; }
+        }
+        @media (max-width: 600px) {
+            .search-bar-results-page input[type="search"] { padding: 10px 15px; font-size: 14px; }
+            .search-bar-results-page button { padding: 10px 15px; font-size: 14px; }
+            .result-title a { font-size: 1.1em; }
+            .result-snippet { font-size: 0.9em; }
+            .pagination a, .pagination span.page-number { padding: 7px 10px; font-size: 0.85em; min-width: 30px;}
+            .filters-container-sidebar { gap: 15px; }
+            .filter-group input[type="text"], .filter-group input[type="date"], .filter-group select { padding: 8px 10px; font-size: 0.85em; }
+            .category-filter-tile { min-width: calc(50% - 5px); max-width: calc(50% - 5px); min-height: 65px; padding: 0.4rem 0.3rem; }
+            .category-tile-icon { font-size: 1em; width: 20px; height: 20px; }
+            .category-tile-name { font-size: 0.65rem;}
+            .category-tile-count { font-size: 0.55rem; }
+            .filter-group label, .filter-group .filter-label { font-size: 0.8em; }
+            .author-profile-card { width: calc(100% - 10px); } 
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-peek-trigger"></div>
+    <aside class="filter-sidebar" id="filter-sidebar">
+        <div class="filters-header-sidebar">
+            <span class="filters-title-sidebar">Filters</span>
+            <button type="button" id="sidebar-minimize-btn" title="Minimize Filters">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <div class="filters-container-sidebar">
+            <div class="filter-group">
+                <div class="filter-group-category-header">
+                    <label class="filter-label">Category</label>
+                    <button type="button" id="toggle-all-categories-btn">Select All</button>
+                </div>
+                <div id="category-tile-filter-container" role="group" aria-labelledby="category-filter-label">
+                </div>
+            </div>
+             <div class="filter-group">
+                <label class="filter-label">Show Only</label>
+                <div class="result-type-filter-group" id="result-type-filter">
+                    <label for="show-all-types" class="result-type-tile result-type-tile-all"><input type="radio" id="show-all-types" name="result-type" value="all" checked> <span>All</span><span class="filter-count" id="count-all-types"></span></label>
+                    <label for="show-documents" class="result-type-tile result-type-tile-document"><input type="radio" id="show-documents" name="result-type" value="document"> <span>Documents</span><span class="filter-count" id="count-documents"></span></label>
+                    <label for="show-authors" class="result-type-tile result-type-tile-author"><input type="radio" id="show-authors" name="result-type" value="author"> <span>Authors</span><span class="filter-count" id="count-authors"></span></label>
+                    <label for="show-tags-results" class="result-type-tile result-type-tile-tag"><input type="radio" id="show-tags-results" name="result-type" value="tag"> <span>Tags</span><span class="filter-count" id="count-tags-results"></span></label>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="filter-sort">Sort By</label>
+                <select id="filter-sort" name="sort" aria-label="Sort results by">
+                    <option value="relevance">Relevance</option>
+                    <option value="date-newest">Date: Newest First</option>
+                    <option value="date-oldest">Date: Oldest First</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-author">Author</label>
+                <select id="filter-author" name="author" aria-label="Filter by author">
+                    <option value="all">All Authors</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                 <div class="filter-group-label-container">
+                    <label for="filter-tags">Filter by Tags (comma-separated)</label>
+                    <span class="info-icon" tabindex="0">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd" /></svg>
+                        <span class="tooltip">
+                            Enter tags separated by commas (e.g., AI, research). This filters <strong>documents</strong> containing ALL entered tags.
+                            <br><br>
+                            This is different from "Show Only: Tags", which displays tag entities themselves.
+                        </span>
+                    </span>
+                </div>
+                <input type="text" id="filter-tags" name="tags" placeholder="e.g., AI, research" aria-label="Filter by tags">
+            </div>
+            <div class="filter-group">
+                <label for="filter-date-predefined">Date Range</label>
+                <select id="filter-date-predefined" name="date-predefined" aria-label="Filter by predefined date range">
+                    <option value="all">All Time</option>
+                    <option value="past-week">Past Week</option>
+                    <option value="past-month">Past Month</option>
+                    <option value="past-year">Past Year</option>
+                    <option value="custom">Custom Range...</option>
+                </select>
+            </div>
+            <div class="filter-group" id="custom-date-filter-group" style="display: none;">
+                 <div class="date-custom-inputs">
+                    <div class="filter-group">
+                        <label for="filter-date-from">From</label>
+                        <input type="date" id="filter-date-from" name="date-from" aria-label="Custom start date">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-date-to">To</label>
+                        <input type="date" id="filter-date-to" name="date-to" aria-label="Custom end date">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="clear-filters-btn" class="clear-filters-btn">Clear All Filters</button>
+        <div class="sidebar-peek-arrow" id="sidebar-peek-arrow" title="Maximize Filters">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+            </svg>
+        </div>
+    </aside>
+
+    <main class="main-content-area" id="main-content-area">
+        <div class="search-results-container-wrapper">
+             <h1 id="results-for-header" class="results-for-header">Results for '<span id="search-query-term-display">Your Search</span>'</h1>
+            
+            <div id="searchResultsList">
+                <p class="no-results">Apply filters or search to see results.</p>
+            </div>
+            <div id="end-of-results-message" class="end-of-results-message" style="display: none;">
+                You've reached the end of the results.
+            </div>
+
+            <div class="pagination-container" id="pagination-container" style="display: none;">
+                <nav class="pagination" id="pagination-nav" aria-label="Search results pagination">
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const mockResultsData = [
+            // Documents
+            { id: 1, resultType: 'document', title: "The Future of AI in Academic Research", url: "https://www.example.com/ai-research", snippet: "Exploring the transformative impact of artificial intelligence on research methodologies and academic publishing.", date: "2024-05-10", category: "Article", author: "Dr. Ada Lovelace", tags: ["AI", "research", "academia", "innovation"], relevanceScore: 0.92 },
+            { id: 2, resultType: 'document', title: "A Comprehensive Guide to Data Visualization", url: "https://www.example.org/guides/data-viz", snippet: "This guide covers principles, tools, and techniques for effective data visualization in various fields.", date: "2024-04-20", category: "Article", author: "Prof. Edward Tufte", tags: ["data visualization", "guide", "analytics", "charts"], relevanceScore: 0.88 },
+            { id: 3, resultType: 'document', title: "Sustainable Urban Development: A Thesis", url: "https://www.example.net/blog/sustainable-cities", snippet: "Discussing new approaches to creating sustainable and resilient urban environments for the future.", date: "2024-05-01", category: "Thesis", author: "Jane Jacobs Jr.", tags: ["sustainability", "urban planning", "cities", "environment"], relevanceScore: 0.85 },
+            { id: 4, resultType: 'document', title: "Advanced Techniques in Machine Learning - A Dissertation", url: "https://www.example.edu/ml-techniques", snippet: "A deep dive into cutting-edge machine learning algorithms and their applications.", date: "2023-11-15", category: "Dissertation", author: "Dr. Alan Turing", tags: ["machine learning", "AI", "algorithms", "deep learning"], relevanceScore: 0.95 },
+            { id: 5, resultType: 'document', title: "Beginner's Guide to Quantum Computing - Confluence Proceedings", url: "https://www.example.com/guides/quantum", snippet: "An accessible introduction to the principles of quantum computing and its potential.", date: "2024-03-13", category: "Confluence", author: "Dr. Ada Lovelace", tags: ["quantum computing", "guide", "physics", "technology"], relevanceScore: 0.77 },
+            // Authors
+            { id: 101, resultType: 'author', title: "Dr. Ada Lovelace", url: "#author-ada", documentCount: 2, relevanceScore: 0.9 },
+            { id: 102, resultType: 'author', title: "Prof. Edward Tufte", url: "#author-tufte", documentCount: 1, relevanceScore: 0.85 },
+            { id: 103, resultType: 'author', title: "Jane Jacobs Jr.", url: "#author-jacobs", documentCount: 1, relevanceScore: 0.8 },
+            { id: 104, resultType: 'author', title: "Dr. Alan Turing", url: "#author-turing", documentCount: 1, relevanceScore: 0.93 },
+            { id: 105, resultType: 'author', title: "Dr. Rachel Carson", url: "#author-carson", documentCount: 1, relevanceScore: 0.81 },
+
+
+            // Tags (formerly Keywords)
+            { id: 201, resultType: 'tag', title: "AI", url: "#tag-ai", documentCount: 3, relevanceScore: 0.95 },
+            { id: 202, resultType: 'tag', title: "Research", url: "#tag-research", documentCount: 2, relevanceScore: 0.90 },
+            { id: 203, resultType: 'tag', title: "Sustainability", url: "#tag-sustainability", documentCount: 2, relevanceScore: 0.88 },
+            { id: 204, resultType: 'tag', title: "Data Visualization", url: "#tag-dataviz", documentCount: 1, relevanceScore: 0.87 },
+            { id: 205, resultType: 'tag', title: "Machine Learning", url: "#tag-ml", documentCount: 1, relevanceScore: 0.94 }
+        ];
+        const PREDEFINED_CATEGORIES = ["Thesis", "Dissertation", "Confluence", "Synergy"];
+        const RESULTS_PER_PAGE = 5;
+        let currentPage = 1;
+        let currentFilteredResultsMasterList = [];
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let initialFullQuery = urlParams.get('q') || ""; 
+            let displayedSearchTerm = ""; 
+
+            const resultsListContainer = document.getElementById('searchResultsList');
+            const searchQueryTermDisplay = document.getElementById('search-query-term-display');
+            
+            const filterSort = document.getElementById('filter-sort');
+            const filterAuthorEl = document.getElementById('filter-author');
+            const categoryTileFilterContainer = document.getElementById('category-tile-filter-container');
+            const filterTagsInput = document.getElementById('filter-tags'); 
+            const filterDatePredefined = document.getElementById('filter-date-predefined');
+            const customDateFilterGroup = document.getElementById('custom-date-filter-group');
+            const filterDateFrom = document.getElementById('filter-date-from');
+            const filterDateTo = document.getElementById('filter-date-to');
+            const clearFiltersBtn = document.getElementById('clear-filters-btn');
+            const resultTypeFilterRadios = document.querySelectorAll('input[name="result-type"]');
+            
+            const sidebarMinimizeBtn = document.getElementById('sidebar-minimize-btn');
+            const filterSidebar = document.getElementById('filter-sidebar');
+            const sidebarPeekTrigger = document.getElementById('sidebar-peek-trigger');
+            const sidebarPeekArrow = document.getElementById('sidebar-peek-arrow');
+            const toggleAllCategoriesBtn = document.getElementById('toggle-all-categories-btn');
+            const paginationContainer = document.getElementById('pagination-container');
+            const paginationNav = document.getElementById('pagination-nav');
+            const endOfResultsMessage = document.getElementById('end-of-results-message');
+            
+            const countAllTypesEl = document.getElementById('count-all-types');
+            const countDocumentsEl = document.getElementById('count-documents');
+            const countAuthorsEl = document.getElementById('count-authors');
+            const countTagsEl = document.getElementById('count-tags-results'); 
+
+
+            function populateAuthorFilter() {
+                const authors = [...new Set(mockResultsData.filter(item => item.resultType === 'document' && item.author).map(item => item.author))].sort();
+                filterAuthorEl.innerHTML = '<option value="all">All Authors</option>';
+                authors.forEach(author => {
+                    const option = document.createElement('option');
+                    option.value = author;
+                    option.textContent = author;
+                    filterAuthorEl.appendChild(option);
+                });
+            }
+
+            function populateCategoryTiles() {
+                categoryTileFilterContainer.innerHTML = ''; 
+                PREDEFINED_CATEGORIES.forEach(categoryName => {
+                    const count = mockResultsData.filter(item => item.resultType === 'document' && item.category === categoryName).length;
+                    const tile = createCategoryTile(categoryName, count, false);
+                    categoryTileFilterContainer.appendChild(tile);
+                });
+                updateToggleAllButtonState();
+            }
+
+            function createCategoryTile(categoryName, count, isActive) {
+                const tile = document.createElement('button');
+                tile.type = 'button';
+                tile.className = `category-filter-tile category-tile-${categoryName.toLowerCase().replace(/\s+/g, '-')}`;
+                if (isActive) {
+                    tile.classList.add('active');
+                }
+                tile.dataset.category = categoryName;
+
+                let iconSVG = '';
+                if (categoryName === "Thesis" || categoryName === "Dissertation") {
+                    iconSVG = `<svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3.25 2.75A.75.75 0 002.5 3.5v9.5A.75.75 0 004 13.75v-1.224A2.736 2.736 0 014.69 12.5h10.618a2.736 2.736 0 01.691.026V3.5A.75.75 0 0015.25 2H4.75A.75.75 0 004 2.75H3.25zM14.75 14.5H4.691A1.236 1.236 0 004 14.691V15.5A2.25 2.25 0 006.25 17.75h7.5A2.25 2.25 0 0016 15.5v-.809c0-.052-.002-.104-.005-.155A2.736 2.736 0 0114.75 14.5z" /></svg>`;
+                } else if (categoryName === "Confluence") {
+                    iconSVG = `<svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM1.054 17.245A3.501 3.501 0 014.5 14h11a3.501 3.501 0 013.446 3.245A2.002 2.002 0 0116.5 19h-13a2.002 2.002 0 01-1.946-1.755z" /></svg>`;
+                } else if (categoryName === "Synergy") {
+                    iconSVG = `<svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.586 4.414a1.5 1.5 0 012.122 0l1.878 1.879a1.5 1.5 0 010 2.121l-1.878 1.879a1.5 1.5 0 01-2.122-2.122L13.5 7.25H6.5A1.5 1.5 0 015 5.75S5 4.25 6.5 4.25h7.086l-.914-.914a1.5 1.5 0 010-2.122zM7.414 15.586a1.5 1.5 0 01-2.122 0L3.414 13.707a1.5 1.5 0 010-2.121l1.878-1.879a1.5 1.5 0 112.122 2.122L6.5 12.75h7a1.5 1.5 0 011.5 1.5s0 1.5-1.5 1.5H6.5l.914.914a1.5 1.5 0 010 2.122z" clip-rule="evenodd" /></svg>`;
+                }
+
+
+                tile.innerHTML = `
+                    <span class="category-tile-content">
+                        <span class="category-tile-icon">${iconSVG}</span>
+                        <span class="category-tile-name">${categoryName}</span>
+                        <span class="category-tile-count">${count}</span>
+                    </span>
+                `;
+                tile.addEventListener('click', handleCategoryTileClick);
+                return tile;
+            }
+            
+            function updateToggleAllButtonState() {
+                const allTiles = categoryTileFilterContainer.querySelectorAll('.category-filter-tile');
+                const activeTiles = categoryTileFilterContainer.querySelectorAll('.category-filter-tile.active');
+                if (activeTiles.length === allTiles.length && allTiles.length > 0) {
+                    toggleAllCategoriesBtn.textContent = "Deselect All";
+                } else {
+                    toggleAllCategoriesBtn.textContent = "Select All";
+                }
+            }
+
+            toggleAllCategoriesBtn.addEventListener('click', () => {
+                const allTiles = categoryTileFilterContainer.querySelectorAll('.category-filter-tile');
+                const shouldSelectAll = toggleAllCategoriesBtn.textContent === "Select All";
+                allTiles.forEach(tile => {
+                    tile.classList.toggle('active', shouldSelectAll);
+                });
+                updateToggleAllButtonState();
+                currentPage = 1;
+                applyFiltersAndSearch();
+            });
+            
+            function handleCategoryTileClick(event) {
+                const clickedTile = event.currentTarget;
+                clickedTile.classList.toggle('active');
+                updateToggleAllButtonState();
+                currentPage = 1;
+                applyFiltersAndSearch();
+            }
+            
+            populateAuthorFilter();
+            populateCategoryTiles();
+
+            function displayResults() {
+                resultsListContainer.innerHTML = '';
+                const selectedResultType = document.querySelector('input[name="result-type"]:checked').value;
+                
+                let resultsToDisplay = currentFilteredResultsMasterList;
+                if (selectedResultType !== 'all') {
+                    resultsToDisplay = currentFilteredResultsMasterList.filter(r => r.resultType === selectedResultType);
+                }
+
+                let paginatedItems = resultsToDisplay;
+                let itemsForPaginationCount = resultsToDisplay.length;
+
+                if (selectedResultType === 'all' || selectedResultType === 'document') {
+                    const documentsInCurrentView = resultsToDisplay.filter(r => r.resultType === 'document');
+                    itemsForPaginationCount = documentsInCurrentView.length;
+
+                    const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+                    const endIndex = startIndex + RESULTS_PER_PAGE;
+                    
+                    if (selectedResultType === 'all') {
+                         paginatedItems = resultsToDisplay; 
+                    } else { 
+                         paginatedItems = documentsInCurrentView.slice(startIndex, endIndex);
+                    }
+
+                } else { 
+                    itemsForPaginationCount = paginatedItems.length; 
+                }
+
+
+                if (resultsToDisplay.length === 0) {
+                    resultsListContainer.innerHTML = '<p class="no-results">No results match your criteria.</p>';
+                } else {
+                    const grouped = { document: [], author: [], tag: [] }; 
+                    
+                    paginatedItems.forEach(item => {
+                        if (grouped[item.resultType]) { 
+                            grouped[item.resultType].push(item);
+                        }
+                    });
+
+                    if (grouped.document.length > 0) {
+                        const heading = document.createElement('h2');
+                        heading.className = 'results-category-heading';
+                        heading.textContent = 'Documents';
+                        resultsListContainer.appendChild(heading);
+                        grouped.document.forEach(result => resultsListContainer.appendChild(createResultItemElement(result)));
+                    }
+                    if (grouped.author.length > 0) {
+                        const heading = document.createElement('h2');
+                        heading.className = 'results-category-heading';
+                        heading.textContent = 'Authors';
+                        resultsListContainer.appendChild(heading);
+                        const authorCardContainer = document.createElement('div'); 
+                        authorCardContainer.className = 'author-card-grid-container';
+                        grouped.author.forEach(result => authorCardContainer.appendChild(createResultItemElement(result)));
+                        resultsListContainer.appendChild(authorCardContainer);
+                    }
+                    if (grouped.tag.length > 0) { 
+                        const heading = document.createElement('h2');
+                        heading.className = 'results-category-heading';
+                        heading.textContent = 'Tags'; 
+                        resultsListContainer.appendChild(heading);
+                        const tagPillContainer = document.createElement('div');
+                        tagPillContainer.className = 'keyword-result-pill-container'; 
+                        grouped.tag.forEach(result => tagPillContainer.appendChild(createResultItemElement(result)));
+                        resultsListContainer.appendChild(tagPillContainer);
+                    }
+                    if (resultsListContainer.innerHTML === '') { 
+                         resultsListContainer.innerHTML = '<p class="no-results">No results for this selection.</p>';
+                    }
+                }
+                
+                let itemsToConsiderForPagination = currentFilteredResultsMasterList.filter(r => r.resultType === 'document');
+                if (selectedResultType !== 'all' && selectedResultType !== 'document') { 
+                    renderPagination(0); 
+                } else {
+                    renderPagination(itemsToConsiderForPagination.length);
+                }
+            }
+
+            function createResultItemElement(result) {
+                const itemEl = document.createElement('article');
+                let itemHTML = '';
+                
+                if (result.resultType === 'document') {
+                    itemEl.className = 'search-result-item';
+                    itemEl.setAttribute('aria-labelledby', `result-title-${result.id}`);
+                    const publicationYear = new Date(result.date).getFullYear();
+                    
+                    const categoryIconSVG = `<svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3.25 2.75A.75.75 0 002.5 3.5v9.5A.75.75 0 004 13.75v-1.224A2.736 2.736 0 014.69 12.5h10.618a2.736 2.736 0 01.691.026V3.5A.75.75 0 0015.25 2H4.75A.75.75 0 004 2.75H3.25zM14.75 14.5H4.691A1.236 1.236 0 004 14.691V15.5A2.25 2.25 0 006.25 17.75h7.5A2.25 2.25 0 0016 15.5v-.809c0-.052-.002-.104-.005-.155A2.736 2.736 0 0114.75 14.5z" /></svg>`;
+                    const authorIconSVG = `<svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.095a1.23 1.23 0 00.41-1.412c-.006-.042-.307-.52-.94-.872-1.777-.872h-10c-.836 0-1.47-.352-1.777-.872z" /></svg>`;
+                    const dateIconSVG = `<svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75z" clip-rule="evenodd" /></svg>`;
+
+                    itemHTML = `
+                        <h3 class="result-title"><a href="${result.url || '#'}" id="result-title-${result.id}" target="_blank" rel="noopener noreferrer">${result.title}</a></h3>
+                        <div class="result-metadata">
+                            ${result.category ? `<span>${categoryIconSVG}${result.category}</span>` : ''}
+                            ${result.author ? `<span>${authorIconSVG}By ${result.author}</span>` : ''}
+                            <span>${dateIconSVG}${publicationYear}</span>
+                        </div>
+                        <p class="result-snippet">${result.snippet}</p>
+                    `;
+                } else if (result.resultType === 'author') {
+                    itemEl.className = 'author-profile-card';
+                    const initials = result.title.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                    itemHTML = `
+                        <div class="author-avatar-placeholder">${initials}</div>
+                        <div class="author-info">
+                            <h3 class="author-name"><a href="${result.url || '#'}" target="_blank" rel="noopener noreferrer">${result.title}</a></h3>
+                            <p class="author-doc-count">${result.documentCount} document${result.documentCount !== 1 ? 's' : ''}</p>
+                            <a href="${result.url || '#'}" class="author-view-link" target="_blank" rel="noopener noreferrer">View works &rarr;</a>
+                        </div>
+                    `;
+                } else if (result.resultType === 'tag') { 
+                    itemEl.tagName = 'A'; 
+                    itemEl.href = result.url || '#';
+                    itemEl.className = 'keyword-result-pill'; 
+                    itemEl.setAttribute('target', '_blank');
+                    itemEl.setAttribute('rel', 'noopener noreferrer');
+                    itemHTML = `
+                        <span class="keyword-pill-name">${result.title}</span>
+                        <span class="keyword-pill-count">${result.documentCount}</span>
+                    `;
+                }
+                itemEl.innerHTML = itemHTML;
+                return itemEl;
+            }
+            
+            function renderPagination(totalItems) {
+                paginationNav.innerHTML = '';
+                endOfResultsMessage.style.display = 'none';
+                const totalPages = Math.ceil(totalItems / RESULTS_PER_PAGE);
+
+                if (totalPages <= 1) {
+                    paginationContainer.style.display = 'none';
+                    if (totalItems > 0 && (document.querySelector('input[name="result-type"]:checked').value === 'all' || document.querySelector('input[name="result-type"]:checked').value === 'document') ) { 
+                         endOfResultsMessage.style.display = 'block';
+                    }
+                    return;
+                }
+                paginationContainer.style.display = 'block';
+
+                const prevLink = document.createElement('a');
+                prevLink.href = '#';
+                prevLink.innerHTML = '&laquo; Previous';
+                prevLink.setAttribute('aria-label', 'Previous page');
+                if (currentPage === 1) {
+                    prevLink.classList.add('disabled');
+                    prevLink.setAttribute('aria-disabled', 'true');
+                } else {
+                    prevLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage--;
+                        displayResults();
+                    });
+                }
+                paginationNav.appendChild(prevLink);
+
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+
+                if (currentPage <= 3) endPage = Math.min(totalPages, 5);
+                if (currentPage > totalPages - 3) startPage = Math.max(1, totalPages - 4);
+
+                if (startPage > 1) {
+                    paginationNav.appendChild(createPageLink(1));
+                    if (startPage > 2) {
+                         const ellipsis = document.createElement('span');
+                         ellipsis.className = 'ellipsis';
+                         ellipsis.textContent = '...';
+                         paginationNav.appendChild(ellipsis);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationNav.appendChild(createPageLink(i));
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'ellipsis';
+                        ellipsis.textContent = '...';
+                        paginationNav.appendChild(ellipsis);
+                    }
+                    paginationNav.appendChild(createPageLink(totalPages));
+                }
+
+                const nextLink = document.createElement('a');
+                nextLink.href = '#';
+                nextLink.innerHTML = 'Next &raquo;';
+                nextLink.setAttribute('aria-label', 'Next page');
+                if (currentPage === totalPages) {
+                    nextLink.classList.add('disabled');
+                    nextLink.setAttribute('aria-disabled', 'true');
+                     if (document.querySelector('input[name="result-type"]:checked').value === 'all' || document.querySelector('input[name="result-type"]:checked').value === 'document') {
+                        endOfResultsMessage.style.display = 'block';
+                    }
+                } else {
+                    nextLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage++;
+                        displayResults();
+                    });
+                }
+                paginationNav.appendChild(nextLink);
+            }
+
+            function createPageLink(pageNumber) {
+                const pageLink = document.createElement('a');
+                pageLink.href = '#';
+                pageLink.textContent = pageNumber;
+                pageLink.classList.add('page-number');
+                pageLink.setAttribute('aria-label', `Go to page ${pageNumber}`);
+                if (pageNumber === currentPage) {
+                    pageLink.classList.add('current');
+                    pageLink.setAttribute('aria-current', 'page');
+                } else {
+                    pageLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentPage = pageNumber;
+                        displayResults();
+                    });
+                }
+                return pageLink;
+            }
+
+
+            function updateFilterControlActiveState() {
+                [filterSort, filterAuthorEl, filterDatePredefined].forEach(selectEl => {
+                    selectEl.classList.toggle('filter-active', selectEl.value !== selectEl.options[0].value);
+                });
+                [filterTagsInput, filterDateFrom, filterDateTo].forEach(inputEl => { 
+                     inputEl.classList.toggle('filter-active', inputEl.value.trim() !== '');
+                });
+                 document.querySelectorAll('input[name="result-type"]').forEach(radio => {
+                    const label = radio.closest('label');
+                    if (label) {
+                        label.classList.toggle('filter-active', radio.checked && radio.value !== 'all');
+                    }
+                });
+            }
+
+            function parseAndUpdateFiltersFromQuery(fullQuery) {
+                let remainingQuery = fullQuery;
+                
+                const authorRegex = /author:"([^"]+)"/gi;
+                let match = authorRegex.exec(remainingQuery);
+                if (match && match[1]) {
+                    const authorName = match[1];
+                    const authorOption = Array.from(filterAuthorEl.options).find(opt => opt.value.toLowerCase() === authorName.toLowerCase());
+                    if (authorOption) filterAuthorEl.value = authorOption.value;
+                    remainingQuery = remainingQuery.replace(match[0], '').trim();
+                }
+
+                const categoryRegex = /category:(\w+)/gi;
+                const categoriesFromQuery = [];
+                while ((match = categoryRegex.exec(remainingQuery)) !== null) {
+                    categoriesFromQuery.push(match[1].toLowerCase());
+                    remainingQuery = remainingQuery.replace(match[0], '').trim();
+                }
+                if (categoriesFromQuery.length > 0) {
+                    categoryTileFilterContainer.querySelectorAll('.category-filter-tile').forEach(tile => {
+                        tile.classList.toggle('active', categoriesFromQuery.includes(tile.dataset.category.toLowerCase()));
+                    });
+                    updateToggleAllButtonState();
+                }
+
+                const showOnlyRegex = /show:(\w+)/gi;
+                match = showOnlyRegex.exec(remainingQuery);
+                if (match && match[1]) {
+                    const showType = match[1].toLowerCase();
+                    const radioToSelect = document.querySelector(`input[name="result-type"][value="${showType}"]`);
+                    if (radioToSelect) radioToSelect.checked = true;
+                    remainingQuery = remainingQuery.replace(match[0], '').trim();
+                }
+                
+                const tagsRegex = /tags:([^ ]+(?:,[^ ]+)*)/gi; 
+                match = tagsRegex.exec(remainingQuery);
+                if (match && match[1]) {
+                    filterTagsInput.value = match[1].replace(/,/g, ', '); 
+                    remainingQuery = remainingQuery.replace(match[0], '').trim();
+                }
+
+                const yearRegex = /year:(\d{4})(?!\S)/gi;
+                match = yearRegex.exec(remainingQuery);
+                if (match && match[1]) {
+                    const year = match[1];
+                    filterDatePredefined.value = 'custom';
+                    customDateFilterGroup.style.display = 'flex';
+                    filterDateFrom.value = `${year}-01-01`;
+                    filterDateTo.value = `${year}-12-31`;
+                    remainingQuery = remainingQuery.replace(match[0], '').trim();
+                } else {
+                    const afterRegex = /after:(\d{4}-\d{2}-\d{2})(?!\S)/gi;
+                    match = afterRegex.exec(remainingQuery);
+                    if (match && match[1]) {
+                        filterDatePredefined.value = 'custom';
+                        customDateFilterGroup.style.display = 'flex';
+                        filterDateFrom.value = match[1];
+                        remainingQuery = remainingQuery.replace(match[0], '').trim();
+                    }
+                    const beforeRegex = /before:(\d{4}-\d{2}-\d{2})(?!\S)/gi;
+                    match = beforeRegex.exec(remainingQuery);
+                    if (match && match[1]) {
+                        filterDatePredefined.value = 'custom';
+                        customDateFilterGroup.style.display = 'flex';
+                        filterDateTo.value = match[1];
+                        remainingQuery = remainingQuery.replace(match[0], '').trim();
+                    }
+                }
+                
+                displayedSearchTerm = remainingQuery.trim(); 
+                searchQueryTermDisplay.textContent = displayedSearchTerm ? displayedSearchTerm : "All Content";
+                document.title = displayedSearchTerm ? `Results for "${displayedSearchTerm}"` : `Search Results`;
+            }
+            
+            parseAndUpdateFiltersFromQuery(decodeURIComponent(initialFullQuery.replace(/\+/g, ' ')));
+
+
+            function applyFiltersAndSearch() {
+                let results = [...mockResultsData]; 
+                const generalQuery = displayedSearchTerm.toLowerCase();
+
+                if (generalQuery && generalQuery !== "all content") {
+                    results = results.filter(result => {
+                        const titleMatch = result.title.toLowerCase().includes(generalQuery);
+                        const snippetMatch = result.snippet && result.snippet.toLowerCase().includes(generalQuery);
+                        const authorNameMatch = result.resultType === 'author' && result.title.toLowerCase().includes(generalQuery);
+                        const tagMatch = result.resultType === 'tag' && result.title.toLowerCase().includes(generalQuery);
+                        return titleMatch || snippetMatch || authorNameMatch || tagMatch;
+                    });
+                }
+
+                const selectedAuthor = filterAuthorEl.value;
+                if (selectedAuthor !== 'all') {
+                    results = results.filter(result => result.resultType === 'document' && result.author === selectedAuthor);
+                }
+                
+                const activeCategoryTiles = Array.from(categoryTileFilterContainer.querySelectorAll('.category-filter-tile.active'));
+                const selectedCategories = activeCategoryTiles.map(tile => tile.dataset.category);
+                
+                if (activeCategoryTiles.length > 0) {
+                    results = results.filter(result => result.resultType === 'document' && selectedCategories.includes(result.category));
+                }
+                
+                const tagsQuery = filterTagsInput.value.trim().toLowerCase(); 
+                if (tagsQuery) {
+                    const tagsArray = tagsQuery.split(',').map(tag => tag.trim()).filter(tag => tag);
+                    if (tagsArray.length > 0) {
+                        results = results.filter(result => 
+                            result.resultType === 'document' && 
+                            result.tags && tagsArray.every(tagFilter => 
+                                result.tags.some(tagItem => tagItem.toLowerCase().includes(tagFilter))
+                            )
+                        );
+                    }
+                }
+
+                const selectedDatePredefined = filterDatePredefined.value;
+                const fromDateVal = filterDateFrom.value;
+                const toDateVal = filterDateTo.value;
+
+                if (selectedDatePredefined === 'custom' && fromDateVal && toDateVal) {
+                    const startDate = new Date(fromDateVal);
+                    const endDate = new Date(toDateVal);
+                    endDate.setHours(23, 59, 59, 999); 
+                    if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
+                         results = results.filter(result => {
+                            if (result.resultType !== 'document' || !result.date) return false;
+                            const resultDate = new Date(result.date);
+                            return resultDate >= startDate && resultDate <= endDate;
+                        });
+                    }
+                } else if (selectedDatePredefined !== 'all' && selectedDatePredefined !== 'custom') {
+                    const now = new Date();
+                    let startDate = new Date();
+                    if (selectedDatePredefined === 'past-week') startDate.setDate(now.getDate() - 7);
+                    else if (selectedDatePredefined === 'past-month') startDate.setMonth(now.getMonth() - 1);
+                    else if (selectedDatePredefined === 'past-year') startDate.setFullYear(now.getFullYear() - 1);
+                    
+                    results = results.filter(result => {
+                        if (result.resultType !== 'document' || !result.date) return false;
+                        const resultDate = new Date(result.date);
+                        return resultDate >= startDate && resultDate <= now;
+                    });
+                }
+                
+                currentFilteredResultsMasterList = results; 
+
+                const selectedResultType = document.querySelector('input[name="result-type"]:checked').value;
+                let finalResultsToDisplayAndPaginate = currentFilteredResultsMasterList;
+
+                currentFilteredResults = currentFilteredResultsMasterList; 
+
+                const sortBy = filterSort.value;
+                 if (sortBy === 'date-newest') { 
+                    currentFilteredResultsMasterList.sort((a, b) => {
+                        if (a.resultType === 'document' && b.resultType === 'document') return new Date(b.date) - new Date(a.date);
+                        if (a.resultType === 'document') return -1; 
+                        if (b.resultType === 'document') return 1;
+                        return (b.relevanceScore || 0) - (a.relevanceScore || 0); 
+                    });
+                } else if (sortBy === 'date-oldest') {
+                    currentFilteredResultsMasterList.sort((a, b) => {
+                         if (a.resultType === 'document' && b.resultType === 'document') return new Date(a.date) - new Date(b.date);
+                         if (a.resultType === 'document') return -1;
+                         if (b.resultType === 'document') return 1;
+                        return (b.relevanceScore || 0) - (a.relevanceScore || 0);
+                    });
+                } else if (sortBy === 'relevance') {
+                    currentFilteredResultsMasterList.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0));
+                }
+                
+                countAllTypesEl.textContent = `(${currentFilteredResultsMasterList.length})`;
+                countDocumentsEl.textContent = `(${currentFilteredResultsMasterList.filter(r => r.resultType === 'document').length})`;
+                countAuthorsEl.textContent = `(${currentFilteredResultsMasterList.filter(r => r.resultType === 'author').length})`;
+                countTagsEl.textContent = `(${currentFilteredResultsMasterList.filter(r => r.resultType === 'tag').length})`; 
+
+                currentPage = 1; 
+                updateFilterControlActiveState();
+                displayResults(); 
+            }
+            
+            resultTypeFilterRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    currentPage = 1; 
+                    applyFiltersAndSearch();
+                });
+            });
+            
+            function resetAllFilters() {
+                filterSort.value = 'relevance';
+                filterAuthorEl.value = 'all';
+                document.getElementById('show-all-types').checked = true;
+                
+                categoryTileFilterContainer.querySelectorAll('.category-filter-tile').forEach(tile => {
+                    tile.classList.remove('active');
+                });
+                updateToggleAllButtonState();
+
+                filterTagsInput.value = ''; 
+                filterDatePredefined.value = 'all';
+                customDateFilterGroup.style.display = 'none';
+                filterDateFrom.value = '';
+                filterDateTo.value = '';
+                
+                applyFiltersAndSearch();
+            }
+
+            filterSort.addEventListener('change', () => { currentPage = 1; applyFiltersAndSearch(); });
+            filterAuthorEl.addEventListener('change', () => { currentPage = 1; applyFiltersAndSearch(); });
+            filterTagsInput.addEventListener('input', debounce(() => { currentPage = 1; applyFiltersAndSearch(); }, 400)); 
+            
+            filterDatePredefined.addEventListener('change', () => {
+                if (filterDatePredefined.value === 'custom') {
+                    customDateFilterGroup.style.display = 'flex'; 
+                } else {
+                    customDateFilterGroup.style.display = 'none';
+                    filterDateFrom.value = '';
+                    filterDateTo.value = '';
+                }
+                currentPage = 1;
+                applyFiltersAndSearch();
+            });
+            filterDateFrom.addEventListener('change', () => { currentPage = 1; applyFiltersAndSearch(); });
+            filterDateTo.addEventListener('change', () => { currentPage = 1; applyFiltersAndSearch(); });
+            clearFiltersBtn.addEventListener('click', resetAllFilters);
+            
+            let isPeeking = false;
+            let peekTimeout;
+
+            function setSidebarCollapsedState(collapse) {
+                filterSidebar.classList.toggle('collapsed', collapse);
+                document.body.classList.toggle('sidebar-open', !collapse);
+                document.body.classList.remove('main-content-dimmed-for-peek');
+
+                if (collapse) {
+                    sidebarPeekTrigger.style.display = 'block';
+                } else {
+                    sidebarPeekTrigger.style.display = 'none';
+                    filterSidebar.classList.remove('peeking'); 
+                }
+            }
+            
+            sidebarMinimizeBtn.addEventListener('click', () => {
+                 setSidebarCollapsedState(true);
+            });
+
+            sidebarPeekTrigger.addEventListener('mouseenter', () => {
+                if (filterSidebar.classList.contains('collapsed')) {
+                    isPeeking = true;
+                    filterSidebar.classList.add('peeking');
+                    document.body.classList.add('main-content-dimmed-for-peek');
+                    clearTimeout(peekTimeout);
+                }
+            });
+
+            filterSidebar.addEventListener('mouseleave', () => {
+                if (isPeeking && filterSidebar.classList.contains('peeking')) {
+                    peekTimeout = setTimeout(() => {
+                        if(isPeeking && filterSidebar.classList.contains('peeking')) { 
+                           filterSidebar.classList.remove('peeking');
+                           document.body.classList.remove('main-content-dimmed-for-peek');
+                           isPeeking = false;
+                        }
+                    }, 300);
+                }
+            });
+             filterSidebar.addEventListener('mouseenter', () => { 
+                if (isPeeking && filterSidebar.classList.contains('peeking')) {
+                    clearTimeout(peekTimeout);
+                }
+            });
+
+            sidebarPeekArrow.addEventListener('click', () => {
+                isPeeking = false;
+                filterSidebar.classList.remove('peeking');
+                document.body.classList.remove('main-content-dimmed-for-peek');
+                setSidebarCollapsedState(false);
+            });
+
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+            
+            function initializeLayout() {
+                const isMobile = window.innerWidth <= 768;
+                setSidebarCollapsedState(isMobile);
+            }
+            
+            initializeLayout();
+            window.addEventListener('resize', debounce(initializeLayout, 200));
+
+            applyFiltersAndSearch();
+        });
+    </script>
+
+</body>
+</html>
