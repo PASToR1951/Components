@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeAS - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --theme-gold: #FDB813;
+            --theme-gold-darker: #EAA10F;
+            --theme-gold-light-bg: rgba(253, 184, 19, 0.2);
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1); /* Used for graphic column background */
+            --theme-green-dark: #006A4E;
+            --theme-green-darker: #00523D; /* Darker green for hover states and text */
+            --theme-green-light-bg: rgba(0, 106, 78, 0.3);
+            --theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
+            --theme-green-border: rgba(0, 106, 78, 0.7);
+            --theme-page-bg: #F9F6EE; /* Page background color */
+            --neutral-border-color: #e5e7eb; /* General border color */
+            --input-border-color: #d1d5db; /* Fallback, overridden by theme-specific input border */
+            --placeholder-text-color: #9ca3af;
+            --text-on-gold: #000000; /* Text color for gold backgrounds */
+            --text-on-green: #FFFFFF; /* Text color for green backgrounds */
+            --primary-text-color: #1f2937;
+            --secondary-text-color: #4b5563;
+            --tertiary-text-color: #6b7280;
+        }
+
+        /* Basic Reset and Global Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--theme-page-bg);
+            /* Subtle background pattern */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D3CBBF' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: var(--primary-text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 90vh;
+            max-height: 700px; /* Max height for larger screens */
+            background-color: #FFFFFF; /* White background for the container */
+            border-radius: 24px; /* Rounded corners for the container */
+            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            overflow: hidden; /* Changed from visible to hidden to contain Vanta.js canvas properly */
+            margin: 20px; /* Margin around the container */
+        }
+
+        .form-column {
+            flex: 0 1 40%; /* Form column takes 40% of the width */
+            min-width: 300px; /* Minimum width for the form column */
+            padding: 40px 60px; /* Padding inside the form column */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space elements vertically */
+            background-color: #FFFFFF; /* Ensure form column bg is white */
+            border-radius: 24px 0 0 24px; /* Rounded corners on the left side */
+            position: relative; /* For potential absolute positioned children */
+            box-shadow: 5px 0px 15px -5px rgba(0, 0, 0, 0.07); /* Subtle shadow separating columns */
+            z-index: 2; /* Ensure form column is above graphic column if they overlap */
+        }
+
+        .graphic-column {
+            flex: 1 1 60%; /* Graphic column takes 60% of the width */
+            min-width: 250px; /* Minimum width for the graphic column */
+            /* background-color: var(--theme-gold-lighter-bg); */ /* Vanta.js will provide the background */
+            position: relative; /* Needed for Vanta.js and other positioned elements */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Crucial for Vanta.js to be contained */
+            border-radius: 0 24px 24px 0; /* Rounded corners on the right side */
+            z-index: 1; /* Lower z-index than form column */
+            /* animation: subtleBackgroundShift 30s ease-in-out infinite alternate; */ /* Removed as Vanta.js is the primary effect */
+        }
+        /* Vanta canvas styling - ensure it fills the container */
+        .graphic-column .vanta-canvas {
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            z-index: 0 !important; /* Behind other graphic column content */
+        }
+
+
+        .blob-container {
+            width: 280px;
+            height: 280px;
+            position: relative; /* Keeps it within the flow but allows z-indexing */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1; /* Above Vanta canvas, below icons overlay */
+        }
+
+        .blob-interactive-wrapper {
+            width: 100%;
+            height: 100%;
+            will-change: transform; /* Performance hint for animations */
+            position: absolute; /* Positioned within blob-container */
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .blob { /* Gold blob styling */
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center,
+                var(--theme-gold) 0%,
+                rgba(253, 184, 19, 0.7) 40%,
+                rgba(253, 184, 19, 0.3) 70%,
+                rgba(253, 184, 19, 0.0) 100%
+            );
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; /* Organic shape */
+            filter: blur(6px); /* Soft blur effect */
+            opacity: 0.85; /* Slight transparency */
+            z-index: 1; /* Within its wrapper */
+            position: absolute;
+            top:0; left:0;
+        }
+
+        .icons-overlay {
+            position: absolute; /* Overlay on top of other elements in graphic-column */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* Above blob and Vanta canvas */
+            pointer-events: none; /* Allow mouse events to pass through to Vanta if needed */
+        }
+
+        .icons-overlay .icon {
+            position: absolute;
+            color: rgba(224, 161, 15, 0.65); /* Icon color */
+            opacity: 0; /* Initially hidden */
+            transform-origin: center center;
+            will-change: transform, opacity; /* Performance hint */
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Smooth transition for interaction */
+            /* pointer-events: none; */ /* Removed to allow individual icon interactions if any are added later */
+            display: none; /* Initially not displayed, controlled by JS */
+        }
+        .icons-overlay .icon.icon-active {
+            display: block; /* Make active icons visible */
+        }
+
+        /* Icon sizes */
+        .icons-overlay .icon-1 { font-size: 22px; }
+        .icons-overlay .icon-2 { font-size: 30px; }
+        .icons-overlay .icon-3 { font-size: 20px; }
+        .icons-overlay .icon-4 { font-size: 32px; }
+        .icons-overlay .icon-5 { font-size: 24px; }
+        .icons-overlay .icon-6 { font-size: 26px; }
+        .icons-overlay .icon-7 { font-size: 22px; }
+        .icons-overlay .icon-8 { font-size: 28px; }
+        .icons-overlay .icon-9 { font-size: 24px; }
+        .icons-overlay .icon-10 { font-size: 20px; }
+
+        .header-logo {
+            display: flex;
+            align-items: center; /* Vertically align logo image and text */
+            margin-bottom: 30px; /* Space below the logo */
+            position: relative;
+            cursor: default; /* Default cursor for the logo area */
+        }
+
+        .logo-image {
+            width: 52px;
+            height: 52px;
+            object-fit: contain; /* Ensure logo image scales correctly */
+            margin-right: 12px; /* Space between image and text */
+            flex-shrink: 0; /* Prevent image from shrinking */
+            border-radius: 4px; /* Slightly rounded corners for the image */
+            will-change: transform;
+            transition: transform 0.15s ease-out;
+        }
+        .logo-image-fallback { /* Fallback style if image fails to load */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            background-color: var(--theme-green-dark);
+            color: var(--text-on-green);
+            border-radius: 8px;
+            margin-right: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: 2px solid var(--theme-gold);
+            text-align: center;
+            line-height: 1;
+            will-change: transform;
+            transition: transform 0.15s ease-out;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-text-color);
+            line-height: 1.3; /* Adjust line height for two lines of text */
+        }
+         .logo-text span { /* Style for the "(PeAS)" part */
+            font-weight: 700;
+            color: var(--theme-green-dark);
+        }
+
+        .form-content {
+            position: relative; /* For positioning of form switch animations */
+        }
+
+        /* Styling for login and forgot password forms for smooth transition */
+        #login-form,
+        #forgot-password-form {
+            width: 100%;
+            transform-origin: top center;
+            opacity: 1;
+            transform: translateY(0px) scale(1);
+            max-height: 500px; /* Allow space for content */
+            overflow: visible;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
+            transition: opacity 0.35s ease-in-out,
+                        transform 0.35s ease-in-out,
+                        max-height 0.45s ease-in-out,
+                        margin 0.35s ease-in-out,
+                        padding 0.35s ease-in-out,
+                        border-width 0.35s ease-in-out;
+        }
+
+        #login-form.hidden,
+        #forgot-password-form.hidden {
+            opacity: 0;
+            transform: translateY(15px) scale(0.98); /* Slight move and scale down */
+            max-height: 0px; /* Collapse the form */
+            overflow: hidden;
+            pointer-events: none; /* Disable interaction when hidden */
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
+        }
+
+        .form-content h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-text-color);
+            margin-bottom: 8px; /* Space below heading */
+        }
+
+        .form-content p.subtitle {
+            font-size: 16px;
+            color: var(--secondary-text-color);
+            margin-bottom: 32px; /* Space below subtitle */
+        }
+
+        .form-group {
+            margin-bottom: 20px; /* Space between form groups */
+        }
+
+        .form-group label {
+            display: block; /* Label on its own line */
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary-text-color);
+            margin-bottom: 6px; /* Space between label and input */
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="email"] {
+            width: 100%; /* Full width inputs */
+            padding: 12px 14px; /* Padding inside inputs */
+            border: 1px solid var(--theme-green-border); /* Themed border */
+            border-radius: 8px; /* Rounded corners for inputs */
+            font-size: 16px;
+            color: var(--primary-text-color);
+            background-color: #FFFFFF; /* White background for inputs */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for focus */
+        }
+
+        .form-group input::placeholder {
+            color: var(--placeholder-text-color); /* Placeholder text color */
+        }
+
+        .form-group input:focus {
+            outline: none; /* Remove default outline */
+            border-color: var(--theme-green-dark); /* Darker green border on focus */
+            box-shadow: 0 0 0 3px var(--theme-green-light-bg); /* Green glow effect on focus */
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: flex-end; /* Align "Forgot Password?" to the right */
+            align-items: center;
+            margin-bottom: 24px; /* Space below options row */
+            font-size: 14px;
+        }
+
+        .options-row a { /* Styling for links in options row */
+            color: var(--theme-green-dark);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .options-row a:hover {
+            color: var(--theme-green-darker); /* Darker green on hover */
+            text-decoration: underline;
+        }
+
+        button { /* General button styling */
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        button.btn-primary { /* Primary button style (Sign In, Send Reset Link) */
+            background-color: var(--theme-green-dark);
+            color: var(--text-on-green);
+            border-color: var(--theme-green-dark);
+            margin-bottom: 24px; /* Space below primary button */
+        }
+
+        button.btn-primary:hover {
+            background-color: var(--theme-green-darker);
+            border-color: var(--theme-green-darker);
+        }
+        button.btn-primary:active {
+            transform: scale(0.99); /* Slight shrink on click */
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--tertiary-text-color);
+            padding-top: 20px; /* Space above footer text */
+            line-height: 1.5; /* Improve readability of multi-line footer */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) { /* Tablet view */
+            .main-container {
+                 max-height: none; /* Allow container to grow */
+                 min-height: 0; /* Adjust min-height */
+            }
+            .form-column {
+                padding: 30px 40px;
+                min-width: 280px;
+            }
+            .graphic-column {
+                min-width: 200px;
+            }
+
+            .blob-container { width: 200px; height: 200px; }
+
+            /* Adjust icon sizes and hide some for smaller screens */
+            .icons-overlay .icon-1 { font-size: 18px; }
+            .icons-overlay .icon-2 { font-size: 24px; }
+            .icons-overlay .icon-3 { font-size: 16px; }
+            .icons-overlay .icon-4 { font-size: 26px; }
+            .icons-overlay .icon-5 { font-size: 20px; }
+            .icons-overlay .icon-6, .icons-overlay .icon-7, .icons-overlay .icon-8, .icons-overlay .icon-9, .icons-overlay .icon-10 { display: none !important; }
+
+
+            .form-content h1 { font-size: 26px; }
+            .form-content p.subtitle { margin-bottom: 24px; }
+            .logo-text { font-size: 17px; }
+            .logo-image, .logo-image-fallback { width: 48px; height: 48px; }
+            .logo-image-fallback { font-size: 1.05em; }
+            .footer-text { text-align: center; margin-top: 30px; padding-bottom: 20px; }
+        }
+
+        @media (max-width: 480px) { /* Mobile devices - STACKED layout */
+            .main-container {
+                flex-direction: column; /* Stack columns vertically */
+                max-height: none;
+                min-height: 100vh; /* Full viewport height */
+                border-radius: 0; /* No rounded corners on mobile */
+                margin: 0; /* No margin on mobile */
+            }
+            .form-column {
+                flex: 1 1 100%; /* Form column takes full width */
+                width: 100%;
+                min-width: unset;
+                padding: 30px 20px; /* Reduce padding on mobile */
+                order: 0; /* Form column first */
+                justify-content: flex-start; /* Align content to top */
+                border-radius: 0; /* No rounded corners */
+                box-shadow: none; /* No shadow */
+                z-index: auto;
+            }
+            .graphic-column {
+                display: none; /* Hide graphic column on mobile to save space and resources */
+            }
+
+            /* Adjust typography and spacing for mobile */
+            .form-content h1 { font-size: 22px; }
+            .form-content p.subtitle { font-size: 15px; margin-bottom: 20px; }
+            .header-logo { margin-bottom: 24px; }
+            .logo-text { font-size: 15px; }
+            .logo-image, .logo-image-fallback { width: 44px; height: 44px; }
+            .logo-image-fallback { font-size: 1em; }
+            .options-row { margin-bottom: 20px; }
+            button.btn-primary { padding: 10px; font-size: 15px; margin-bottom: 20px; }
+            .form-group input[type="text"],
+            .form-group input[type="password"],
+            .form-group input[type="email"] { padding: 10px 12px; font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="form-column">
+            <div> <div class="header-logo">
+                    <img src="https://www.spud.edu.ph/assets/logo/spud_logo_s.png" alt="PeAS Logo" class="logo-image"
+                         onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='inline-flex';">
+                    <div id="logo-fallback" class="logo-image-fallback" style="display:none;">PeAS</div>
+                    <div class="logo-text">Paulinian electronic<br>Archiving System <span>(PeAS)</span></div>
+                </div>
+                <div class="form-content">
+                    <h1 id="form-title-main">Welcome back</h1>
+                    <p class="subtitle" id="form-subtitle">Please enter your details to access the PeAS.</p>
+                    <form id="login-form" action="#" method="post">
+                        <div class="form-group">
+                            <label for="username">Email</label>
+                            <input type="email" id="username" name="username" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required placeholder="••••••••">
+                        </div>
+                        <div class="options-row">
+                            <a href="#" id="forgot-password-link">Forgot Password?</a>
+                        </div>
+                        <button type="submit" class="btn-primary">Sign in</button>
+                    </form>
+                    <form id="forgot-password-form" action="#" method="post" class="hidden">
+                        <div class="form-group">
+                            <label for="email-forgot">Enter your Registered Email</label>
+                            <input type="email" id="email-forgot" name="email-forgot-input" required placeholder="e.g., user@example.com">
+                        </div>
+                        <button type="submit" class="btn-primary">Send Reset Link</button>
+                        <div class="options-row" style="justify-content: center; margin-top: 20px;">
+                             <a href="#" id="back-to-login-link">Back to Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-text">
+                © <span id="currentYear"></span> PeAS. All Rights Reserved. <br>L. Rovira Rd, Bantayan, Dumaguete, Negros Oriental.
+            </div>
+        </div>
+
+        <div class="graphic-column" id="vanta-bg">
+            <div class="blob-container">
+                <div class="blob-interactive-wrapper">
+                    <div class="blob"></div>
+                </div>
+            </div>
+            <div class="icons-overlay">
+                <i class="fas fa-archive icon icon-1"></i>
+                <i class="fas fa-file-alt icon icon-2"></i>
+                <i class="fas fa-search icon icon-3"></i>
+                <i class="fas fa-shield-alt icon icon-4"></i>
+                <i class="fas fa-book icon icon-5"></i>
+                <i class="fas fa-folder-open icon icon-6"></i>
+                <i class="fas fa-cogs icon icon-7"></i>
+                <i class="fas fa-key icon icon-8"></i>
+                <i class="fas fa-link icon icon-9"></i>
+                <i class="fas fa-history icon icon-10"></i>
+            </div>
+        </div>
+    </div>
+    <!-- <script src="three.r134.min.js"></script>
+    <script src="vanta.net.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <script>
+    // Initialize VANTA.NET on the #vanta-bg element
+    // Check if the target element exists and is visible (not hidden by CSS for mobile)
+    const vantaEffectTarget = document.getElementById('net');
+    if (vantaEffectTarget && getComputedStyle(vantaEffectTarget).display !== 'none') {
+        VANTA.NET({
+          el: "net", // Target element ID
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.00, // Vanta will attempt to fill the element, these are minimums
+          minWidth: 200.00,
+          scale: 1.00,
+          scaleMobile: 1.00, // Adjust scale for mobile if needed
+          color: 0xffd93f, // Color of the net points (gold)
+          backgroundColor: 0x004739, // Dark green background for Vanta canvas, blends with theme
+          points: 14.00, // Number of points
+          maxDistance: 18.00, // Max distance between points for a line to form
+          spacing: 15.00 // Spacing between points
+        });
+    }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Form switching logic
+            const loginForm = document.getElementById('login-form');
+            const forgotPasswordForm = document.getElementById('forgot-password-form');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            const backToLoginLink = document.getElementById('back-to-login-link');
+            const formTitleMain = document.getElementById('form-title-main');
+            const formSubtitle = document.getElementById('form-subtitle');
+
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    loginForm.classList.add('hidden');
+                    forgotPasswordForm.classList.remove('hidden');
+                    formTitleMain.textContent = 'Forgot Password?';
+                    formSubtitle.textContent = 'No worries, we’ll send you reset instructions.';
+                });
+            }
+
+            if (backToLoginLink) {
+                backToLoginLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    forgotPasswordForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    formTitleMain.textContent = 'Welcome back';
+                    formSubtitle.textContent = 'Please enter your details to access the PeAS.';
+                });
+            }
+
+            // Set current year in footer
+            const yearSpan = document.getElementById('currentYear');
+            if (yearSpan) {
+                yearSpan.textContent = new Date().getFullYear();
+            }
+
+            // Animations for graphic column elements
+            const graphicColumn = document.querySelector('.graphic-column');
+            const allIconElements = Array.from(document.querySelectorAll('.icons-overlay .icon'));
+            const blobInteractiveWrapper = document.querySelector('.graphic-column .blob-interactive-wrapper');
+            const blobElement = document.querySelector('.graphic-column .blob');
+
+            // Logo animation elements
+            const headerLogoContainer = document.querySelector('.header-logo');
+            const logoImage = document.querySelector('.logo-image');
+            const logoFallback = document.getElementById('logo-fallback');
+            let currentLogoAnimation = null;
+
+            // Check if graphic column is visible (not on mobile) before running animations
+            if (graphicColumn && getComputedStyle(graphicColumn).display !== 'none') {
+                if (!blobInteractiveWrapper || !blobElement || allIconElements.length === 0) {
+                     console.warn("PeAS Login: Required elements for graphic column animations were not found.");
+                } else {
+                    // --- Gold Blob (Shape/Scale/Rotate) Animation ---
+                    function animateGoldBlobShape() {
+                        anime.timeline({
+                            targets: blobElement,
+                            loop: true, easing: 'easeInOutSine', direction: 'alternate',
+                        })
+                        .add({ borderRadius: ['40% 60% 70% 30% / 40% 50% 50% 60%', '70% 30% 50% 50% / 30% 70% 40% 60%'], duration: 5000 })
+                        .add({ borderRadius: '50% 50% 30% 70% / 60% 40% 70% 30%', duration: 5000 })
+                        .add({ borderRadius: '30% 70% 60% 40% / 70% 30% 50% 50%', duration: 5000 });
+
+                        anime({
+                            targets: blobElement,
+                            scale: [ { value: 0.95, duration: 6000, easing: 'easeInOutQuad' }, { value: 1.05, duration: 6000, easing: 'easeInOutQuad' } ],
+                            rotate: [ { value: -3, duration: 6000, easing: 'easeInOutQuad' }, { value: 3, duration: 6000, easing: 'easeInOutQuad' } ],
+                            loop: true, direction: 'alternate', delay: 500
+                        });
+                    }
+                    animateGoldBlobShape();
+
+                    // --- Gold Blob Wrapper (Positional) Autonomous Movement ---
+                    anime({
+                        targets: blobInteractiveWrapper,
+                        translateX: [
+                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' },
+                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' },
+                            { value: 0, duration: anime.random(6000, 10000), easing: 'easeInOutSine' }
+                        ],
+                        translateY: [
+                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' },
+                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' },
+                            { value: 0, duration: anime.random(6000, 10000), easing: 'easeInOutSine' }
+                        ],
+                        loop: true,
+                        direction: 'alternate'
+                    });
+
+                    // --- Icons Management and Animation ---
+                    const getTargetActiveIcons = () => {
+                         const screenWidth = window.innerWidth;
+                         if (screenWidth <= 480) return 0; // No icons on small mobile
+                         if (screenWidth <= 900) return 5; // Fewer icons on tablet
+                         return Math.floor(Math.random() * (9 - 5 + 1)) + 5; // Random number of icons for desktop
+                    };
+                    let TARGET_ACTIVE_ICONS = getTargetActiveIcons();
+                    const MIN_ICON_SEPARATION = 70; // Minimum distance between icons
+                    let activeIconData = []; // Store data about active icons
+                    let graphicColumnCenterX, graphicColumnCenterY, baseExclusionRadius;
+                    let graphicColumnRect = graphicColumn.getBoundingClientRect();
+
+                    function calculateDimensions() {
+                        if (getComputedStyle(graphicColumn).display === 'none') return;
+                        graphicColumnRect = graphicColumn.getBoundingClientRect();
+                        graphicColumnCenterX = graphicColumnRect.width / 2;
+                        graphicColumnCenterY = graphicColumnRect.height / 2;
+                        const goldBlobWidthForCalc = parseFloat(getComputedStyle(blobElement).width) || (graphicColumnRect.width < 280 ? graphicColumnRect.width * 0.8 : 280) ;
+                        baseExclusionRadius = (goldBlobWidthForCalc / 2) * 0.7; // Area around blob where icons shouldn't spawn
+                        TARGET_ACTIVE_ICONS = getTargetActiveIcons(); // Recalculate on resize
+                    }
+
+                    calculateDimensions(); // Initial calculation
+                    window.addEventListener('resize', calculateDimensions); // Recalculate on window resize
+
+                    // Check if a new icon position is valid (not overlapping blob or other icons)
+                    function isPositionValid(x, y, iconRadius, currentIconElement) {
+                        if (getComputedStyle(graphicColumn).display === 'none') return false;
+                        const dxToCircleCenter = x - graphicColumnCenterX;
+                        const dyToCircleCenter = y - graphicColumnCenterY;
+                        const distToCircleCenter = Math.sqrt(dxToCircleCenter * dxToCircleCenter + dyToCircleCenter * dyToCircleCenter);
+                        const exclusionRadiusWithBuffer = baseExclusionRadius + iconRadius + 30; // Add buffer to exclusion radius
+                        if (distToCircleCenter < exclusionRadiusWithBuffer) return false; // Too close to blob
+
+                        // Check against other active icons
+                        for (const activeIcon of activeIconData) {
+                            if (activeIcon.element === currentIconElement || !activeIcon.element.style.opacity || parseFloat(activeIcon.element.style.opacity) < 0.1) continue;
+                            const otherIconCenterX = parseFloat(activeIcon.element.dataset.originalLeft) + activeIcon.radius;
+                            const otherIconCenterY = parseFloat(activeIcon.element.dataset.originalTop) + activeIcon.radius;
+                            const dxToOtherIcon = x - otherIconCenterX;
+                            const dyToOtherIcon = y - otherIconCenterY;
+                            const distToOtherIcon = Math.sqrt(dxToOtherIcon * dxToOtherIcon + dyToOtherIcon * dyToOtherIcon);
+                            if (distToOtherIcon < (iconRadius + activeIcon.radius + MIN_ICON_SEPARATION)) return false; // Too close to another icon
+                        }
+                        return true;
+                    }
+
+                    // Spawn a single icon
+                    function spawnIcon(iconElement) {
+                        if (getComputedStyle(graphicColumn).display === 'none' || getComputedStyle(iconElement).display === 'none') {
+                            activeIconData = activeIconData.filter(d => d.element !== iconElement);
+                            return;
+                        }
+                        iconElement.classList.remove('icon-active');
+                        iconElement.style.opacity = '0';
+                        iconElement.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
+                        const iconComputedStyle = getComputedStyle(iconElement);
+                        const iconFontSize = parseFloat(iconComputedStyle.fontSize) || 24;
+                        const iconRadius = iconFontSize / 2;
+                        let newTop, newLeft, newCenterX, newCenterY;
+                        let attempts = 0; const maxAttempts = 100;
+                        // Try to find a valid position
+                        do {
+                            const paddingWidth = 0.10 * graphicColumnRect.width; // Padding from edges
+                            const paddingHeight = 0.10 * graphicColumnRect.height;
+                            const iconWidth = iconElement.offsetWidth || iconFontSize;
+                            const iconHeight = iconElement.offsetHeight || iconFontSize;
+                            const effectiveSpawnWidth = graphicColumnRect.width - 2 * paddingWidth - iconWidth;
+                            const effectiveSpawnHeight = graphicColumnRect.height - 2 * paddingHeight - iconHeight;
+                            newLeft = paddingWidth + Math.random() * Math.max(0, effectiveSpawnWidth);
+                            newTop = paddingHeight + Math.random() * Math.max(0, effectiveSpawnHeight);
+                            newCenterX = newLeft + iconWidth / 2;
+                            newCenterY = newTop + iconHeight / 2;
+                            attempts++;
+                        } while (!isPositionValid(newCenterX, newCenterY, iconRadius, iconElement) && attempts < maxAttempts);
+
+                        if (attempts >= maxAttempts) { // Fallback if no valid position found
+                            newLeft = (iconRadius + 10) + (Math.random() * 20 - 10) ;
+                            newTop = (iconRadius + 10) + (Math.random() * 20 - 10);
+                        }
+
+                        iconElement.style.left = `${newLeft}px`;
+                        iconElement.style.top = `${newTop}px`;
+                        iconElement.dataset.originalLeft = newLeft; // Store original position
+                        iconElement.dataset.originalTop = newTop;
+                        iconElement.style.display = 'block';
+                        const targetOpacity = 0.3 + Math.random() * 0.6; // Random opacity
+                        // Animate icon appearing
+                        anime({
+                            targets: iconElement, opacity: [0, targetOpacity], scale: [0.8, 1],
+                            duration: 700, easing: 'easeOutQuad',
+                            begin: () => iconElement.classList.add('icon-active')
+                        });
+                        const lifetime = (7 + Math.random() * 5) * 1000; // Random lifetime for the icon
+                        const timeoutId = setTimeout(() => manageSpecificIcon(iconElement), lifetime); // Despawn after lifetime
+
+                        // Update activeIconData
+                        let existingIconData = activeIconData.find(d => d.element === iconElement);
+                        if (existingIconData) {
+                            clearTimeout(existingIconData.lifetimeTimeoutId);
+                            existingIconData.lifetimeTimeoutId = timeoutId;
+                            existingIconData.originalLeft = newLeft;
+                            existingIconData.originalTop = newTop;
+                            existingIconData.radius = iconRadius;
+                        } else {
+                             activeIconData.push({ element: iconElement, lifetimeTimeoutId: timeoutId, originalLeft: newLeft, originalTop: newTop, radius: iconRadius });
+                        }
+                    }
+
+                    // Manage (despawn and potentially respawn) a specific icon
+                    function manageSpecificIcon(iconElementToReplace) {
+                         if (iconElementToReplace) {
+                            anime({ // Animate icon disappearing
+                                targets: iconElementToReplace, opacity: 0, scale: 0.8,
+                                duration: 700, easing: 'easeInQuad',
+                                complete: () => {
+                                    iconElementToReplace.style.display = 'none';
+                                    iconElementToReplace.classList.remove('icon-active');
+                                    activeIconData = activeIconData.filter(d => d.element !== iconElementToReplace);
+                                    // If below target number of icons, try to spawn a new one
+                                    if (getComputedStyle(graphicColumn).display !== 'none' && activeIconData.length < TARGET_ACTIVE_ICONS) {
+                                        const availableIcons = allIconElements.filter(el => !activeIconData.some(d => d.element === el) && getComputedStyle(el).display !== 'none');
+                                        if (availableIcons.length > 0) spawnIcon(availableIcons[Math.floor(Math.random() * availableIcons.length)]);
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                    // Initial spawning of icons
+                    let iconsToSpawnInitially = [...allIconElements];
+                    if (getComputedStyle(graphicColumn).display !== 'none') {
+                        for (let i = 0; i < TARGET_ACTIVE_ICONS && iconsToSpawnInitially.length > 0; i++) {
+                            const randomIndex = Math.floor(Math.random() * iconsToSpawnInitially.length);
+                            const iconToSpawn = iconsToSpawnInitially.splice(randomIndex, 1)[0];
+                            if (iconToSpawn) spawnIcon(iconToSpawn);
+                        }
+                    }
+
+                    // Mouse move interaction for icons
+                    graphicColumn.addEventListener('mousemove', (e) => {
+                        if (getComputedStyle(graphicColumn).display === 'none') return;
+                        const mouseX = e.clientX - graphicColumnRect.left;
+                        const mouseY = e.clientY - graphicColumnRect.top;
+
+                        activeIconData.forEach(iconData => {
+                            const icon = iconData.element;
+                            const currentOpacity = parseFloat(getComputedStyle(icon).opacity);
+                            if (!icon.classList.contains('icon-active') || currentOpacity < 0.1) return; // Skip inactive or very transparent icons
+
+                            const iconRect = icon.getBoundingClientRect();
+                            const iconVisualCenterX = (iconRect.left - graphicColumnRect.left) + (iconRect.width / 2);
+                            const iconVisualCenterY = (iconRect.top - graphicColumnRect.top) + (iconRect.height / 2);
+                            // Original center based on dataset to avoid drift from transform
+                            const originalCenterX = parseFloat(icon.dataset.originalLeft) + (iconRect.width / 2);
+                            const originalCenterY = parseFloat(icon.dataset.originalTop) + (iconRect.height / 2);
+
+                            const deltaXIcon = mouseX - iconVisualCenterX;
+                            const deltaYIcon = mouseY - iconVisualCenterY;
+                            const maxDistIcon = 150; // Max distance for interaction
+                            const distToMouseIcon = Math.sqrt(deltaXIcon * deltaXIcon + deltaYIcon * deltaYIcon);
+                            const moveFactorIcon = Math.max(0, (maxDistIcon - distToMouseIcon) / maxDistIcon); // Stronger effect when closer
+                            const maxMoveIcon = 18; // Max pixels to move
+                            let moveX = 0, moveY = 0, angleDeg = 0, scaleFactor = 1, jitterX = 0, jitterY = 0;
+
+                            if (distToMouseIcon < maxDistIcon && distToMouseIcon > 0) {
+                                // Move away from cursor
+                                moveX = (deltaXIcon / distToMouseIcon) * maxMoveIcon * moveFactorIcon * -1;
+                                moveY = (deltaYIcon / distToMouseIcon) * maxMoveIcon * moveFactorIcon * -1;
+                                // Rotate slightly
+                                const angleToCursorRad = Math.atan2(deltaYIcon, deltaXIcon);
+                                angleDeg = angleToCursorRad * (180 / Math.PI) * moveFactorIcon * 0.25;
+                                // Scale up slightly
+                                scaleFactor = 1 + moveFactorIcon * 0.15;
+                                // Add jitter for more dynamic feel
+                                if (moveFactorIcon > 0.1) {
+                                   jitterX = (Math.random() - 0.5) * 4 * moveFactorIcon;
+                                   jitterY = (Math.random() - 0.5) * 4 * moveFactorIcon;
+                                }
+                            }
+                            let finalMoveX = moveX + jitterX;
+                            let finalMoveY = moveY + jitterY;
+
+                            // Prevent icon from moving into the blob area
+                            let testCenterX = originalCenterX + finalMoveX;
+                            let testCenterY = originalCenterY + finalMoveY;
+                            const dxToBlobFromIcon = testCenterX - graphicColumnCenterX;
+                            const dyToBlobFromIcon = testCenterY - graphicColumnCenterY;
+                            const distToBlobFromIcon = Math.sqrt(dxToBlobFromIcon * dxToBlobFromIcon + dyToBlobFromIcon * dyToBlobFromIcon);
+                            const iconTrueRadius = iconRect.width / 2;
+                            const currentExclusionRadius = baseExclusionRadius + iconTrueRadius + 30; // Exclusion radius + icon radius + buffer
+
+                            if (distToBlobFromIcon < currentExclusionRadius && distToBlobFromIcon > 0) {
+                                // Push icon to the edge of the exclusion zone
+                                const normDxToBlob = dxToBlobFromIcon / distToBlobFromIcon;
+                                const normDyToBlob = dyToBlobFromIcon / distToBlobFromIcon;
+                                const targetXOnEdge = graphicColumnCenterX + normDxToBlob * currentExclusionRadius;
+                                const targetYOnEdge = graphicColumnCenterY + normDyToBlob * currentExclusionRadius;
+                                finalMoveX = targetXOnEdge - originalCenterX;
+                                finalMoveY = targetYOnEdge - originalCenterY;
+                                angleDeg *= 0.5; // Reduce rotation when near blob
+                                scaleFactor = 1 + (scaleFactor - 1) * 0.5; // Reduce scaling
+                            }
+                            icon.style.transform = `translate(${finalMoveX}px, ${finalMoveY}px) rotate(${angleDeg}deg) scale(${scaleFactor})`;
+                        });
+                    });
+
+                    // Reset icon positions on mouse leave
+                    graphicColumn.addEventListener('mouseleave', () => {
+                         if (getComputedStyle(graphicColumn).display === 'none') return;
+                         activeIconData.forEach(iconData => {
+                            if (iconData.element.classList.contains('icon-active')) {
+                                iconData.element.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)'; // Reset transform
+                            }
+                         });
+                     });
+                }
+            }
+
+            // Logo hover animation
+            if (headerLogoContainer && (logoImage || logoFallback)) {
+                const logoTarget = logoImage && getComputedStyle(logoImage).display !== 'none' ? logoImage : logoFallback;
+                if (logoTarget) {
+                    headerLogoContainer.addEventListener('mousemove', (e) => {
+                        const logoRect = logoTarget.getBoundingClientRect();
+                        const parentRect = headerLogoContainer.getBoundingClientRect();
+                        const mouseX = e.clientX - parentRect.left;
+                        const mouseY = e.clientY - parentRect.top;
+                        const logoCenterX = logoTarget.offsetLeft + logoRect.width / 2;
+                        const logoCenterY = logoTarget.offsetTop + logoRect.height / 2;
+                        const deltaX = mouseX - logoCenterX;
+                        const deltaY = mouseY - logoCenterY;
+                        const maxDistLogo = 100; // Max distance for logo interaction
+                        const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                        const moveFactor = Math.max(0, (maxDistLogo - dist) / maxDistLogo);
+                        const maxRotate = 8; // Max rotation degrees
+                        const maxScale = 1.08; // Max scale factor
+                        let rotateX = 0, rotateY = 0, scale = 1;
+
+                        if (dist < maxDistLogo) {
+                            rotateX = -(deltaY / logoRect.height) * maxRotate * 2 * moveFactor;
+                            rotateY = (deltaX / logoRect.width) * maxRotate * 2 * moveFactor;
+                            scale = 1 + (maxScale - 1) * moveFactor;
+                        }
+                        if(currentLogoAnimation) currentLogoAnimation.pause(); // Pause previous animation
+                        currentLogoAnimation = anime({ // Animate logo
+                            targets: [logoImage, logoFallback],
+                            rotateX: rotateX, rotateY: rotateY, scale: scale,
+                            duration: 150, easing: 'easeOutQuad'
+                        });
+                    });
+                    headerLogoContainer.addEventListener('mouseleave', () => {
+                        if(currentLogoAnimation) currentLogoAnimation.pause();
+                        currentLogoAnimation = anime({ // Reset logo animation
+                            targets: [logoImage, logoFallback],
+                            rotateX: 0, rotateY: 0, scale: 1,
+                            duration: 300, easing: 'easeOutElastic(1, .8)'
+                        });
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
