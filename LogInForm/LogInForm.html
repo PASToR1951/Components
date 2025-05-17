@@ -11,28 +11,30 @@
         /* CSS Variables for theming */
         :root {
             --theme-gold: #FDB813;
-            --theme-gold-darker: #EAA10F;
+            --theme-gold-darker: #EAA10F; /* Orange for X button normal state */
             --theme-gold-light-bg: rgba(253, 184, 19, 0.2);
-            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1); /* Used for graphic column background */
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.1);
             --theme-green-dark: #006A4E;
-            --theme-green-darker: #00523D; /* Darker green for hover states and text */
+            --theme-green-darker: #00523D; /* Dark Green for X button hover state */
             --theme-green-light-bg: rgba(0, 106, 78, 0.3);
             --theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
             --theme-green-border: rgba(0, 106, 78, 0.7);
-            --theme-page-bg: #F9F6EE; /* Page background color */
-            --neutral-border-color: #e5e7eb; /* General border color */
-            --input-border-color: #d1d5db; /* Fallback, overridden by theme-specific input border */
+            --theme-page-bg: #F9F6EE;
+            --neutral-border-color: #e5e7eb;
+            --input-border-color: #d1d5db;
             --placeholder-text-color: #9ca3af;
-            --text-on-gold: #000000; /* Text color for gold backgrounds */
-            --text-on-green: #FFFFFF; /* Text color for green backgrounds */
+            --text-on-gold: #000000;
+            --text-on-green: #FFFFFF;
             --primary-text-color: #1f2937;
             --secondary-text-color: #4b5563;
             --tertiary-text-color: #6b7280;
-            --error-color: #dc2626; /* Red for error messages */
-            --success-color: #16a34a; /* Green for success messages */
+            --error-color: #dc2626;
+            --success-color: #16a34a;
+
+            --form-transition-duration: 0.3s;
+            --form-transition-easing: cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
-        /* Basic Reset and Global Styles */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -51,6 +53,34 @@
             overflow-x: hidden;
         }
 
+        /* Viewport Close Button (Top-right of the screen) */
+        .viewport-close-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: transparent; /* MODIFICATION: Removed background */
+            /* backdrop-filter: blur(5px); REMOVED */
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px; /* Increased icon size slightly for better visibility without background */
+            color: var(--theme-gold-darker);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* box-shadow: 0 2px 10px rgba(0,0,0,0.1); REMOVED */
+            transition: color 0.2s ease, transform 0.2s ease;
+            z-index: 1001;
+        }
+        .viewport-close-button:hover {
+            color: var(--theme-green-darker);
+            /* background-color: rgba(255, 255, 255, 0.7); REMOVED */
+            transform: scale(1.1);
+        }
+
+
         .main-container {
             display: flex;
             width: 100%;
@@ -60,8 +90,8 @@
             background-color: #FFFFFF;
             border-radius: 24px;
             box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.08);
-            overflow: visible;
             margin: 20px;
+            position: relative;
         }
 
         .form-column {
@@ -92,6 +122,28 @@
             animation: subtleBackgroundShift 30s ease-in-out infinite alternate;
         }
 
+
+        .form-column-close-button-mobile {
+            display: none;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent; /* MODIFICATION: Ensured transparent background */
+            border: none;
+            font-size: 22px; /* Slightly larger for mobile */
+            color: var(--theme-gold-darker);
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+            z-index: 10;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+         .form-column-close-button-mobile:hover {
+            color: var(--theme-green-darker);
+            transform: scale(1.1);
+        }
+
+
         @keyframes subtleBackgroundShift {
             0% { background-color: var(--theme-gold-lighter-bg); }
             50% { background-color: rgba(253, 190, 30, 0.1); }
@@ -120,7 +172,7 @@
             align-items: center;
         }
 
-        .blob { /* Gold blob */
+        .blob {
             width: 100%;
             height: 100%;
             background: radial-gradient(circle at center,
@@ -172,13 +224,16 @@
         .icons-overlay .icon-9 { font-size: 24px; }
         .icons-overlay .icon-10 { font-size: 20px; }
 
-        .header-logo {
+        .header-logo-link {
             display: flex;
             align-items: center;
+            text-decoration: none;
+            color: inherit;
             margin-bottom: 30px;
             position: relative;
-            cursor: default;
+            cursor: pointer;
         }
+
 
         .logo-image {
             width: 52px;
@@ -227,29 +282,30 @@
         #login-form,
         #forgot-password-form {
             width: 100%;
-            transform-origin: top center;
+            transform-origin: center center;
             opacity: 1;
             transform: translateY(0px) scale(1);
-            max-height: 500px; /* Adjusted to accommodate message box */
+            max-height: 500px;
             overflow: visible;
             margin-top: 0;
             margin-bottom: 0;
             padding-top: 0;
             padding-bottom: 0;
             border-width: 0;
-            transition: opacity 0.35s ease-in-out,
-                        transform 0.35s ease-in-out,
-                        max-height 0.45s ease-in-out,
-                        margin 0.35s ease-in-out,
-                        padding 0.35s ease-in-out,
-                        border-width 0.35s ease-in-out;
+            will-change: transform, opacity, max-height;
+            transition: opacity var(--form-transition-duration) var(--form-transition-easing),
+                        transform var(--form-transition-duration) var(--form-transition-easing),
+                        max-height calc(var(--form-transition-duration) + 0.05s) var(--form-transition-easing),
+                        margin var(--form-transition-duration) var(--form-transition-easing),
+                        padding var(--form-transition-duration) var(--form-transition-easing),
+                        border-width var(--form-transition-duration) var(--form-transition-easing);
         }
 
         #login-form.hidden,
         #forgot-password-form.hidden {
             opacity: 0;
-            transform: translateY(15px) scale(0.98);
-            max-height: 0px;
+            transform: translateY(0px) scale(0.98);
+            max-height: 0px !important;
             overflow: hidden;
             pointer-events: none;
             margin-top: 0;
@@ -257,14 +313,22 @@
             padding-top: 0;
             padding-bottom: 0;
             border-width: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #login-form:not(.hidden),
+        #forgot-password-form:not(.hidden) {
+            position: relative;
         }
 
+
         .form-content h1, .form-content p.subtitle {
-            overflow: hidden; /* Clip letter animations */
+            overflow: hidden;
         }
         .form-content h1 .letter, .form-content p.subtitle .letter {
-            display: inline-block; /* Allow transforms on individual letters */
-            opacity: 0; /* Initially hidden for animation */
+            display: inline-block;
+            opacity: 0;
         }
 
 
@@ -278,7 +342,7 @@
         .form-content p.subtitle {
             font-size: 16px;
             color: var(--secondary-text-color);
-            margin-bottom: 24px; /* Reduced margin to make space for message box */
+            margin-bottom: 24px;
         }
 
         .form-group {
@@ -336,12 +400,13 @@
             text-decoration: underline;
         }
 
-        button {
+        button { /* General button styles */
+            font-family: 'Inter', sans-serif; /* Ensure Inter is used */
             width: 100%;
             padding: 12px;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 600; /* Default bold weight for buttons */
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
             border: 1px solid transparent;
@@ -352,6 +417,8 @@
             color: var(--text-on-green);
             border-color: var(--theme-green-dark);
             margin-bottom: 24px;
+            font-weight: 600; /* Explicitly set for primary button */
+            letter-spacing: 0.025em; /* Slight letter spacing for clarity */
         }
 
         button.btn-primary:hover {
@@ -368,26 +435,35 @@
             padding-top: 20px;
             line-height: 1.5;
         }
+        .footer-text a {
+            color: var(--theme-green-dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-text a:hover {
+            text-decoration: underline;
+            color: var(--theme-green-darker);
+        }
 
-        /* Message box styles */
+
         .message-box {
             padding: 10px 15px;
-            margin-bottom: 15px; /* Space between message and form elements */
+            margin-bottom: 15px;
             border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
-            display: none; /* Hidden by default */
+            display: none;
             text-align: center;
             border: 1px solid transparent;
         }
         .message-box.error {
-            background-color: rgba(220, 38, 38, 0.1); /* Light red background */
+            background-color: rgba(220, 38, 38, 0.1);
             color: var(--error-color);
             border-color: rgba(220, 38, 38, 0.3);
             display: block;
         }
         .message-box.success {
-            background-color: rgba(22, 163, 74, 0.1); /* Light green background */
+            background-color: rgba(22, 163, 74, 0.1);
             color: var(--success-color);
             border-color: rgba(22, 163, 74, 0.3);
             display: block;
@@ -401,24 +477,25 @@
                  min-height: 0;
             }
             .form-column {
-                padding: 30px 40px;
-                min-width: 280px;
+                padding: 40px;
+            }
+            .viewport-close-button { /* Adjust viewport close button for tablet */
+                top: 15px;
+                right: 15px;
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
             }
             .graphic-column {
                 min-width: 200px;
             }
-
             .blob-container { width: 200px; height: 200px; }
-
-
             .icons-overlay .icon-1 { font-size: 18px; }
             .icons-overlay .icon-2 { font-size: 24px; }
             .icons-overlay .icon-3 { font-size: 16px; }
             .icons-overlay .icon-4 { font-size: 26px; }
             .icons-overlay .icon-5 { font-size: 20px; }
             .icons-overlay .icon-6, .icons-overlay .icon-7, .icons-overlay .icon-8, .icons-overlay .icon-9, .icons-overlay .icon-10 { display: none !important; }
-
-
             .form-content h1 { font-size: 26px; }
             .form-content p.subtitle { margin-bottom: 24px; }
             .logo-text { font-size: 17px; }
@@ -436,23 +513,25 @@
                 margin: 0;
             }
             .form-column {
-                flex: 1 1 100%;
-                width: 100%;
-                min-width: unset;
                 padding: 30px 20px;
-                order: 0;
-                justify-content: flex-start;
                 border-radius: 0;
-                box-shadow: none;
-                z-index: auto;
+            }
+            .viewport-close-button { /* Hide viewport close button on small mobile */
+                display: none;
+            }
+            .form-column-close-button-mobile { /* Show mobile-specific button */
+                display: block;
+                top: 10px;
+                right: 10px;
+            }
+            .header-logo-link {
+                margin-bottom: 24px;
             }
             .graphic-column {
                 display: none;
             }
-
             .form-content h1 { font-size: 22px; }
             .form-content p.subtitle { font-size: 15px; margin-bottom: 20px; }
-            .header-logo { margin-bottom: 24px; }
             .logo-text { font-size: 15px; }
             .logo-image, .logo-image-fallback { width: 44px; height: 44px; }
             .logo-image-fallback { font-size: 1em; }
@@ -465,15 +544,22 @@
     </style>
 </head>
 <body>
-    <div class="main-container">
+    <button class="viewport-close-button" id="viewportCloseButton" aria-label="Close Login Form">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <div class="main-container" id="mainLoginFormContainer">
         <div class="form-column">
+            <button class="form-column-close-button-mobile" id="formCloseButtonMobile" aria-label="Close Login Form">
+                <i class="fas fa-times"></i>
+            </button>
             <div>
-                <div class="header-logo">
+                <a href="/index.html" class="header-logo-link" aria-label="Back to PeAS Main Page">
                     <img src="https://www.spud.edu.ph/assets/logo/spud_logo_s.png" alt="PeAS Logo" class="logo-image"
                          onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='inline-flex';">
                     <div id="logo-fallback" class="logo-image-fallback" style="display:none;">PeAS</div>
                     <div class="logo-text">Paulinian electronic<br>Archiving System <span>(PeAS)</span></div>
-                </div>
+                </a>
                 <div class="form-content">
                     <h1 id="form-title-main">Welcome back</h1>
                     <p class="subtitle" id="form-subtitle">Please enter your details to access the PeAS.</p>
@@ -508,7 +594,8 @@
                 </div>
             </div>
             <div class="footer-text">
-                © <span id="currentYear"></span> PeAS. All Rights Reserved. <br>L. Rovira Rd, Bantayan, Dumaguete, Negros Oriental.
+                © <span id="currentYear"></span> PeAS. All Rights Reserved. <br>
+                L. Rovira Rd, Bantayan, Dumaguete, Negros Oriental.
             </div>
         </div>
 
@@ -517,7 +604,7 @@
                 <div class="blob-interactive-wrapper">
                     <div class="blob"></div>
                 </div>
-                </div>
+            </div>
             <div class="icons-overlay">
                 <i class="fas fa-archive icon icon-1"></i>
                 <i class="fas fa-file-alt icon icon-2"></i>
@@ -542,22 +629,39 @@
             const formTitleMain = document.getElementById('form-title-main');
             const formSubtitle = document.getElementById('form-subtitle');
 
-            // Message boxes
             const loginMessageBox = document.getElementById('login-message-box');
             const forgotPasswordMessageBox = document.getElementById('forgot-password-message-box');
 
-            // Function to display messages
+            const viewportCloseButton = document.getElementById('viewportCloseButton'); // Changed ID
+            const formCloseButtonMobile = document.getElementById('formCloseButtonMobile');
+
+
             function showMessage(boxElement, message, type = 'error') {
                 if (boxElement) {
                     boxElement.textContent = message;
-                    boxElement.className = `message-box ${type}`; // Applies 'error' or 'success' class
+                    boxElement.className = `message-box ${type}`;
                 }
             }
             function clearMessage(boxElement) {
                  if (boxElement) {
                     boxElement.textContent = '';
-                    boxElement.className = 'message-box'; // Removes 'error' or 'success'
+                    boxElement.className = 'message-box';
                 }
+            }
+
+            function goBack() {
+                if (document.referrer && document.referrer !== window.location.href) {
+                    window.history.back();
+                } else {
+                    window.location.href = '/index.html'; // Fallback to main page
+                }
+            }
+
+            if (viewportCloseButton) { // Changed variable name
+                viewportCloseButton.addEventListener('click', goBack);
+            }
+            if (formCloseButtonMobile) {
+                formCloseButtonMobile.addEventListener('click', goBack);
             }
 
 
@@ -615,7 +719,7 @@
             if (forgotPasswordLink) {
                 forgotPasswordLink.addEventListener('click', function(event) {
                     event.preventDefault();
-                    clearMessage(loginMessageBox); // Clear any previous messages
+                    clearMessage(loginMessageBox);
                     loginForm.classList.add('hidden');
                     forgotPasswordForm.classList.remove('hidden');
                     formTitleMain.textContent = 'Forgot Password?';
@@ -628,7 +732,7 @@
             if (backToLoginLink) {
                 backToLoginLink.addEventListener('click', function(event) {
                     event.preventDefault();
-                    clearMessage(forgotPasswordMessageBox); // Clear any previous messages
+                    clearMessage(forgotPasswordMessageBox);
                     forgotPasswordForm.classList.add('hidden');
                     loginForm.classList.remove('hidden');
                     formTitleMain.textContent = 'Welcome back';
@@ -641,8 +745,8 @@
             // --- Form Submission Handling ---
             if (loginForm) {
                 loginForm.addEventListener('submit', async function(event) {
-                    event.preventDefault(); // Prevent default browser submission
-                    clearMessage(loginMessageBox); // Clear previous messages
+                    event.preventDefault();
+                    clearMessage(loginMessageBox);
 
                     const submitButton = loginForm.querySelector('button[type="submit"]');
                     const originalButtonText = submitButton.textContent;
@@ -653,7 +757,6 @@
                     const data = Object.fromEntries(formData.entries());
 
                     try {
-                        // Replace '/api/login' with your actual Deno backend endpoint
                         const response = await fetch('/api/login', {
                             method: 'POST',
                             headers: {
@@ -666,7 +769,6 @@
 
                         if (response.ok) {
                             showMessage(loginMessageBox, result.message || 'Login successful! Redirecting...', 'success');
-                            // Example: Redirect to a dashboard page after a short delay
                             if (result.redirectUrl) {
                                 setTimeout(() => {
                                     window.location.href = result.redirectUrl;
@@ -687,8 +789,8 @@
 
             if (forgotPasswordForm) {
                 forgotPasswordForm.addEventListener('submit', async function(event) {
-                    event.preventDefault(); // Prevent default browser submission
-                    clearMessage(forgotPasswordMessageBox); // Clear previous messages
+                    event.preventDefault();
+                    clearMessage(forgotPasswordMessageBox);
 
                     const submitButton = forgotPasswordForm.querySelector('button[type="submit"]');
                     const originalButtonText = submitButton.textContent;
@@ -699,7 +801,6 @@
                     const data = Object.fromEntries(formData.entries());
 
                     try {
-                        // Replace '/api/forgot-password' with your actual Deno backend endpoint
                         const response = await fetch('/api/forgot-password', {
                             method: 'POST',
                             headers: {
@@ -731,13 +832,13 @@
                 yearSpan.textContent = new Date().getFullYear();
             }
 
-            // --- Graphic Column Animations (unchanged from original) ---
+            // --- Graphic Column Animations ---
             const graphicColumn = document.querySelector('.graphic-column');
             const allIconElements = Array.from(document.querySelectorAll('.icons-overlay .icon'));
             const blobInteractiveWrapper = document.querySelector('.graphic-column .blob-interactive-wrapper');
             const blobElement = document.querySelector('.graphic-column .blob');
 
-            const headerLogoContainer = document.querySelector('.header-logo');
+            const headerLogoLinkElement = document.querySelector('.header-logo-link');
             const logoImage = document.querySelector('.logo-image');
             const logoFallback = document.getElementById('logo-fallback');
 
@@ -974,12 +1075,12 @@
                 }
             }
 
-            if (headerLogoContainer && (logoImage || logoFallback)) {
+            if (headerLogoLinkElement && (logoImage || logoFallback)) {
                 const logoTarget = logoImage && getComputedStyle(logoImage).display !== 'none' ? logoImage : logoFallback;
                 if (logoTarget) {
-                    headerLogoContainer.addEventListener('mousemove', (e) => {
+                    headerLogoLinkElement.addEventListener('mousemove', (e) => {
                         const logoRect = logoTarget.getBoundingClientRect();
-                        const parentRect = headerLogoContainer.getBoundingClientRect();
+                        const parentRect = headerLogoLinkElement.getBoundingClientRect();
                         const mouseX = e.clientX - parentRect.left;
                         const mouseY = e.clientY - parentRect.top;
                         const logoCenterX = logoTarget.offsetLeft + logoRect.width / 2;
@@ -1004,7 +1105,7 @@
                             duration: 150, easing: 'easeOutQuad'
                         });
                     });
-                    headerLogoContainer.addEventListener('mouseleave', () => {
+                    headerLogoLinkElement.addEventListener('mouseleave', () => {
                         if(currentLogoAnimation) currentLogoAnimation.pause();
                         currentLogoAnimation = anime({
                             targets: [logoImage, logoFallback],
