@@ -52,13 +52,13 @@
 
         .page-wrapper {
             flex-grow: 1;
-            padding-top: 2.5rem; 
+            /* padding-top: 2.5rem; Removed - will be applied to main content area */
         }
-         @media (min-width: 768px) {
+         /* @media (min-width: 768px) {
             .page-wrapper {
-                padding-top: 3rem;
+                padding-top: 3rem; Removed
             }
-        }
+        } */
 
 
         h1, h2, h3, h4, h5, h6 {
@@ -72,7 +72,7 @@
         .font-libre { font-family: 'Libre Baskerville', serif; }
         .font-inter { font-family: 'Inter', sans-serif; }
 
-        .container {
+        .container { /* General container for width constraint */
             width: 100%;
             margin-left: auto;
             margin-right: auto;
@@ -82,12 +82,22 @@
         @media (min-width: 640px) { .container { max-width: 640px; padding-left: 1.5rem; padding-right: 1.5rem; } }
         @media (min-width: 768px) { .container { max-width: 768px; } }
         @media (min-width: 1024px) { .container { max-width: 900px; } }
+        
+        main.container { /* Specific padding for the main content area */
+            padding-top: 2.5rem;
+        }
+        @media (min-width: 768px) {
+            main.container {
+                padding-top: 3rem;
+            }
+        }
+
 
         .page-header {
             background-color: var(--theme-green-dark); 
             color: var(--text-on-dark-bg);
             padding: 3rem 1.5rem; 
-            margin-bottom: 2.5rem;
+            margin-bottom: 2.5rem; /* This creates space between header and main content */
         }
 
         .page-header .header-content {
@@ -95,11 +105,10 @@
             margin-left: auto;
             margin-right: auto;
             text-align: left; 
-            /* Make header text unselectable */
-            user-select: none; /* Standard */
-            -webkit-user-select: none; /* Safari */
-            -moz-user-select: none; /* Firefox */
-            -ms-user-select: none; /* IE/Edge */
+            user-select: none; 
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
         }
 
         .header-title-container {
@@ -190,16 +199,15 @@
             color: var(--hover-focus-color);
         }
 
-        /* Custom text selection style for terms content */
         .terms-content p::selection,
         .terms-content li::selection,
-        .terms-content span::selection { /* Apply to span if used within p/li */
+        .terms-content span::selection { 
             background-color: var(--theme-gold-light-bg);
             color: var(--text-on-selection); 
         }
         .terms-content p::-moz-selection,
         .terms-content li::-moz-selection,
-        .terms-content span::-moz-selection { /* Firefox */
+        .terms-content span::-moz-selection { 
             background-color: var(--theme-gold-light-bg);
             color: var(--text-on-selection);
         }
