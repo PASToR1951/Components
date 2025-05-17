@@ -1249,7 +1249,7 @@
                     remainingQuery = remainingQuery.replace(match[0], '').trim();
                 }
                 
-                const tagsRegex = /tags:([^ ]+(?:,[^ ]+)*)/gi; 
+                const tagsRegex = /tags:([^ ]+(?:,[^ ]+)*)/gi; //regex to match tags in the query.
                 match = tagsRegex.exec(remainingQuery);
                 if (match && match[1]) {
                     filterTagsInput.value = match[1].replace(/,/g, ', '); 
