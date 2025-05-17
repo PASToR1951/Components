@@ -28,6 +28,8 @@
             --primary-text-color: #1f2937;
             --secondary-text-color: #4b5563;
             --tertiary-text-color: #6b7280;
+            --error-color: #dc2626; /* Red for error messages */
+            --success-color: #16a34a; /* Green for success messages */
         }
 
         /* Basic Reset and Global Styles */
@@ -46,25 +48,25 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden; 
+            overflow-x: hidden;
         }
 
         .main-container {
             display: flex;
             width: 100%;
-            max-width: 1200px; 
-            min-height: 90vh;   
-            max-height: 700px;  
-            background-color: #FFFFFF; 
-            border-radius: 24px; 
-            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.08); 
-            overflow: visible; 
-            margin: 20px; 
+            max-width: 1200px;
+            min-height: 90vh;
+            max-height: 700px;
+            background-color: #FFFFFF;
+            border-radius: 24px;
+            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.08);
+            overflow: visible;
+            margin: 20px;
         }
 
         .form-column {
             flex: 0 1 40%;
-            min-width: 300px; 
+            min-width: 300px;
             padding: 40px 60px;
             display: flex;
             flex-direction: column;
@@ -78,7 +80,7 @@
 
         .graphic-column {
             flex: 1 1 60%;
-            min-width: 250px; 
+            min-width: 250px;
             background-color: var(--theme-gold-lighter-bg);
             position: relative;
             display: flex;
@@ -92,28 +94,28 @@
 
         @keyframes subtleBackgroundShift {
             0% { background-color: var(--theme-gold-lighter-bg); }
-            50% { background-color: rgba(253, 190, 30, 0.1); } 
+            50% { background-color: rgba(253, 190, 30, 0.1); }
             100% { background-color: var(--theme-gold-lighter-bg); }
         }
 
         .blob-container {
-            width: 280px; 
+            width: 280px;
             height: 280px;
-            position: relative; 
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1; 
+            z-index: 1;
         }
 
-        .blob-interactive-wrapper { 
+        .blob-interactive-wrapper {
             width: 100%;
             height: 100%;
-            will-change: transform; 
-            position: absolute; 
+            will-change: transform;
+            position: absolute;
             top: 0;
             left: 0;
-            display: flex; 
+            display: flex;
             justify-content: center;
             align-items: center;
         }
@@ -127,15 +129,14 @@
                 rgba(253, 184, 19, 0.3) 70%,
                 rgba(253, 184, 19, 0.0) 100%
             );
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; 
-            filter: blur(6px); 
-            opacity: 0.85; 
-            z-index: 1; 
-            position: absolute; 
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            filter: blur(6px);
+            opacity: 0.85;
+            z-index: 1;
+            position: absolute;
             top:0; left:0;
         }
 
-        /* .logo-on-blob and .logo-on-blob-fallback styles removed */
 
         .icons-overlay {
             position: absolute;
@@ -143,21 +144,21 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 2; /* Adjusted z-index as logo is removed */
+            z-index: 2;
         }
 
         .icons-overlay .icon {
-            position: absolute; 
-            color: rgba(224, 161, 15, 0.65); 
-            opacity: 0; 
-            transform-origin: center center; 
-            will-change: transform, opacity; 
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); 
-            pointer-events: none; 
-            display: none; 
+            position: absolute;
+            color: rgba(224, 161, 15, 0.65);
+            opacity: 0;
+            transform-origin: center center;
+            will-change: transform, opacity;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            display: none;
         }
         .icons-overlay .icon.icon-active {
-            display: block; 
+            display: block;
         }
 
         .icons-overlay .icon-1 { font-size: 22px; }
@@ -175,22 +176,22 @@
             display: flex;
             align-items: center;
             margin-bottom: 30px;
-            position: relative; 
-            cursor: default; 
+            position: relative;
+            cursor: default;
         }
 
         .logo-image {
             width: 52px;
             height: 52px;
-            object-fit: contain; 
+            object-fit: contain;
             margin-right: 12px;
-            flex-shrink: 0; 
+            flex-shrink: 0;
             border-radius: 4px;
-            will-change: transform; 
-            transition: transform 0.15s ease-out; 
+            will-change: transform;
+            transition: transform 0.15s ease-out;
         }
         .logo-image-fallback {
-            display: inline-flex; 
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 52px;
@@ -204,7 +205,7 @@
             border: 2px solid var(--theme-gold);
             text-align: center;
             line-height: 1;
-            will-change: transform; 
+            will-change: transform;
             transition: transform 0.15s ease-out;
         }
 
@@ -214,31 +215,31 @@
             color: var(--primary-text-color);
             line-height: 1.3;
         }
-         .logo-text span { 
+         .logo-text span {
             font-weight: 700;
             color: var(--theme-green-dark);
         }
 
         .form-content {
-            position: relative; 
+            position: relative;
         }
 
         #login-form,
         #forgot-password-form {
             width: 100%;
-            transform-origin: top center; 
+            transform-origin: top center;
             opacity: 1;
             transform: translateY(0px) scale(1);
-            max-height: 500px; 
-            overflow: visible; 
+            max-height: 500px; /* Adjusted to accommodate message box */
+            overflow: visible;
             margin-top: 0;
-            margin-bottom: 0; 
+            margin-bottom: 0;
             padding-top: 0;
             padding-bottom: 0;
-            border-width: 0; 
+            border-width: 0;
             transition: opacity 0.35s ease-in-out,
                         transform 0.35s ease-in-out,
-                        max-height 0.45s ease-in-out, 
+                        max-height 0.45s ease-in-out,
                         margin 0.35s ease-in-out,
                         padding 0.35s ease-in-out,
                         border-width 0.35s ease-in-out;
@@ -247,16 +248,25 @@
         #login-form.hidden,
         #forgot-password-form.hidden {
             opacity: 0;
-            transform: translateY(15px) scale(0.98); 
-            max-height: 0px; 
-            overflow: hidden; 
-            pointer-events: none; 
-            margin-top: 0; 
-            margin-bottom: 0; 
-            padding-top: 0; 
-            padding-bottom: 0; 
-            border-width: 0; 
+            transform: translateY(15px) scale(0.98);
+            max-height: 0px;
+            overflow: hidden;
+            pointer-events: none;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
         }
+
+        .form-content h1, .form-content p.subtitle {
+            overflow: hidden; /* Clip letter animations */
+        }
+        .form-content h1 .letter, .form-content p.subtitle .letter {
+            display: inline-block; /* Allow transforms on individual letters */
+            opacity: 0; /* Initially hidden for animation */
+        }
+
 
         .form-content h1 {
             font-size: 28px;
@@ -268,7 +278,7 @@
         .form-content p.subtitle {
             font-size: 16px;
             color: var(--secondary-text-color);
-            margin-bottom: 32px;
+            margin-bottom: 24px; /* Reduced margin to make space for message box */
         }
 
         .form-group {
@@ -292,7 +302,7 @@
             border-radius: 8px;
             font-size: 16px;
             color: var(--primary-text-color);
-            background-color: #FFFFFF; 
+            background-color: #FFFFFF;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -301,14 +311,14 @@
         }
 
         .form-group input:focus {
-            outline: none; 
-            border-color: var(--theme-green-dark); 
-            box-shadow: 0 0 0 3px var(--theme-green-light-bg); 
+            outline: none;
+            border-color: var(--theme-green-dark);
+            box-shadow: 0 0 0 3px var(--theme-green-light-bg);
         }
 
         .options-row {
             display: flex;
-            justify-content: flex-end; 
+            justify-content: flex-end;
             align-items: center;
             margin-bottom: 24px;
             font-size: 14px;
@@ -334,14 +344,14 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
-            border: 1px solid transparent; 
+            border: 1px solid transparent;
         }
 
         button.btn-primary {
             background-color: var(--theme-green-dark);
             color: var(--text-on-green);
             border-color: var(--theme-green-dark);
-            margin-bottom: 24px; 
+            margin-bottom: 24px;
         }
 
         button.btn-primary:hover {
@@ -349,32 +359,56 @@
             border-color: var(--theme-green-darker);
         }
         button.btn-primary:active {
-            transform: scale(0.99); 
+            transform: scale(0.99);
         }
 
         .footer-text {
             font-size: 12px;
             color: var(--tertiary-text-color);
-            padding-top: 20px; 
+            padding-top: 20px;
             line-height: 1.5;
         }
+
+        /* Message box styles */
+        .message-box {
+            padding: 10px 15px;
+            margin-bottom: 15px; /* Space between message and form elements */
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+            text-align: center;
+            border: 1px solid transparent;
+        }
+        .message-box.error {
+            background-color: rgba(220, 38, 38, 0.1); /* Light red background */
+            color: var(--error-color);
+            border-color: rgba(220, 38, 38, 0.3);
+            display: block;
+        }
+        .message-box.success {
+            background-color: rgba(22, 163, 74, 0.1); /* Light green background */
+            color: var(--success-color);
+            border-color: rgba(22, 163, 74, 0.3);
+            display: block;
+        }
+
 
         /* Responsive adjustments */
         @media (max-width: 900px) { /* Tablet view */
             .main-container {
-                 max-height: none; 
-                 min-height: 0; 
+                 max-height: none;
+                 min-height: 0;
             }
             .form-column {
-                padding: 30px 40px; 
-                min-width: 280px; 
+                padding: 30px 40px;
+                min-width: 280px;
             }
             .graphic-column {
-                min-width: 200px; 
+                min-width: 200px;
             }
 
-            .blob-container { width: 200px; height: 200px; } 
-            /* .logo-on-blob styles removed as it's not present */
+            .blob-container { width: 200px; height: 200px; }
 
 
             .icons-overlay .icon-1 { font-size: 18px; }
@@ -395,25 +429,25 @@
 
         @media (max-width: 480px) { /* Mobile devices - STACKED layout */
             .main-container {
-                flex-direction: column; 
-                max-height: none; 
-                min-height: 100vh; 
-                border-radius: 0; 
-                margin: 0; 
+                flex-direction: column;
+                max-height: none;
+                min-height: 100vh;
+                border-radius: 0;
+                margin: 0;
             }
             .form-column {
-                flex: 1 1 100%; 
-                width: 100%;    
-                min-width: unset; 
-                padding: 30px 20px; 
-                order: 0; 
-                justify-content: flex-start; 
-                border-radius: 0; 
-                box-shadow: none; 
+                flex: 1 1 100%;
+                width: 100%;
+                min-width: unset;
+                padding: 30px 20px;
+                order: 0;
+                justify-content: flex-start;
+                border-radius: 0;
+                box-shadow: none;
                 z-index: auto;
             }
             .graphic-column {
-                display: none; 
+                display: none;
             }
 
             .form-content h1 { font-size: 22px; }
@@ -433,7 +467,7 @@
 <body>
     <div class="main-container">
         <div class="form-column">
-            <div> 
+            <div>
                 <div class="header-logo">
                     <img src="https://www.spud.edu.ph/assets/logo/spud_logo_s.png" alt="PeAS Logo" class="logo-image"
                          onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='inline-flex';">
@@ -443,8 +477,10 @@
                 <div class="form-content">
                     <h1 id="form-title-main">Welcome back</h1>
                     <p class="subtitle" id="form-subtitle">Please enter your details to access the PeAS.</p>
-                    <form id="login-form" action="#" method="post">
-                        <div class="form-group">
+
+                    <div id="login-message-box" class="message-box"></div>
+
+                    <form id="login-form"> <div class="form-group">
                             <label for="username">Email</label>
                             <input type="email" id="username" name="username" required placeholder="Enter your email">
                         </div>
@@ -457,8 +493,10 @@
                         </div>
                         <button type="submit" class="btn-primary">Sign in</button>
                     </form>
-                    <form id="forgot-password-form" action="#" method="post" class="hidden">
-                        <div class="form-group">
+
+                     <div id="forgot-password-message-box" class="message-box"></div>
+
+                    <form id="forgot-password-form" class="hidden"> <div class="form-group">
                             <label for="email-forgot">Enter your Registered Email</label>
                             <input type="email" id="email-forgot" name="email" required placeholder="e.g., user@example.com">
                         </div>
@@ -476,8 +514,8 @@
 
         <div class="graphic-column">
             <div class="blob-container">
-                <div class="blob-interactive-wrapper"> 
-                    <div class="blob"></div> 
+                <div class="blob-interactive-wrapper">
+                    <div class="blob"></div>
                 </div>
                 </div>
             <div class="icons-overlay">
@@ -504,50 +542,214 @@
             const formTitleMain = document.getElementById('form-title-main');
             const formSubtitle = document.getElementById('form-subtitle');
 
+            // Message boxes
+            const loginMessageBox = document.getElementById('login-message-box');
+            const forgotPasswordMessageBox = document.getElementById('forgot-password-message-box');
+
+            // Function to display messages
+            function showMessage(boxElement, message, type = 'error') {
+                if (boxElement) {
+                    boxElement.textContent = message;
+                    boxElement.className = `message-box ${type}`; // Applies 'error' or 'success' class
+                }
+            }
+            function clearMessage(boxElement) {
+                 if (boxElement) {
+                    boxElement.textContent = '';
+                    boxElement.className = 'message-box'; // Removes 'error' or 'success'
+                }
+            }
+
+
+            // --- Text Animation Functions ---
+            function wrapLettersInSpans(textWrapper) {
+                if (textWrapper) {
+                    textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+                }
+                return textWrapper ? textWrapper.querySelectorAll('.letter') : [];
+            }
+
+            function animateHeadline(selector, delay = 0, isSubtitle = false) {
+                const textWrapper = document.querySelector(selector);
+                if (!textWrapper) return;
+
+                const letters = wrapLettersInSpans(textWrapper);
+                if (letters.length === 0) return;
+
+                if (isSubtitle) {
+                    anime({
+                        targets: letters,
+                        translateY: ["0.4em", 0],
+                        opacity: [0, 1],
+                        scale: [
+                            {value: 0.9, duration: 200, easing: 'easeOutSine'},
+                            {value: 1, duration: 600, easing: 'easeOutSine'}
+                        ],
+                        rotateZ: [anime.random(-5, 5), 0],
+                        duration: 800,
+                        delay: anime.stagger(35, {start: delay}),
+                    });
+                } else {
+                    anime({
+                        targets: letters,
+                        translateY: ["1.1em", 0],
+                        opacity: [0,1],
+                        scale: [
+                            {value: 0.2, duration: 150, easing: 'easeOutSine'},
+                            {value: 1.4, duration: 300, easing: 'easeOutElastic(1.8, .5)'},
+                            {value: 0.8, duration: 200, easing: 'easeInOutQuad'},
+                            {value: 1, duration: 350, easing: 'easeOutExpo'}
+                        ],
+                        rotateZ: [anime.random(-20, 20), 0],
+                        duration: 1000,
+                        delay: anime.stagger(50, {start: delay}),
+                    });
+                }
+            }
+
+
+            // --- Initial Text Animations ---
+            animateHeadline('#form-title-main', 100);
+            animateHeadline('#form-subtitle', 400, true);
+
             if (forgotPasswordLink) {
                 forgotPasswordLink.addEventListener('click', function(event) {
-                    event.preventDefault(); 
-                    loginForm.classList.add('hidden'); 
-                    forgotPasswordForm.classList.remove('hidden'); 
+                    event.preventDefault();
+                    clearMessage(loginMessageBox); // Clear any previous messages
+                    loginForm.classList.add('hidden');
+                    forgotPasswordForm.classList.remove('hidden');
                     formTitleMain.textContent = 'Forgot Password?';
                     formSubtitle.textContent = 'No worries, we’ll send you reset instructions.';
+                    animateHeadline('#form-title-main', 0);
+                    animateHeadline('#form-subtitle', 150, true);
                 });
             }
 
             if (backToLoginLink) {
                 backToLoginLink.addEventListener('click', function(event) {
-                    event.preventDefault(); 
-                    forgotPasswordForm.classList.add('hidden'); 
-                    loginForm.classList.remove('hidden'); 
+                    event.preventDefault();
+                    clearMessage(forgotPasswordMessageBox); // Clear any previous messages
+                    forgotPasswordForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
                     formTitleMain.textContent = 'Welcome back';
                     formSubtitle.textContent = 'Please enter your details to access the PeAS.';
+                    animateHeadline('#form-title-main', 0);
+                    animateHeadline('#form-subtitle', 150, true);
                 });
             }
+
+            // --- Form Submission Handling ---
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(event) {
+                    event.preventDefault(); // Prevent default browser submission
+                    clearMessage(loginMessageBox); // Clear previous messages
+
+                    const submitButton = loginForm.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.textContent = 'Signing in...';
+                    submitButton.disabled = true;
+
+                    const formData = new FormData(loginForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    try {
+                        // Replace '/api/login' with your actual Deno backend endpoint
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            showMessage(loginMessageBox, result.message || 'Login successful! Redirecting...', 'success');
+                            // Example: Redirect to a dashboard page after a short delay
+                            if (result.redirectUrl) {
+                                setTimeout(() => {
+                                    window.location.href = result.redirectUrl;
+                                }, 1500);
+                            }
+                        } else {
+                            showMessage(loginMessageBox, result.message || 'Login failed. Please check your credentials.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        showMessage(loginMessageBox, 'An unexpected error occurred. Please try again.', 'error');
+                    } finally {
+                        submitButton.textContent = originalButtonText;
+                        submitButton.disabled = false;
+                    }
+                });
+            }
+
+            if (forgotPasswordForm) {
+                forgotPasswordForm.addEventListener('submit', async function(event) {
+                    event.preventDefault(); // Prevent default browser submission
+                    clearMessage(forgotPasswordMessageBox); // Clear previous messages
+
+                    const submitButton = forgotPasswordForm.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.textContent = 'Sending...';
+                    submitButton.disabled = true;
+
+                    const formData = new FormData(forgotPasswordForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    try {
+                        // Replace '/api/forgot-password' with your actual Deno backend endpoint
+                        const response = await fetch('/api/forgot-password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            showMessage(forgotPasswordMessageBox, result.message || 'Password reset link sent! Please check your email.', 'success');
+                        } else {
+                            showMessage(forgotPasswordMessageBox, result.message || 'Failed to send reset link. Please try again.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Forgot password error:', error);
+                        showMessage(forgotPasswordMessageBox, 'An unexpected error occurred. Please try again.', 'error');
+                    } finally {
+                        submitButton.textContent = originalButtonText;
+                        submitButton.disabled = false;
+                    }
+                });
+            }
+
 
             const yearSpan = document.getElementById('currentYear');
             if (yearSpan) {
                 yearSpan.textContent = new Date().getFullYear();
             }
 
+            // --- Graphic Column Animations (unchanged from original) ---
             const graphicColumn = document.querySelector('.graphic-column');
             const allIconElements = Array.from(document.querySelectorAll('.icons-overlay .icon'));
-            const blobInteractiveWrapper = document.querySelector('.graphic-column .blob-interactive-wrapper'); 
-            const blobElement = document.querySelector('.graphic-column .blob'); 
-            
+            const blobInteractiveWrapper = document.querySelector('.graphic-column .blob-interactive-wrapper');
+            const blobElement = document.querySelector('.graphic-column .blob');
+
             const headerLogoContainer = document.querySelector('.header-logo');
-            const logoImage = document.querySelector('.logo-image'); 
-            const logoFallback = document.getElementById('logo-fallback'); 
+            const logoImage = document.querySelector('.logo-image');
+            const logoFallback = document.getElementById('logo-fallback');
 
             let currentLogoAnimation = null;
-            
+
             if (graphicColumn && getComputedStyle(graphicColumn).display !== 'none') {
-                if (!blobInteractiveWrapper || !blobElement || allIconElements.length === 0) { 
+                if (!blobInteractiveWrapper || !blobElement || allIconElements.length === 0) {
                      console.warn("PeAS Login: Required elements for graphic column animations were not found.");
                 } else {
-                    // --- Gold Blob (Shape/Scale/Rotate) Animation ---
-                    function animateGoldBlobShape() { 
+                    function animateGoldBlobShape() {
                         anime.timeline({
-                            targets: blobElement, 
+                            targets: blobElement,
                             loop: true, easing: 'easeInOutSine', direction: 'alternate',
                         })
                         .add({ borderRadius: ['40% 60% 70% 30% / 40% 50% 50% 60%', '70% 30% 50% 50% / 30% 70% 40% 60%'], duration: 5000 })
@@ -555,65 +757,62 @@
                         .add({ borderRadius: '30% 70% 60% 40% / 70% 30% 50% 50%', duration: 5000 });
 
                         anime({
-                            targets: blobElement, 
+                            targets: blobElement,
                             scale: [ { value: 0.95, duration: 6000, easing: 'easeInOutQuad' }, { value: 1.05, duration: 6000, easing: 'easeInOutQuad' } ],
                             rotate: [ { value: -3, duration: 6000, easing: 'easeInOutQuad' }, { value: 3, duration: 6000, easing: 'easeInOutQuad' } ],
-                            loop: true, direction: 'alternate', delay: 500 
+                            loop: true, direction: 'alternate', delay: 500
                         });
                     }
-                    animateGoldBlobShape(); 
+                    animateGoldBlobShape();
 
-                    // --- Gold Blob Wrapper (Positional) Autonomous Movement ---
                     anime({
                         targets: blobInteractiveWrapper,
                         translateX: [
-                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' }, 
-                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' },
-                            { value: 0, duration: anime.random(6000, 10000), easing: 'easeInOutSine' }
+                            { value: anime.random(-40, 40), duration: anime.random(5000, 8000), easing: 'easeInOutSine' },
+                            { value: anime.random(-40, 40), duration: anime.random(5000, 8000), easing: 'easeInOutSine' },
+                            { value: 0, duration: anime.random(5000, 8000), easing: 'easeInOutSine' }
                         ],
                         translateY: [
-                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' },
-                            { value: anime.random(-20, 20), duration: anime.random(6000, 10000), easing: 'easeInOutSine' },
-                            { value: 0, duration: anime.random(6000, 10000), easing: 'easeInOutSine' }
+                            { value: anime.random(-40, 40), duration: anime.random(5000, 8000), easing: 'easeInOutSine' },
+                            { value: anime.random(-40, 40), duration: anime.random(5000, 8000), easing: 'easeInOutSine' },
+                            { value: 0, duration: anime.random(5000, 8000), easing: 'easeInOutSine' }
                         ],
                         loop: true,
                         direction: 'alternate'
                     });
 
-
                     const getTargetActiveIcons = () => {
                          const screenWidth = window.innerWidth;
-                         if (screenWidth <= 480) return 0; 
-                         if (screenWidth <= 900) return 5; 
-                         return Math.floor(Math.random() * (9 - 5 + 1)) + 5; 
+                         if (screenWidth <= 480) return 0;
+                         if (screenWidth <= 900) return 5;
+                         return Math.floor(Math.random() * (9 - 5 + 1)) + 5;
                     };
                     let TARGET_ACTIVE_ICONS = getTargetActiveIcons();
-                    const MIN_ICON_SEPARATION = 70; 
-                    let activeIconData = []; 
+                    const MIN_ICON_SEPARATION = 70;
+                    let activeIconData = [];
                     let graphicColumnCenterX, graphicColumnCenterY, baseExclusionRadius;
                     let graphicColumnRect = graphicColumn.getBoundingClientRect();
-                    
+
                     function calculateDimensions() {
-                        if (getComputedStyle(graphicColumn).display === 'none') return; 
+                        if (getComputedStyle(graphicColumn).display === 'none') return;
                         graphicColumnRect = graphicColumn.getBoundingClientRect();
                         graphicColumnCenterX = graphicColumnRect.width / 2;
                         graphicColumnCenterY = graphicColumnRect.height / 2;
                         const goldBlobWidthForCalc = parseFloat(getComputedStyle(blobElement).width) || (graphicColumnRect.width < 280 ? graphicColumnRect.width * 0.8 : 280) ;
-                        // Reverted baseExclusionRadius as logo on blob is removed
-                        baseExclusionRadius = (goldBlobWidthForCalc / 2) * 0.7; 
-                        TARGET_ACTIVE_ICONS = getTargetActiveIcons(); 
+                        baseExclusionRadius = (goldBlobWidthForCalc / 2) * 0.7;
+                        TARGET_ACTIVE_ICONS = getTargetActiveIcons();
                     }
 
-                    calculateDimensions(); 
-                    window.addEventListener('resize', calculateDimensions); 
+                    calculateDimensions();
+                    window.addEventListener('resize', calculateDimensions);
 
                     function isPositionValid(x, y, iconRadius, currentIconElement) {
                         if (getComputedStyle(graphicColumn).display === 'none') return false;
                         const dxToCircleCenter = x - graphicColumnCenterX;
                         const dyToCircleCenter = y - graphicColumnCenterY;
                         const distToCircleCenter = Math.sqrt(dxToCircleCenter * dxToCircleCenter + dyToCircleCenter * dyToCircleCenter);
-                        const exclusionRadiusWithBuffer = baseExclusionRadius + iconRadius + 30; 
-                        if (distToCircleCenter < exclusionRadiusWithBuffer) return false; 
+                        const exclusionRadiusWithBuffer = baseExclusionRadius + iconRadius + 30;
+                        if (distToCircleCenter < exclusionRadiusWithBuffer) return false;
 
                         for (const activeIcon of activeIconData) {
                             if (activeIcon.element === currentIconElement || !activeIcon.element.style.opacity || parseFloat(activeIcon.element.style.opacity) < 0.1) continue;
@@ -622,34 +821,34 @@
                             const dxToOtherIcon = x - otherIconCenterX;
                             const dyToOtherIcon = y - otherIconCenterY;
                             const distToOtherIcon = Math.sqrt(dxToOtherIcon * dxToOtherIcon + dyToOtherIcon * dyToOtherIcon);
-                            if (distToOtherIcon < (iconRadius + activeIcon.radius + MIN_ICON_SEPARATION)) return false; 
+                            if (distToOtherIcon < (iconRadius + activeIcon.radius + MIN_ICON_SEPARATION)) return false;
                         }
-                        return true; 
+                        return true;
                     }
 
                     function spawnIcon(iconElement) {
                         if (getComputedStyle(graphicColumn).display === 'none' || getComputedStyle(iconElement).display === 'none') {
                             activeIconData = activeIconData.filter(d => d.element !== iconElement);
-                            return; 
+                            return;
                         }
-                        iconElement.classList.remove('icon-active'); 
-                        iconElement.style.opacity = '0'; 
-                        iconElement.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)'; 
+                        iconElement.classList.remove('icon-active');
+                        iconElement.style.opacity = '0';
+                        iconElement.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
                         const iconComputedStyle = getComputedStyle(iconElement);
-                        const iconFontSize = parseFloat(iconComputedStyle.fontSize) || 24; 
-                        const iconRadius = iconFontSize / 2; 
+                        const iconFontSize = parseFloat(iconComputedStyle.fontSize) || 24;
+                        const iconRadius = iconFontSize / 2;
                         let newTop, newLeft, newCenterX, newCenterY;
-                        let attempts = 0; const maxAttempts = 100; 
+                        let attempts = 0; const maxAttempts = 100;
                         do {
                             const paddingWidth = 0.10 * graphicColumnRect.width;
                             const paddingHeight = 0.10 * graphicColumnRect.height;
-                            const iconWidth = iconElement.offsetWidth || iconFontSize; 
+                            const iconWidth = iconElement.offsetWidth || iconFontSize;
                             const iconHeight = iconElement.offsetHeight || iconFontSize;
                             const effectiveSpawnWidth = graphicColumnRect.width - 2 * paddingWidth - iconWidth;
                             const effectiveSpawnHeight = graphicColumnRect.height - 2 * paddingHeight - iconHeight;
                             newLeft = paddingWidth + Math.random() * Math.max(0, effectiveSpawnWidth);
                             newTop = paddingHeight + Math.random() * Math.max(0, effectiveSpawnHeight);
-                            newCenterX = newLeft + iconWidth / 2; 
+                            newCenterX = newLeft + iconWidth / 2;
                             newCenterY = newTop + iconHeight / 2;
                             attempts++;
                         } while (!isPositionValid(newCenterX, newCenterY, iconRadius, iconElement) && attempts < maxAttempts);
@@ -659,37 +858,37 @@
                         }
                         iconElement.style.left = `${newLeft}px`;
                         iconElement.style.top = `${newTop}px`;
-                        iconElement.dataset.originalLeft = newLeft; 
+                        iconElement.dataset.originalLeft = newLeft;
                         iconElement.dataset.originalTop = newTop;
-                        iconElement.style.display = 'block'; 
-                        const targetOpacity = 0.3 + Math.random() * 0.6; 
+                        iconElement.style.display = 'block';
+                        const targetOpacity = 0.3 + Math.random() * 0.6;
                         anime({
-                            targets: iconElement, opacity: [0, targetOpacity], scale: [0.8, 1], 
+                            targets: iconElement, opacity: [0, targetOpacity], scale: [0.8, 1],
                             duration: 700, easing: 'easeOutQuad',
-                            begin: () => iconElement.classList.add('icon-active') 
+                            begin: () => iconElement.classList.add('icon-active')
                         });
-                        const lifetime = (7 + Math.random() * 5) * 1000; 
+                        const lifetime = (7 + Math.random() * 5) * 1000;
                         const timeoutId = setTimeout(() => manageSpecificIcon(iconElement), lifetime);
                         let existingIconData = activeIconData.find(d => d.element === iconElement);
-                        if (existingIconData) { 
-                            clearTimeout(existingIconData.lifetimeTimeoutId); 
+                        if (existingIconData) {
+                            clearTimeout(existingIconData.lifetimeTimeoutId);
                             existingIconData.lifetimeTimeoutId = timeoutId;
                             existingIconData.originalLeft = newLeft;
                             existingIconData.originalTop = newTop;
                             existingIconData.radius = iconRadius;
-                        } else { 
+                        } else {
                              activeIconData.push({ element: iconElement, lifetimeTimeoutId: timeoutId, originalLeft: newLeft, originalTop: newTop, radius: iconRadius });
                         }
                     }
-                    
+
                     function manageSpecificIcon(iconElementToReplace) {
                          if (iconElementToReplace) {
                             anime({
-                                targets: iconElementToReplace, opacity: 0, scale: 0.8, 
+                                targets: iconElementToReplace, opacity: 0, scale: 0.8,
                                 duration: 700, easing: 'easeInQuad',
-                                complete: () => { 
-                                    iconElementToReplace.style.display = 'none'; 
-                                    iconElementToReplace.classList.remove('icon-active'); 
+                                complete: () => {
+                                    iconElementToReplace.style.display = 'none';
+                                    iconElementToReplace.classList.remove('icon-active');
                                     activeIconData = activeIconData.filter(d => d.element !== iconElementToReplace);
                                     if (getComputedStyle(graphicColumn).display !== 'none' && activeIconData.length < TARGET_ACTIVE_ICONS) {
                                         const availableIcons = allIconElements.filter(el => !activeIconData.some(d => d.element === el) && getComputedStyle(el).display !== 'none');
@@ -700,56 +899,56 @@
                         }
                     }
 
-                    let iconsToSpawnInitially = [...allIconElements]; 
+                    let iconsToSpawnInitially = [...allIconElements];
                     if (getComputedStyle(graphicColumn).display !== 'none') {
                         for (let i = 0; i < TARGET_ACTIVE_ICONS && iconsToSpawnInitially.length > 0; i++) {
                             const randomIndex = Math.floor(Math.random() * iconsToSpawnInitially.length);
-                            const iconToSpawn = iconsToSpawnInitially.splice(randomIndex, 1)[0]; 
+                            const iconToSpawn = iconsToSpawnInitially.splice(randomIndex, 1)[0];
                             if (iconToSpawn) spawnIcon(iconToSpawn);
                         }
                     }
-                    
+
                     graphicColumn.addEventListener('mousemove', (e) => {
                         if (getComputedStyle(graphicColumn).display === 'none') return;
-                        const mouseX = e.clientX - graphicColumnRect.left; 
-                        const mouseY = e.clientY - graphicColumnRect.top;  
+                        const mouseX = e.clientX - graphicColumnRect.left;
+                        const mouseY = e.clientY - graphicColumnRect.top;
 
                         activeIconData.forEach(iconData => {
                             const icon = iconData.element;
-                            const currentOpacity = parseFloat(getComputedStyle(icon).opacity); 
+                            const currentOpacity = parseFloat(getComputedStyle(icon).opacity);
                             if (!icon.classList.contains('icon-active') || currentOpacity < 0.1) return;
-                            const iconRect = icon.getBoundingClientRect(); 
+                            const iconRect = icon.getBoundingClientRect();
                             const iconVisualCenterX = (iconRect.left - graphicColumnRect.left) + (iconRect.width / 2);
                             const iconVisualCenterY = (iconRect.top - graphicColumnRect.top) + (iconRect.height / 2);
                             const originalCenterX = parseFloat(icon.dataset.originalLeft) + (iconRect.width / 2);
                             const originalCenterY = parseFloat(icon.dataset.originalTop) + (iconRect.height / 2);
-                            const deltaXIcon = mouseX - iconVisualCenterX; 
-                            const deltaYIcon = mouseY - iconVisualCenterY; 
-                            const maxDistIcon = 150; 
+                            const deltaXIcon = mouseX - iconVisualCenterX;
+                            const deltaYIcon = mouseY - iconVisualCenterY;
+                            const maxDistIcon = 150;
                             const distToMouseIcon = Math.sqrt(deltaXIcon * deltaXIcon + deltaYIcon * deltaYIcon);
-                            const moveFactorIcon = Math.max(0, (maxDistIcon - distToMouseIcon) / maxDistIcon); 
-                            const maxMoveIcon = 18; 
+                            const moveFactorIcon = Math.max(0, (maxDistIcon - distToMouseIcon) / maxDistIcon);
+                            const maxMoveIcon = 18;
                             let moveX = 0, moveY = 0, angleDeg = 0, scaleFactor = 1, jitterX = 0, jitterY = 0;
                             if (distToMouseIcon < maxDistIcon && distToMouseIcon > 0) {
-                                moveX = (deltaXIcon / distToMouseIcon) * maxMoveIcon * moveFactorIcon * -1; 
-                                moveY = (deltaYIcon / distToMouseIcon) * maxMoveIcon * moveFactorIcon * -1; 
+                                moveX = (deltaXIcon / distToMouseIcon) * maxMoveIcon * moveFactorIcon * -1;
+                                moveY = (deltaYIcon / distToMouseIcon) * maxMoveIcon * moveFactorIcon * -1;
                                 const angleToCursorRad = Math.atan2(deltaYIcon, deltaXIcon);
-                                angleDeg = angleToCursorRad * (180 / Math.PI) * moveFactorIcon * 0.25; 
-                                scaleFactor = 1 + moveFactorIcon * 0.15; 
-                                if (moveFactorIcon > 0.1) { 
-                                   jitterX = (Math.random() - 0.5) * 4 * moveFactorIcon; 
+                                angleDeg = angleToCursorRad * (180 / Math.PI) * moveFactorIcon * 0.25;
+                                scaleFactor = 1 + moveFactorIcon * 0.15;
+                                if (moveFactorIcon > 0.1) {
+                                   jitterX = (Math.random() - 0.5) * 4 * moveFactorIcon;
                                    jitterY = (Math.random() - 0.5) * 4 * moveFactorIcon;
                                 }
                             }
                             let finalMoveX = moveX + jitterX;
                             let finalMoveY = moveY + jitterY;
-                            let testCenterX = originalCenterX + finalMoveX; 
+                            let testCenterX = originalCenterX + finalMoveX;
                             let testCenterY = originalCenterY + finalMoveY;
-                            const dxToBlobFromIcon = testCenterX - graphicColumnCenterX; 
+                            const dxToBlobFromIcon = testCenterX - graphicColumnCenterX;
                             const dyToBlobFromIcon = testCenterY - graphicColumnCenterY;
                             const distToBlobFromIcon = Math.sqrt(dxToBlobFromIcon * dxToBlobFromIcon + dyToBlobFromIcon * dyToBlobFromIcon);
-                            const iconTrueRadius = iconRect.width / 2; 
-                            const currentExclusionRadius = baseExclusionRadius + iconTrueRadius + 30; 
+                            const iconTrueRadius = iconRect.width / 2;
+                            const currentExclusionRadius = baseExclusionRadius + iconTrueRadius + 30;
                             if (distToBlobFromIcon < currentExclusionRadius && distToBlobFromIcon > 0) {
                                 const normDxToBlob = dxToBlobFromIcon / distToBlobFromIcon;
                                 const normDyToBlob = dyToBlobFromIcon / distToBlobFromIcon;
@@ -757,7 +956,7 @@
                                 const targetYOnEdge = graphicColumnCenterY + normDyToBlob * currentExclusionRadius;
                                 finalMoveX = targetXOnEdge - originalCenterX;
                                 finalMoveY = targetYOnEdge - originalCenterY;
-                                angleDeg *= 0.5; 
+                                angleDeg *= 0.5;
                                 scaleFactor = 1 + (scaleFactor - 1) * 0.5;
                             }
                             icon.style.transform = `translate(${finalMoveX}px, ${finalMoveY}px) rotate(${angleDeg}deg) scale(${scaleFactor})`;
@@ -767,50 +966,50 @@
                     graphicColumn.addEventListener('mouseleave', () => {
                          if (getComputedStyle(graphicColumn).display === 'none') return;
                          activeIconData.forEach(iconData => {
-                            if (iconData.element.classList.contains('icon-active')) { 
+                            if (iconData.element.classList.contains('icon-active')) {
                                 iconData.element.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
                             }
                          });
                      });
-                } 
-            } 
+                }
+            }
 
             if (headerLogoContainer && (logoImage || logoFallback)) {
                 const logoTarget = logoImage && getComputedStyle(logoImage).display !== 'none' ? logoImage : logoFallback;
                 if (logoTarget) {
                     headerLogoContainer.addEventListener('mousemove', (e) => {
-                        const logoRect = logoTarget.getBoundingClientRect(); 
-                        const parentRect = headerLogoContainer.getBoundingClientRect(); 
+                        const logoRect = logoTarget.getBoundingClientRect();
+                        const parentRect = headerLogoContainer.getBoundingClientRect();
                         const mouseX = e.clientX - parentRect.left;
                         const mouseY = e.clientY - parentRect.top;
                         const logoCenterX = logoTarget.offsetLeft + logoRect.width / 2;
                         const logoCenterY = logoTarget.offsetTop + logoRect.height / 2;
-                        const deltaX = mouseX - logoCenterX; 
-                        const deltaY = mouseY - logoCenterY; 
-                        const maxDistLogo = 100; 
+                        const deltaX = mouseX - logoCenterX;
+                        const deltaY = mouseY - logoCenterY;
+                        const maxDistLogo = 100;
                         const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-                        const moveFactor = Math.max(0, (maxDistLogo - dist) / maxDistLogo); 
-                        const maxRotate = 8; 
-                        const maxScale = 1.08; 
+                        const moveFactor = Math.max(0, (maxDistLogo - dist) / maxDistLogo);
+                        const maxRotate = 8;
+                        const maxScale = 1.08;
                         let rotateX = 0, rotateY = 0, scale = 1;
                         if (dist < maxDistLogo) {
-                            rotateX = -(deltaY / logoRect.height) * maxRotate * 2 * moveFactor; 
-                            rotateY = (deltaX / logoRect.width) * maxRotate * 2 * moveFactor;  
-                            scale = 1 + (maxScale - 1) * moveFactor; 
+                            rotateX = -(deltaY / logoRect.height) * maxRotate * 2 * moveFactor;
+                            rotateY = (deltaX / logoRect.width) * maxRotate * 2 * moveFactor;
+                            scale = 1 + (maxScale - 1) * moveFactor;
                         }
-                        if(currentLogoAnimation) currentLogoAnimation.pause(); 
+                        if(currentLogoAnimation) currentLogoAnimation.pause();
                         currentLogoAnimation = anime({
-                            targets: [logoImage, logoFallback], 
+                            targets: [logoImage, logoFallback],
                             rotateX: rotateX, rotateY: rotateY, scale: scale,
                             duration: 150, easing: 'easeOutQuad'
                         });
                     });
                     headerLogoContainer.addEventListener('mouseleave', () => {
-                        if(currentLogoAnimation) currentLogoAnimation.pause(); 
+                        if(currentLogoAnimation) currentLogoAnimation.pause();
                         currentLogoAnimation = anime({
                             targets: [logoImage, logoFallback],
                             rotateX: 0, rotateY: 0, scale: 1,
-                            duration: 300, easing: 'easeOutElastic(1, .8)' 
+                            duration: 300, easing: 'easeOutElastic(1, .8)'
                         });
                     });
                 }
