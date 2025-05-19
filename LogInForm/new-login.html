@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeAS - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" xintegrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --theme-gold: #FDB813;
+            --theme-gold-darker: #EAA10F;
+            --theme-gold-light-bg: rgba(253, 184, 19, 0.2);
+            --theme-gold-lighter-bg: rgba(253, 184, 19, 0.05);
+            --theme-green-dark: #006A4E;
+            --theme-green-darker: #00523D;
+            --theme-green-light-bg: rgba(0, 106, 78, 0.3);
+            --theme-green-lighter-bg: rgba(0, 106, 78, 0.15);
+            --theme-green-border: rgba(0, 106, 78, 0.7);
+            --theme-page-bg: #F9F6EE;
+            --neutral-border-color: #e5e7eb;
+            --input-border-color: #d1d5db;
+            --placeholder-text-color: #9ca3af;
+            --text-on-gold: #000000;
+            --text-on-green: #FFFFFF;
+            --primary-text-color: #1f2937;
+            --secondary-text-color: #4b5563;
+            --tertiary-text-color: #6b7280;
+            --error-color: #dc2626;
+            --success-color: #16a34a;
+
+            --form-transition-duration: 0.3s;
+            --form-transition-easing: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --dynamic-overlay-color: var(--theme-green-darker);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--theme-page-bg);
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D3CBBF' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            color: var(--primary-text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .main-close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            color: var(--theme-green-darker);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease, transform 0.2s ease;
+            z-index: 100;
+        }
+        .main-close-button:hover {
+            color: var(--theme-gold-darker);
+            transform: scale(1.1);
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 90vh;
+            max-height: 700px;
+            background-color: #FFFFFF;
+            border-radius: 24px;
+            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.08);
+            margin: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+        }
+
+        .main-container--fade-out {
+            opacity: 0;
+            transform: scale(0.95) translateY(15px);
+            pointer-events: none;
+        }
+
+        .form-column {
+            flex: 0 1 40%;
+            min-width: 300px;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #FFFFFF;
+            border-radius: 24px 0 0 24px;
+            position: relative;
+            box-shadow: 5px 0px 15px -5px rgba(0, 0, 0, 0.07);
+            z-index: 2;
+        }
+
+        .graphic-column {
+            flex: 1 1 60%;
+            min-width: 250px;
+            background-color: rgba(253, 184, 19, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 0 24px 24px 0;
+            z-index: 1;
+        }
+
+        .logo-background-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: url('https://storage.googleapis.com/oa_disk001/spudlms/84/school_logo/1627354824-105.jpeg');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(80%) brightness(40%) contrast(120%) sepia(20%);
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        .background-image-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: var(--dynamic-overlay-color);
+            opacity: 0.3;
+            mix-blend-mode: multiply;
+            z-index: 1;
+            pointer-events: none;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+
+        .logo-display-container {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            transform-style: preserve-3d;
+        }
+
+        .logo-wrapper {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        /* MODIFICATION: New glow element style */
+        .logo-glow-background {
+            position: absolute;
+            width: 115%; /* Slightly larger than the logo area */
+            height: 115%;
+            background: radial-gradient(circle, 
+                rgba(253, 184, 19, 0.45) 0%,  /* Brighter, more focused center */
+                rgba(253, 184, 19, 0.25) 40%, 
+                rgba(253, 184, 19, 0) 70%
+            );
+            border-radius: 50%; /* Soft circular glow */
+            filter: blur(20px); /* More pronounced blur for glow */
+            opacity: 0.7; /* Base opacity */
+            z-index: 1; /* Behind the actual logo image */
+            transform: translateZ(-10px); /* Push it slightly back for depth */
+            will-change: opacity, transform; /* If we animate it later */
+        }
+
+        .static-logo-image {
+            position: relative; /* To sit on top of the glow */
+            width: 100%;
+            height: 100%;
+            max-width: 250px;
+            max-height: 250px;
+            object-fit: contain;
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+            z-index: 2; /* Above the glow */
+            transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), filter 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            will-change: transform, filter;
+            filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.15));
+        }
+
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 30px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .logo-image {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            margin-right: 12px;
+            flex-shrink: 0;
+            border-radius: 4px;
+        }
+        .logo-image-fallback {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            background-color: var(--theme-green-dark);
+            color: var(--text-on-green);
+            border-radius: 8px;
+            margin-right: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            border: 2px solid var(--theme-gold);
+            text-align: center;
+            line-height: 1;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-text-color);
+            line-height: 1.3;
+        }
+         .logo-text span {
+            font-weight: 700;
+            color: var(--theme-green-dark);
+        }
+
+        .form-content {
+            position: relative;
+        }
+
+        #login-form,
+        #forgot-password-form {
+            width: 100%;
+            transform-origin: center center;
+            opacity: 1;
+            transform: translateY(0px) scale(1);
+            max-height: 500px;
+            overflow: visible;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
+            will-change: transform, opacity, max-height;
+            transition: opacity var(--form-transition-duration) var(--form-transition-easing),
+                        transform var(--form-transition-duration) var(--form-transition-easing),
+                        max-height calc(var(--form-transition-duration) + 0.05s) var(--form-transition-easing),
+                        margin var(--form-transition-duration) var(--form-transition-easing),
+                        padding var(--form-transition-duration) var(--form-transition-easing),
+                        border-width var(--form-transition-duration) var(--form-transition-easing);
+        }
+
+        #login-form.hidden,
+        #forgot-password-form.hidden {
+            opacity: 0;
+            transform: translateY(0px) scale(0.98);
+            max-height: 0px !important;
+            overflow: hidden;
+            pointer-events: none;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-width: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #login-form:not(.hidden),
+        #forgot-password-form:not(.hidden) {
+            position: relative;
+        }
+
+        .form-content h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-text-color);
+            margin-bottom: 8px;
+        }
+
+        .form-content p.subtitle {
+            font-size: 16px;
+            color: var(--secondary-text-color);
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary-text-color);
+            margin-bottom: 6px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--theme-green-border);
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--primary-text-color);
+            background-color: #FFFFFF;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input::placeholder {
+            color: var(--placeholder-text-color);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--theme-green-dark);
+            box-shadow: 0 0 0 3px var(--theme-green-light-bg);
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .options-row a {
+            color: var(--theme-green-dark);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .options-row a:hover {
+            color: var(--theme-green-darker);
+            text-decoration: underline;
+        }
+
+        button {
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        button.btn-primary {
+            background-color: var(--theme-green-dark);
+            color: var(--text-on-green);
+            border-color: var(--theme-green-dark);
+            margin-bottom: 24px;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+
+        button.btn-primary:hover {
+            background-color: var(--theme-green-darker);
+            border-color: var(--theme-green-darker);
+        }
+        button.btn-primary:active {
+            transform: scale(0.99);
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--tertiary-text-color);
+            padding-top: 20px;
+            line-height: 1.5;
+        }
+        .footer-text a {
+            color: var(--theme-green-dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-text a:hover {
+            text-decoration: underline;
+            color: var(--theme-green-darker);
+        }
+
+
+        .message-box {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            text-align: center;
+            border: 1px solid transparent;
+        }
+        .message-box.error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--error-color);
+            border-color: rgba(220, 38, 38, 0.3);
+            display: block;
+        }
+        .message-box.success {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+            border-color: rgba(22, 163, 74, 0.3);
+            display: block;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) { /* Tablet view */
+            .main-container {
+                 max-height: none;
+                 min-height: 0;
+            }
+            .form-column {
+                padding: 40px;
+            }
+            .main-close-button {
+                top: 10px;
+                right: 10px;
+                font-size: 22px;
+                width: 36px;
+                height: 36px;
+            }
+            .graphic-column {
+                min-width: 200px;
+            }
+            .logo-display-container { width: 300px; height: 300px; }
+            .static-logo-image { max-width: 200px; max-height: 200px; }
+            .logo-glow-background {
+                 width: 115%; height: 115%;
+                 filter: blur(18px); /* Adjusted glow for tablet */
+            }
+
+
+            .form-content h1 { font-size: 26px; }
+            .form-content p.subtitle { margin-bottom: 24px; }
+            .logo-text { font-size: 17px; }
+            .logo-image, .logo-image-fallback { width: 48px; height: 48px; }
+            .logo-image-fallback { font-size: 1.05em; }
+            .footer-text { text-align: center; margin-top: 30px; padding-bottom: 20px; }
+        }
+
+        @media (max-width: 480px) { /* Mobile devices - STACKED layout */
+            .main-container {
+                flex-direction: column;
+                max-height: none;
+                min-height: 100vh;
+                border-radius: 0;
+                margin: 0;
+                background-color: #FFFFFF;
+            }
+            .form-column {
+                padding: 30px 20px;
+                border-radius: 0;
+            }
+            .main-close-button {
+                display: none;
+            }
+
+            .header-logo-link {
+                margin-bottom: 24px;
+            }
+            .graphic-column {
+                display: none;
+            }
+            .form-content h1 { font-size: 22px; }
+            .form-content p.subtitle { font-size: 15px; margin-bottom: 20px; }
+            .logo-text { font-size: 15px; }
+            .logo-image, .logo-image-fallback { width: 44px; height: 44px; }
+            .logo-image-fallback { font-size: 1em; }
+            .options-row { margin-bottom: 20px; }
+            button.btn-primary { padding: 10px; font-size: 15px; margin-bottom: 20px; }
+            .form-group input[type="text"],
+            .form-group input[type="password"],
+            .form-group input[type="email"] { padding: 10px 12px; font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container" id="mainLoginFormContainer">
+        <button class="main-close-button" id="mainCloseButton" aria-label="Close Login Form">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="form-column">
+            <div>
+                <a href="/index.html" class="header-logo-link" aria-label="Back to PeAS Main Page">
+                    <img src="https://www.spud.edu.ph/assets/logo/spud_logo_s.png" alt="PeAS Logo" class="logo-image"
+                         onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='inline-flex';">
+                    <div id="logo-fallback" class="logo-image-fallback" style="display:none;">PeAS</div>
+                    <div class="logo-text">Paulinian electronic<br>Archiving System <span>(PeAS)</span></div>
+                </a>
+                <div class="form-content">
+                    <h1 id="form-title-main">Welcome back</h1>
+                    <p class="subtitle" id="form-subtitle">Please enter your details to access the PeAS.</p>
+
+                    <div id="login-message-box" class="message-box"></div>
+
+                    <form id="login-form"> <div class="form-group">
+                            <label for="username">Email</label>
+                            <input type="email" id="username" name="username" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required placeholder="••••••••">
+                        </div>
+                        <div class="options-row">
+                            <a href="#" id="forgot-password-link">Forgot Password?</a>
+                        </div>
+                        <button type="submit" class="btn-primary">Sign in</button>
+                    </form>
+
+                     <div id="forgot-password-message-box" class="message-box"></div>
+
+                    <form id="forgot-password-form" class="hidden"> <div class="form-group">
+                            <label for="email-forgot">Enter your Registered Email</label>
+                            <input type="email" id="email-forgot" name="email" required placeholder="e.g., user@example.com">
+                        </div>
+                        <button type="submit" class="btn-primary">Send Reset Link</button>
+                        <div class="options-row" style="justify-content: center; margin-top: 20px;">
+                             <a href="#" id="back-to-login-link">Back to Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-text">
+                © <span id="currentYear"></span> PeAS. All Rights Reserved. <br>
+                L. Rovira Rd, Bantayan, Dumaguete, Negros Oriental.
+            </div>
+        </div>
+
+        <div class="graphic-column">
+            <div class="logo-background-effect" id="logoBackgroundEffect"></div>
+            <div class="background-image-overlay" id="backgroundImageOverlay"></div>
+            <div class="logo-display-container">
+                <div class="logo-wrapper">
+                    <div id="logoGlowBlob"></div>
+                    <img src="https://www.spud.edu.ph/assets/logo/spud_logo_s.png" alt="PeAS System Logo" class="static-logo-image" id="staticLogoInGraphic">
+                </div>
+            </div>
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const forgotPasswordForm = document.getElementById('forgot-password-form');
+            const forgotPasswordLink = document.getElementById('forgot-password-link');
+            const backToLoginLink = document.getElementById('back-to-login-link');
+            const formTitleMain = document.getElementById('form-title-main');
+            const formSubtitle = document.getElementById('form-subtitle');
+
+            const loginMessageBox = document.getElementById('login-message-box');
+            const forgotPasswordMessageBox = document.getElementById('forgot-password-message-box');
+
+            const mainCloseButton = document.getElementById('mainCloseButton');
+            const backgroundImageOverlay = document.getElementById('backgroundImageOverlay');
+            const mainLoginFormContainer = document.getElementById('mainLoginFormContainer');
+
+
+            function showMessage(boxElement, message, type = 'error') {
+                if (boxElement) {
+                    boxElement.textContent = message;
+                    boxElement.className = `message-box ${type}`;
+                }
+            }
+            function clearMessage(boxElement) {
+                 if (boxElement) {
+                    boxElement.textContent = '';
+                    boxElement.className = 'message-box';
+                }
+            }
+
+            function goBackAnimated() {
+                if (mainLoginFormContainer) {
+                    mainLoginFormContainer.classList.add('main-container--fade-out');
+                }
+                setTimeout(() => {
+                    if (document.referrer && document.referrer !== window.location.href) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/index.html';
+                    }
+                }, 350);
+            }
+
+            if (mainCloseButton) {
+                mainCloseButton.addEventListener('click', goBackAnimated);
+                mainCloseButton.addEventListener('mouseenter', () => {
+                    if (backgroundImageOverlay) {
+                        document.documentElement.style.setProperty('--dynamic-overlay-color', 'var(--theme-gold-darker)');
+                    }
+                });
+                mainCloseButton.addEventListener('mouseleave', () => {
+                    if (backgroundImageOverlay) {
+                        document.documentElement.style.setProperty('--dynamic-overlay-color', 'var(--theme-green-darker)');
+                    }
+                });
+            }
+
+
+            if (forgotPasswordLink) {
+                forgotPasswordLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    clearMessage(loginMessageBox);
+                    loginForm.classList.add('hidden');
+                    forgotPasswordForm.classList.remove('hidden');
+                    formTitleMain.textContent = 'Forgot Password?';
+                    formSubtitle.textContent = 'No worries, we’ll send you reset instructions.';
+                });
+            }
+
+            if (backToLoginLink) {
+                backToLoginLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    clearMessage(forgotPasswordMessageBox);
+                    forgotPasswordForm.classList.add('hidden');
+                    loginForm.classList.remove('hidden');
+                    formTitleMain.textContent = 'Welcome back';
+                    formSubtitle.textContent = 'Please enter your details to access the PeAS.';
+                });
+            }
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    clearMessage(loginMessageBox);
+                    const submitButton = loginForm.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.textContent = 'Signing in...';
+                    submitButton.disabled = true;
+                    const formData = new FormData(loginForm);
+                    const data = Object.fromEntries(formData.entries());
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', },
+                            body: JSON.stringify(data),
+                        });
+                        const result = await response.json();
+                        if (response.ok) {
+                            showMessage(loginMessageBox, result.message || 'Login successful! Redirecting...', 'success');
+                            if (result.redirectUrl) {
+                                setTimeout(() => { window.location.href = result.redirectUrl; }, 1500);
+                            }
+                        } else {
+                            showMessage(loginMessageBox, result.message || 'Login failed. Please check your credentials.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        showMessage(loginMessageBox, 'An unexpected error occurred. Please try again.', 'error');
+                    } finally {
+                        submitButton.textContent = originalButtonText;
+                        submitButton.disabled = false;
+                    }
+                });
+            }
+
+            if (forgotPasswordForm) {
+                forgotPasswordForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    clearMessage(forgotPasswordMessageBox);
+                    const submitButton = forgotPasswordForm.querySelector('button[type="submit"]');
+                    const originalButtonText = submitButton.textContent;
+                    submitButton.textContent = 'Sending...';
+                    submitButton.disabled = true;
+                    const formData = new FormData(forgotPasswordForm);
+                    const data = Object.fromEntries(formData.entries());
+                    try {
+                        const response = await fetch('/api/forgot-password', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', },
+                            body: JSON.stringify(data),
+                        });
+                        const result = await response.json();
+                        if (response.ok) {
+                            showMessage(forgotPasswordMessageBox, result.message || 'Password reset link sent! Please check your email.', 'success');
+                        } else {
+                            showMessage(forgotPasswordMessageBox, result.message || 'Failed to send reset link. Please try again.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Forgot password error:', error);
+                        showMessage(forgotPasswordMessageBox, 'An unexpected error occurred. Please try again.', 'error');
+                    } finally {
+                        submitButton.textContent = originalButtonText;
+                        submitButton.disabled = false;
+                    }
+                });
+            }
+
+            const yearSpan = document.getElementById('currentYear');
+            if (yearSpan) {
+                yearSpan.textContent = new Date().getFullYear();
+            }
+
+            // --- Graphic Column Animations ---
+            const graphicColumn = document.querySelector('.graphic-column');
+            const logoWrapper = document.querySelector('.logo-wrapper');
+            const staticLogo = document.getElementById('staticLogoInGraphic');
+            const logoBackgroundEffect = document.getElementById('logoBackgroundEffect');
+            const logoGlowBlob = document.getElementById('logoGlowBlob'); // Get the glow element
+
+            const headerLogoLinkElement = document.querySelector('.header-logo-link');
+            const headerLogoImage = document.querySelector('.logo-image');
+            const headerLogoFallback = document.getElementById('logo-fallback');
+            let currentHeaderLogoAnimation = null;
+
+            if (graphicColumn && getComputedStyle(graphicColumn).display !== 'none') {
+                if (logoWrapper) { // Drift animation for the entire logo area (logo + glow)
+                    anime({
+                        targets: logoWrapper,
+                        translateX: [
+                            { value: anime.random(-5, 5), duration: anime.random(7000, 9000), easing: 'easeInOutSine' },
+                            { value: anime.random(-5, 5), duration: anime.random(7000, 9000), easing: 'easeInOutSine' },
+                            { value: 0, duration: anime.random(7000, 9000), easing: 'easeInOutSine' }
+                        ],
+                        translateY: [
+                            { value: anime.random(-5, 5), duration: anime.random(7000, 9000), easing: 'easeInOutSine' },
+                            { value: anime.random(-5, 5), duration: anime.random(7000, 9000), easing: 'easeInOutSine' },
+                            { value: 0, duration: anime.random(7000, 9000), easing: 'easeInOutSine' }
+                        ],
+                        loop: true,
+                        direction: 'alternate',
+                        delay: 300
+                    });
+                }
+
+                // MODIFICATION: Animation for the logoGlowBlob
+                if (logoGlowBlob) {
+                    anime({
+                        targets: logoGlowBlob,
+                        scale: [ // Gentle pulsing scale
+                            { value: 1, duration: 2500, easing: 'easeInOutSine' },
+                            { value: 1.05, duration: 2000, easing: 'easeInOutSine' },
+                            { value: 1, duration: 2500, easing: 'easeInOutSine' }
+                        ],
+                        opacity: [ // Gentle pulsing opacity
+                            { value: 0.55, duration: 2200, easing: 'easeInOutSine' },
+                            { value: 0.75, duration: 1800, easing: 'easeInOutSine' },
+                            { value: 0.55, duration: 2200, easing: 'easeInOutSine' }
+                        ],
+                        // Removed border-radius animation for performance
+                        loop: true,
+                        direction: 'alternate',
+                        easing: 'easeInOutSine'
+                    });
+                }
+
+                // Hover interaction for the static logo (tilt, scale, shadow)
+                if (staticLogo && graphicColumn) {
+                    let currentGraphicLogoAnimation = null;
+                    const logoParallaxFactor = 0.03; // Parallax for the logo itself
+                    // const backgroundParallaxFactor = 0.015; // Parallax for the full background image - removed as it's static now
+
+                    graphicColumn.addEventListener('mousemove', (e) => {
+                        if (!staticLogo) return;
+                        const rect = graphicColumn.getBoundingClientRect();
+                        const x = e.clientX - rect.left - (rect.width / 2);
+                        const y = e.clientY - rect.top - (rect.height / 2);
+
+                        const maxRotate = 5;
+                        const logoRotateX = -(y / (rect.height / 2)) * maxRotate;
+                        const logoRotateY = (x / (rect.width / 2)) * maxRotate;
+                        const logoScale = 1.05;
+                        const logoShadow = 'drop-shadow(6px 10px 12px rgba(0,0,0,0.2))';
+                        const logoTranslateX = -x * logoParallaxFactor;
+                        const logoTranslateY = -y * logoParallaxFactor;
+
+                        if(currentGraphicLogoAnimation) currentGraphicLogoAnimation.pause();
+                        currentGraphicLogoAnimation = anime({
+                            targets: staticLogo,
+                            translateX: logoTranslateX,
+                            translateY: logoTranslateY,
+                            rotateX: logoRotateX,
+                            rotateY: logoRotateY,
+                            scale: logoScale,
+                            filter: logoShadow,
+                            duration: 100,
+                            easing: 'easeOutQuad'
+                        });
+
+                        // Removed background parallax animation
+                    });
+
+                    graphicColumn.addEventListener('mouseleave', () => {
+                        if (!staticLogo) return;
+                        if(currentGraphicLogoAnimation) currentGraphicLogoAnimation.pause();
+                        currentGraphicLogoAnimation = anime({
+                            targets: staticLogo,
+                            translateX: 0,
+                            translateY: 0,
+                            rotateX: 0,
+                            rotateY: 0,
+                            scale: 1,
+                            filter: 'drop-shadow(0px 4px 8px rgba(0,0,0,0.15))',
+                            duration: 400,
+                            easing: 'easeOutElastic(1, .7)'
+                        });
+                        // Removed background parallax reset
+                    });
+                }
+            }
+
+            if (headerLogoLinkElement && (headerLogoImage || headerLogoFallback)) {
+                const logoTarget = headerLogoImage && getComputedStyle(headerLogoImage).display !== 'none' ? headerLogoImage : headerLogoFallback;
+                if (logoTarget) {
+                    headerLogoLinkElement.addEventListener('mousemove', (e) => {
+                        const logoRect = logoTarget.getBoundingClientRect();
+                        const parentRect = headerLogoLinkElement.getBoundingClientRect();
+                        const mouseX = e.clientX - parentRect.left;
+                        const mouseY = e.clientY - parentRect.top;
+                        const logoCenterX = logoTarget.offsetLeft + logoRect.width / 2;
+                        const logoCenterY = logoTarget.offsetTop + logoRect.height / 2;
+                        const deltaX = mouseX - logoCenterX;
+                        const deltaY = mouseY - logoCenterY;
+                        const maxDistLogo = 100;
+                        const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                        const moveFactor = Math.max(0, (maxDistLogo - dist) / maxDistLogo);
+                        const maxRotate = 8;
+                        const maxScale = 1.08;
+                        let rotateXval = 0, rotateYval = 0, scaleVal = 1;
+                        if (dist < maxDistLogo) {
+                            rotateXval = -(deltaY / logoRect.height) * maxRotate * 2 * moveFactor;
+                            rotateYval = (deltaX / logoRect.width) * maxRotate * 2 * moveFactor;
+                            scaleVal = 1 + (maxScale - 1) * moveFactor;
+                        }
+                        if(currentHeaderLogoAnimation) currentHeaderLogoAnimation.pause();
+                        currentHeaderLogoAnimation = anime({
+                            targets: [headerLogoImage, headerLogoFallback],
+                            rotateX: rotateXval, rotateY: rotateYval, scale: scaleVal,
+                            duration: 150, easing: 'easeOutQuad'
+                        });
+                    });
+                    headerLogoLinkElement.addEventListener('mouseleave', () => {
+                        if(currentHeaderLogoAnimation) currentHeaderLogoAnimation.pause();
+                        currentHeaderLogoAnimation = anime({
+                            targets: [headerLogoImage, headerLogoFallback],
+                            rotateX: 0, rotateY: 0, scale: 1,
+                            duration: 300, easing: 'easeOutElastic(1, .8)'
+                        });
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
